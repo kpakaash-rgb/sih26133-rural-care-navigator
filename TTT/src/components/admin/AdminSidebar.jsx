@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom'
+
 function AdminSidebar({ activeTab, setActiveTab }) {
+  const navigate = useNavigate()
   const navItems = [
     {
       id: 'dashboard',
@@ -74,7 +77,13 @@ function AdminSidebar({ activeTab, setActiveTab }) {
         {navItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setActiveTab(item.id)}
+            onClick={() => {
+              if (item.id === 'logs') {
+                navigate('/naandhaaadmin/submissions')
+                return
+              }
+              setActiveTab(item.id)
+            }}
             className={`w-full flex items-center gap-4 px-5 py-3.5 rounded-xl transition-all duration-200 font-medium text-sm ${
               activeTab === item.id
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/25'

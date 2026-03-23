@@ -16,6 +16,7 @@ const LoginPage = React.lazy(() => import('./Login.jsx'))
 const AdminLoginPage = React.lazy(() => import('./AdminLogin.jsx'))
 const AdminDashboardPage = React.lazy(() => import('./AdminDashboard.jsx'))
 const CreateChallengePage = React.lazy(() => import('./CreateChallenge.jsx'))
+const SubmissionsLogPage = React.lazy(() => import('./SubmissionsLog.jsx'))
 
 // Suspense fallback component
 const SuspenseFallback = () => (
@@ -60,6 +61,16 @@ function App() {
             element={
               <Suspense fallback={<SuspenseFallback />}>
                 <CreateChallengePage />
+              </Suspense>
+            } 
+          />
+
+          {/* Submissions Log - Hidden admin route */}
+          <Route 
+            path="/naandhaaadmin/submissions" 
+            element={
+              <Suspense fallback={<SuspenseFallback />}>
+                <SubmissionsLogPage />
               </Suspense>
             } 
           />
