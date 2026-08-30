@@ -46,8 +46,7 @@ export const SCREEN_TITLES = {
 
 export const BOTTOM_NAV_ITEMS = [
   { id: SCREENS.HOME, label: 'Home', icon: '🏠' },
-  { id: SCREENS.CARE_GUIDANCE, label: 'Guidance', icon: '🩺' },
-  { id: SCREENS.APPOINTMENTS, label: 'Visits', icon: '📅' },
-  { id: SCREENS.SCHEMES, label: 'Schemes', icon: '📋' },
-  { id: SCREENS.ABHA, label: 'ABHA', icon: '🪪' },
+  { id: 'services', label: 'Services', icon: '💼' },
+  { id: 'journey', label: 'Journey', icon: '📈' },
+  { id: 'profile', label: 'Profile', icon: '👤' },
 ]

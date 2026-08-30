@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Welcome } from './pages/patient'
+import { Welcome, Login, Registration, Home } from './pages/patient'
 import { SCREENS } from './utils/constants'
 import './App.css'
 
@@ -12,13 +12,11 @@ function App() {
 
   return (
     <div className="app-container">
-      <main className="app-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-        {currentScreen === SCREENS.WELCOME ? (
-          <Welcome onNavigate={handleNavigate} />
-        ) : (
-          <Welcome onNavigate={handleNavigate} />
-        )}
-      </main>
+      {/* Active Screen Rendering */}
+      {currentScreen === SCREENS.WELCOME && <Welcome onNavigate={handleNavigate} />}
+      {currentScreen === SCREENS.LOGIN && <Login onNavigate={handleNavigate} />}
+      {currentScreen === SCREENS.REGISTRATION && <Registration onNavigate={handleNavigate} />}
+      {currentScreen === SCREENS.HOME && <Home onNavigate={handleNavigate} />}
     </div>
   )
 }

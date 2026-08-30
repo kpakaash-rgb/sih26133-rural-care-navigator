@@ -1,7 +1,8 @@
 export default function SOSButton({
   onClick,
-  label = 'EMERGENCY (108)',
-  compact = false,
+  label = 'SOS',
+  variant = 'pill', // 'pill' | 'card' | 'banner'
+  icon = '▲',
 }) {
   const handleClick = (e) => {
     if (onClick) {
@@ -11,15 +12,29 @@ export default function SOSButton({
     }
   }
 
+  if (variant === 'card') {
+    return (
+      <button
+        type="button"
+        className="sos-card-btn"
+        onClick={handleClick}
+        aria-label="Call Emergency Help"
+      >
+        <span className="sos-phone-icon">📞</span>
+        <span>{label === 'SOS' ? 'Call Emergency Help' : label}</span>
+      </button>
+    )
+  }
+
   return (
     <button
       type="button"
-      className={`sos-btn ${compact ? 'compact' : ''}`}
+      className="header-sos-pill"
       onClick={handleClick}
-      aria-label="Call Emergency 108"
+      aria-label="Emergency SOS 108"
     >
-      <span className="sos-icon">🚨</span>
-      <span className="sos-label">{label}</span>
+      <span className="sos-pill-icon">{icon}</span>
+      <span className="sos-pill-text">{label}</span>
     </button>
   )
 }
