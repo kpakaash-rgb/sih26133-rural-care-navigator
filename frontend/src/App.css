@@ -540,39 +540,127 @@
   padding-top: 12px;
 }
 
-/* Specific Screen Styles */
-.welcome-hero {
+/* Approved Stitch Welcome Screen */
+.welcome-screen-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 56px 20px 36px;
+  background-color: #f8fafd;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.welcome-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  padding: 20px 10px;
+  margin-top: auto;
+  margin-bottom: auto;
+  max-width: 320px;
+  width: 100%;
 }
 
-.brand-badge {
+.welcome-icon-box {
+  width: 96px;
+  height: 96px;
+  background-color: #dbeafe;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+
+.welcome-heading {
+  font-family: 'Georgia', 'Cambria', 'Times New Roman', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: #003b73;
+  line-height: 1.28;
+  letter-spacing: -0.2px;
+  margin: 0 0 16px 0;
+  text-align: center;
+}
+
+.welcome-subheading {
+  font-family: var(--font-family);
+  font-size: 14.5px;
+  font-weight: 400;
+  color: #334155;
+  line-height: 1.45;
+  text-align: center;
+  max-width: 270px;
+  margin: 0;
+}
+
+.welcome-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.welcome-btn-primary {
+  width: 100%;
+  background-color: #00478f;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  min-height: 48px;
+}
+
+.welcome-btn-primary:hover {
+  background-color: #003b78;
+}
+
+.welcome-btn-primary:active {
+  transform: scale(0.99);
+}
+
+.welcome-btn-arrow {
+  font-size: 17px;
+  font-weight: 800;
   display: inline-block;
-  background-color: var(--primary-light);
-  color: var(--primary);
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  margin-bottom: 12px;
+  transform: translateY(1px);
 }
 
-.welcome-title {
-  font-size: var(--font-size-2xl);
-  margin-bottom: 8px;
+.welcome-btn-secondary {
+  width: 100%;
+  background-color: #e9edf4;
+  color: #00478f;
+  border: 1px solid #dce4ee;
+  border-radius: 6px;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  min-height: 48px;
 }
 
-.welcome-description {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
+.welcome-btn-secondary:hover {
+  background-color: #dfe6f0;
 }
 
-.quick-actions-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
+.welcome-btn-secondary:active {
+  transform: scale(0.99);
 }
 
 .home-patient-banner {
