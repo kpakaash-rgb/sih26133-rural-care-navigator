@@ -1,121 +1,131 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import Header from './components/Header'
+import BottomNav from './components/BottomNav'
+import SOSButton from './components/SOSButton'
+import {
+  Welcome,
+  Login,
+  Registration,
+  Home,
+  Symptoms,
+  CareGuidance,
+  Healthcare,
+  FacilityDetails,
+  Availability,
+  Booking,
+  AppointmentConfirmed,
+  Appointments,
+  Referral,
+  TrackReferral,
+  HealthJourney,
+  FollowUp,
+  Schemes,
+  SchemeDetails,
+  MobileClinic,
+  Abha,
+} from './pages/patient'
+import { SCREENS, SCREEN_TITLES } from './utils/constants'
 import './App.css'
 
+const SCREEN_COMPONENTS = {
+  [SCREENS.WELCOME]: Welcome,
+  [SCREENS.LOGIN]: Login,
+  [SCREENS.REGISTRATION]: Registration,
+  [SCREENS.HOME]: Home,
+  [SCREENS.SYMPTOMS]: Symptoms,
+  [SCREENS.CARE_GUIDANCE]: CareGuidance,
+  [SCREENS.HEALTHCARE]: Healthcare,
+  [SCREENS.FACILITY_DETAILS]: FacilityDetails,
+  [SCREENS.AVAILABILITY]: Availability,
+  [SCREENS.BOOKING]: Booking,
+  [SCREENS.APPOINTMENT_CONFIRMED]: AppointmentConfirmed,
+  [SCREENS.APPOINTMENTS]: Appointments,
+  [SCREENS.REFERRAL]: Referral,
+  [SCREENS.TRACK_REFERRAL]: TrackReferral,
+  [SCREENS.HEALTH_JOURNEY]: HealthJourney,
+  [SCREENS.FOLLOW_UP]: FollowUp,
+  [SCREENS.SCHEMES]: Schemes,
+  [SCREENS.SCHEME_DETAILS]: SchemeDetails,
+  [SCREENS.MOBILE_CLINIC]: MobileClinic,
+  [SCREENS.ABHA]: Abha,
+}
+
+// Screens that show bottom nav bar
+const BOTTOM_NAV_SCREENS = [
+  SCREENS.HOME,
+  SCREENS.CARE_GUIDANCE,
+  SCREENS.APPOINTMENTS,
+  SCREENS.SCHEMES,
+  SCREENS.ABHA,
+  SCREENS.HEALTHCARE,
+]
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentScreen, setCurrentScreen] = useState(SCREENS.HOME)
+  const [history, setHistory] = useState([SCREENS.HOME])
+
+  const navigateTo = (screenId) => {
+    setHistory((prev) => [...prev, screenId])
+    setCurrentScreen(screenId)
+  }
+
+  const goBack = () => {
+    if (history.length > 1) {
+      const nextHistory = [...history]
+      nextHistory.pop()
+      const prevScreen = nextHistory[nextHistory.length - 1]
+      setHistory(nextHistory)
+      setCurrentScreen(prevScreen)
+    } else {
+      setCurrentScreen(SCREENS.HOME)
+    }
+  }
+
+  const ActiveComponent = SCREEN_COMPONENTS[currentScreen] || Home
+  const showBack = currentScreen !== SCREENS.HOME && currentScreen !== SCREENS.WELCOME
+  const showBottomNav = BOTTOM_NAV_SCREENS.includes(currentScreen)
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <div className="app-container">
+      {/* Dev Quick Screen Switcher */}
+      <aside className="dev-screen-bar" aria-label="Development Screen Navigator">
+        <span>Preview Screen:</span>
+        <select
+          className="dev-select"
+          value={currentScreen}
+          onChange={(e) => navigateTo(e.target.value)}
+          aria-label="Select screen to preview"
         >
-          Count is {count}
-        </button>
-      </section>
+          {Object.entries(SCREEN_TITLES).map(([id, title]) => (
+            <option key={id} value={id}>
+              {title} ({id})
+            </option>
+          ))}
+        </select>
+      </aside>
 
-      <div className="ticks"></div>
+      {/* Reusable Header */}
+      <Header
+        title={SCREEN_TITLES[currentScreen] || 'Rural Care Navigator'}
+        showBack={showBack}
+        onBack={goBack}
+        rightAction={
+          currentScreen !== SCREENS.WELCOME && (
+            <SOSButton compact label="108" />
+          )
+        }
+      />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+      {/* Screen View */}
+      <main className="app-content" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <ActiveComponent onNavigate={navigateTo} />
+      </main>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {/* Reusable Bottom Navigation */}
+      {showBottomNav && (
+        <BottomNav activeScreen={currentScreen} onNavigate={navigateTo} />
+      )}
+    </div>
   )
 }
 
