@@ -2,12 +2,28 @@ import { useState } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
+import { SCREENS } from '../../utils/constants'
 
-export default function Home() {
+export default function Home({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('home')
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
+  }
+
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId)
+    if (tabId === 'services' && onNavigate) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === SCREENS.HOME && onNavigate) {
+      onNavigate(SCREENS.HOME)
+    }
+  }
+
+  const handleFindCare = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.SYMPTOMS)
+    }
   }
 
   return (
@@ -52,7 +68,7 @@ export default function Home() {
         </article>
 
         {/* 3. Find the Right Place for Care Card */}
-        <article className="home-card care-finder-card" role="button" tabIndex={0}>
+        <article className="home-card care-finder-card" onClick={handleFindCare} role="button" tabIndex={0}>
           <div className="care-finder-icon" aria-hidden="true">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="6" width="18" height="15" rx="3" />
@@ -124,7 +140,8 @@ export default function Home() {
       </main>
 
       {/* Fixed Bottom Navigation */}
-      <BottomNav activeScreen={activeTab} onNavigate={(tabId) => setActiveTab(tabId)} />
+      <BottomNav activeScreen={activeTab} onNavigate={handleNavClick} />
     </div>
   )
 }
+
