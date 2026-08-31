@@ -10,6 +10,9 @@ import {
   FacilityDetails,
   Availability,
   Booking,
+  AppointmentConfirmed,
+  Appointments,
+  ReferralCreated,
 } from './pages/patient'
 import { SCREENS } from './utils/constants'
 import './App.css'
@@ -61,6 +64,23 @@ function App() {
         <Booking
           onNavigate={handleNavigate}
           bookingData={bookingData}
+        />
+      )}
+      {currentScreen === SCREENS.APPOINTMENT_CONFIRMED && (
+        <AppointmentConfirmed
+          onNavigate={handleNavigate}
+          bookingData={bookingData}
+        />
+      )}
+      {currentScreen === SCREENS.APPOINTMENTS && (
+        <Appointments
+          onNavigate={handleNavigate}
+          bookingData={bookingData}
+        />
+      )}
+      {currentScreen === SCREENS.REFERRAL && (
+        <ReferralCreated
+          onNavigate={handleNavigate}
         />
       )}
     </div>

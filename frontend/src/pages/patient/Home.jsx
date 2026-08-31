@@ -15,6 +15,8 @@ export default function Home({ onNavigate }) {
     setActiveTab(tabId)
     if (tabId === 'services' && onNavigate) {
       onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' && onNavigate) {
+      onNavigate(SCREENS.APPOINTMENTS)
     } else if (tabId === SCREENS.HOME && onNavigate) {
       onNavigate(SCREENS.HOME)
     }
@@ -84,7 +86,12 @@ export default function Home({ onNavigate }) {
         </article>
 
         {/* 4. My Appointments Card */}
-        <article className="home-card action-tile-card" role="button" tabIndex={0}>
+        <article
+          className="home-card action-tile-card"
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigate && onNavigate(SCREENS.APPOINTMENTS)}
+        >
           <span className="notification-dot" aria-label="1 unread notification" />
           <div className="tile-icon" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -101,7 +108,12 @@ export default function Home({ onNavigate }) {
         </article>
 
         {/* 5. My Health Journey Card */}
-        <article className="home-card action-tile-card" role="button" tabIndex={0}>
+        <article
+          className="home-card action-tile-card"
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigate && onNavigate(SCREENS.HEALTH_JOURNEY)}
+        >
           <div className="tile-icon" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -115,7 +127,12 @@ export default function Home({ onNavigate }) {
         </article>
 
         {/* 6. My Referrals Card */}
-        <article className="home-card action-tile-card" role="button" tabIndex={0}>
+        <article
+          className="home-card action-tile-card"
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigate && onNavigate(SCREENS.REFERRAL)}
+        >
           <div className="tile-icon" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
