@@ -13,6 +13,8 @@ import {
   AppointmentConfirmed,
   Appointments,
   ReferralCreated,
+  HealthJourney,
+  TrackReferral,
 } from './pages/patient'
 import { SCREENS } from './utils/constants'
 import './App.css'
@@ -80,6 +82,16 @@ function App() {
       )}
       {currentScreen === SCREENS.REFERRAL && (
         <ReferralCreated
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.HEALTH_JOURNEY && (
+        <HealthJourney
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.TRACK_REFERRAL && (
+        <TrackReferral
           onNavigate={handleNavigate}
         />
       )}
