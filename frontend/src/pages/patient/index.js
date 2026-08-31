@@ -5,4 +5,6 @@ export { default as Home } from './Home'
 export { default as Symptoms } from './Symptoms'
 export { default as CareGuidance } from './CareGuidance'
 export { default as Healthcare } from './Healthcare'
-
+export { default as FacilityDetails } from './FacilityDetails'
+export { default as Availability } from './Availability'
+export { default as Booking } from './Booking'

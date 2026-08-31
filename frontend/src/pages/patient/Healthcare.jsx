@@ -125,7 +125,11 @@ export default function Healthcare({ onNavigate }) {
               </p>
             </div>
 
-            <button type="button" className="facility-solid-btn">
+            <button
+              type="button"
+              className="facility-solid-btn"
+              onClick={() => onNavigate && onNavigate(SCREENS.FACILITY_DETAILS)}
+            >
               View Details
             </button>
           </article>
@@ -206,7 +210,11 @@ export default function Healthcare({ onNavigate }) {
               </p>
             </div>
 
-            <button type="button" className="facility-outline-btn">
+            <button
+              type="button"
+              className="facility-outline-btn"
+              onClick={() => onNavigate && onNavigate(SCREENS.FACILITY_DETAILS)}
+            >
               View Details
             </button>
           </article>
