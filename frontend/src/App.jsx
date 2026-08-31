@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Welcome, Login, Registration, Home, Symptoms, Healthcare } from './pages/patient'
+import { Welcome, Login, Registration, Home, Symptoms, CareGuidance, Healthcare } from './pages/patient'
 import { SCREENS } from './utils/constants'
 import './App.css'
 
@@ -18,6 +18,7 @@ function App() {
       {currentScreen === SCREENS.REGISTRATION && <Registration onNavigate={handleNavigate} />}
       {currentScreen === SCREENS.HOME && <Home onNavigate={handleNavigate} />}
       {currentScreen === SCREENS.SYMPTOMS && <Symptoms onNavigate={handleNavigate} />}
+      {currentScreen === SCREENS.CARE_GUIDANCE && <CareGuidance onNavigate={handleNavigate} />}
       {currentScreen === SCREENS.HEALTHCARE && <Healthcare onNavigate={handleNavigate} />}
     </div>
   )

@@ -28,7 +28,7 @@ export default function Symptoms({ onNavigate }) {
 
   const handleContinue = () => {
     if (onNavigate) {
-      onNavigate(SCREENS.HEALTHCARE)
+      onNavigate(SCREENS.CARE_GUIDANCE)
     }
   }
 
