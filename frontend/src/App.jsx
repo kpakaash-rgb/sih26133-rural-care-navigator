@@ -15,12 +15,18 @@ import {
   ReferralCreated,
   HealthJourney,
   TrackReferral,
+  FollowUp,
+  Schemes,
+  SchemeDetails,
+  MobileClinic,
+  Abha,
 } from './pages/patient'
 import { SCREENS } from './utils/constants'
 import './App.css'
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState(SCREENS.WELCOME)
+  const [selectedScheme, setSelectedScheme] = useState(null)
   const [bookingData, setBookingData] = useState({
     facility: 'PHC Malshiras',
     service: 'General Medicine',
@@ -33,7 +39,11 @@ function App() {
 
   const handleNavigate = (screenId, data) => {
     if (data) {
-      setBookingData((prev) => ({ ...prev, ...data }))
+      if (screenId === SCREENS.SCHEME_DETAILS) {
+        setSelectedScheme(data)
+      } else {
+        setBookingData((prev) => ({ ...prev, ...data }))
+      }
     }
     setCurrentScreen(screenId)
   }
@@ -92,6 +102,32 @@ function App() {
       )}
       {currentScreen === SCREENS.TRACK_REFERRAL && (
         <TrackReferral
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.FOLLOW_UP && (
+        <FollowUp
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.SCHEMES && (
+        <Schemes
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.SCHEME_DETAILS && (
+        <SchemeDetails
+          onNavigate={handleNavigate}
+          schemeData={selectedScheme}
+        />
+      )}
+      {currentScreen === SCREENS.MOBILE_CLINIC && (
+        <MobileClinic
+          onNavigate={handleNavigate}
+        />
+      )}
+      {currentScreen === SCREENS.ABHA && (
+        <Abha
           onNavigate={handleNavigate}
         />
       )}
