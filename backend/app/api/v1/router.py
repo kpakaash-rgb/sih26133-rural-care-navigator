@@ -32,7 +32,10 @@ from backend.app.api.v1.routes.health_journey import router as health_journey_ro
 from backend.app.api.v1.routes.mobile_clinics import router as mobile_clinics_router
 from backend.app.api.v1.routes.referrals import router as referrals_router
 from backend.app.api.v1.routes.schemes import router as schemes_router
-
+from backend.app.api.v1.routes.triage import router as triage_router
+from backend.app.api.v1.routes.hospital_recommendation import (
+    router as hospital_recommendation_router,
+)
 api_v1_router = APIRouter(prefix="/api/v1")
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -47,6 +50,8 @@ api_v1_router.include_router(health_journey_router)
 api_v1_router.include_router(follow_ups_router)
 api_v1_router.include_router(schemes_router)
 api_v1_router.include_router(mobile_clinics_router)
+api_v1_router.include_router(triage_router)
+api_v1_router.include_router(hospital_recommendation_router)
 
 
 

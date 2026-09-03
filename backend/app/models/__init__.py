@@ -17,12 +17,15 @@ from backend.app.models.otp import OTPRecord
 from backend.app.models.patient import Patient
 from backend.app.models.referral import Referral
 from backend.app.models.scheme import GovernmentScheme
+from backend.app.models.hospital_queue import HospitalQueue
+from backend.app.models.facility_equipment import FacilityEquipment
 
 __all__ = [
     "Appointment",
     "AvailabilitySlot",
     "Facility",
     "FacilityService",
+    "FacilityEquipment",
     "FollowUp",
     "GovernmentScheme",
     "HealthJourneyEvent",
@@ -30,8 +33,8 @@ __all__ = [
     "OTPRecord",
     "Patient",
     "Referral",
+    "HospitalQueue",
 ]
-
 
 
 
