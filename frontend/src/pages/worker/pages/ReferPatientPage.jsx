@@ -146,7 +146,7 @@ export default function ReferPatientPage() {
         <button id="btn-track-referral" className="rr-submit-btn" style={{ marginTop: 0 }}>
           <Bell size={18} /> Track Referral
         </button>
-        <button className="rr-back-summary" onClick={() => navigate('/patient-summary')}>
+        <button className="rr-back-summary" onClick={() => navigate('/worker/patient-summary')}>
           <ArrowLeft size={15} /> Back to Patient Summary
         </button>
       </div>

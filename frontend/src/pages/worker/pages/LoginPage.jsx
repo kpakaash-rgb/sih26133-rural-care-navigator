@@ -35,7 +35,7 @@ export default function LoginPage() {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      navigate('/home')
+      navigate('/worker/home')
     }, 1200)
   }
 
@@ -47,14 +47,29 @@ export default function LoginPage() {
       mErr.mobile = 'Enter a valid 10-digit mobile number'
     setErrors(mErr)
     if (Object.keys(mErr).length > 0) return
-    navigate('/home')
+    navigate('/worker/home')
   }
 
   return (
     <div className="login-root">
-      {/* ΓöÇΓöÇ Status bar mock ΓöÇΓöÇ */}
-      <div className="login-topbar">
+      {/* ── Status bar / Switch role ── */}
+      <div className="login-topbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255,255,255,0.9)',
+            fontSize: '0.78rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          ← Switch Role
+        </button>
         <span className="login-topbar-title">Frontline Worker Login</span>
+        <span style={{ width: 70 }} />
       </div>
 
       <div className="login-scroll">

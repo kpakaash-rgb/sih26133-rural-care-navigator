@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    RURAL CARE NAVIGATOR - Global Design System
    ============================================================ */
 
@@ -59,35 +59,20 @@
   --transition-normal: 250ms ease;
 }
 
-/* ---------- Reset ---------- */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-body {
-  font-family: var(--font-family);
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-  line-height: 1.5;
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-#root {
+/* ---------- Worker Shell Container ---------- */
+.worker-app-shell {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
   position: relative;
   background: var(--color-bg);
   box-shadow: var(--shadow-lg);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
 }
-img { display: block; max-width: 100%; }
-button { cursor: pointer; font-family: inherit; border: none; background: none; }
-a { text-decoration: none; color: inherit; }
-input, textarea, select { font-family: inherit; }
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 4px; }
 
 /* ---------- Layout ---------- */
 .page { display: flex; flex-direction: column; min-height: 100vh; }

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, Copy, ShieldCheck, Check, Plus,
@@ -111,10 +111,10 @@ export default function ScreeningPage() {
           <span className="sc-id-val">{patient.id}</span>
         </div>
         <div className="sc-submitted-actions">
-          <button className="sc-action-primary" onClick={() => navigate('/patient-summary')}>
+          <button className="sc-action-primary" onClick={() => navigate('/worker/patient-summary')}>
             View Health Summary
           </button>
-          <button className="sc-action-ghost" onClick={() => navigate('/home')}>
+          <button className="sc-action-ghost" onClick={() => navigate('/worker/home')}>
             Back to Dashboard
           </button>
           <button className="sc-action-ghost" onClick={() => { setSubmitted(false); setLoading(false) }}>

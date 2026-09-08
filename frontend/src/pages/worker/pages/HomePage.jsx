@@ -106,28 +106,28 @@ export default function HomePage() {
           <button
             className="hd-review-btn"
             id="btn-review-patient"
-            onClick={() => navigate('/patient-summary')}
+            onClick={() => navigate('/worker/patient-summary')}
           >
             Review Patient <ChevronRight size={16} />
           </button>
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Register Patient ΓöÇΓöÇ */}
+      {/* ── Register Patient ── */}
       <button
         id="btn-register-patient"
         className="hd-register-btn"
-        onClick={() => navigate('/register-patient')}
+        onClick={() => navigate('/worker/register-patient')}
       >
         <UserPlus size={20} />
         + Register Patient
       </button>
 
-      {/* ΓöÇΓöÇ Caseload Overview ΓöÇΓöÇ */}
+      {/* ── Caseload Overview ── */}
       <section>
         <div className="hd-section-row">
           <h2 className="section-title">Caseload Overview</h2>
-          <span className="hd-zone-label">{worker.zone} ΓÇó Today</span>
+          <span className="hd-zone-label">{worker.zone} • Today</span>
         </div>
         <div className="hd-stats-grid">
           {caseloadStats.map((s) => (
@@ -135,7 +135,7 @@ export default function HomePage() {
               key={s.id}
               className="hd-stat-card"
               style={{ cursor: 'pointer' }}
-              onClick={() => navigate(s.id === 1 ? '/patients' : s.id === 4 ? '/tasks' : '/patients')}
+              onClick={() => navigate(s.id === 1 ? '/worker/patients' : s.id === 4 ? '/worker/tasks' : '/worker/patients')}
             >
               <div className="hd-stat-top">
                 <div className="hd-stat-icon" style={{ background: s.color + '1A', color: s.color }}>
@@ -152,7 +152,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ΓöÇΓöÇ Field Route ΓöÇΓöÇ */}
+      {/* ── Field Route ── */}
       <div className="hd-route-card">
         <div className="hd-route-header">
           <div className="flex items-center gap-2">
@@ -173,7 +173,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Today's Tasks ΓöÇΓöÇ */}
+      {/* ── Today's Tasks ── */}
       <section>
         <div className="hd-section-row">
           <div className="flex items-center gap-2">
@@ -182,7 +182,7 @@ export default function HomePage() {
           </div>
           <button
             className="hd-view-tasks-link"
-            onClick={() => navigate('/tasks')}
+            onClick={() => navigate('/worker/tasks')}
           >
             View Tasks <ChevronRight size={15} />
           </button>

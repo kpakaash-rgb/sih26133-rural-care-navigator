@@ -356,7 +356,7 @@ export default function RegisterPatientPage() {
             <button
               id="btn-start-screening"
               className="rp-start-btn"
-              onClick={() => navigate('/screening')}
+              onClick={() => navigate('/worker/screening')}
             >
               <ClipboardList size={18} />
               Start Screening
@@ -364,7 +364,7 @@ export default function RegisterPatientPage() {
 
             <button
               className="rp-back-dash"
-              onClick={() => navigate('/home')}
+              onClick={() => navigate('/worker/home')}
             >
               <ArrowLeft size={15} />
               Back to Dashboard

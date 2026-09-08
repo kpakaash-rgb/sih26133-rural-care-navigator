@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Home, Users, CheckSquare, User, Bell } from 'lucide-react'
 
 /**
@@ -9,12 +9,13 @@ import { Home, Users, CheckSquare, User, Bell } from 'lucide-react'
  */
 export default function WorkerAppLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navItems = [
-    { to: '/home',     icon: Home,        label: 'Home' },
-    { to: '/patients', icon: Users,       label: 'Patients' },
-    { to: '/tasks',    icon: CheckSquare, label: 'Tasks', badge: 3 },
-    { to: '/profile',  icon: User,        label: 'Profile' },
+    { to: '/worker/home',     icon: Home,        label: 'Home' },
+    { to: '/worker/patients', icon: Users,       label: 'Patients' },
+    { to: '/worker/tasks',    icon: CheckSquare, label: 'Tasks', badge: 3 },
+    { to: '/worker/profile',  icon: User,        label: 'Profile' },
   ]
 
   return (
@@ -43,8 +44,31 @@ export default function WorkerAppLayout() {
           </div>
         </div>
 
-        {/* Sync status badge */}
+        {/* Sync status badge & Switch Role */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="header-switch-role-btn"
+            title="Switch Role"
+            style={{
+              background: 'rgba(255,255,255,0.18)',
+              border: 'none',
+              borderRadius: 20,
+              color: 'white',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              padding: '4px 10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            ← Roles
+          </button>
+
           <div style={{
             display: 'flex', alignItems: 'center', gap: 5,
             background: 'rgba(255,255,255,0.18)',

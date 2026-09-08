@@ -119,19 +119,19 @@ export default function PatientsPage() {
   })
 
   function handleOpenPatient(_patientId) {
-    navigate('/patient-summary')
+    navigate('/worker/patient-summary')
   }
 
   return (
     <div className="pp-root animate-fade-in">
 
-      {/* ΓöÇΓöÇ Search Bar ΓöÇΓöÇ */}
+      {/* ── Search Bar ── */}
       <div className="pp-search-wrap">
         <Search size={18} className="pp-search-icon" />
         <input
           id="patient-search-input"
           className="pp-search-input"
-          placeholder="Search patient name, ID, villageΓÇª"
+          placeholder="Search patient name, ID, village…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"
@@ -148,7 +148,7 @@ export default function PatientsPage() {
         )}
       </div>
 
-      {/* ΓöÇΓöÇ Filter Chips ΓöÇΓöÇ */}
+      {/* ── Filter Chips ── */}
       <div className="pp-filters-row">
         {FILTERS.map((f) => (
           <button
@@ -162,7 +162,7 @@ export default function PatientsPage() {
         ))}
       </div>
 
-      {/* ΓöÇΓöÇ Count & Action ΓöÇΓöÇ */}
+      {/* ── Count & Action ── */}
       <div className="pp-count-row">
         <span className="pp-count-text">
           {filtered.length} patient{filtered.length !== 1 ? 's' : ''} assigned
@@ -170,7 +170,7 @@ export default function PatientsPage() {
         <button
           type="button"
           className="pp-new-patient-link"
-          onClick={() => navigate('/register-patient')}
+          onClick={() => navigate('/worker/register-patient')}
         >
           <UserPlus size={14} /> + Register New
         </button>

@@ -304,9 +304,9 @@ export default function PatientSummaryPage() {
         </div>
       </CollapsibleCard>
 
-      {/* ΓöÇΓöÇ Actions ΓöÇΓöÇ */}
+      {/* ── Actions ── */}
       <div className="ps-actions">
-        <button id="btn-refer-patient" className="ps-btn-primary" onClick={() => navigate('/refer-patient')}>
+        <button id="btn-refer-patient" className="ps-btn-primary" onClick={() => navigate('/worker/refer-patient')}>
           <Building2 size={19} />
           Refer Patient to PHC
           <ExternalLink size={16} style={{ marginLeft: 'auto' }} />

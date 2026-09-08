@@ -41,7 +41,7 @@ export default function ProfilePage() {
   }
 
   function handleSignOut() {
-    navigate('/login')
+    navigate('/worker/login')
   }
 
   return (
@@ -245,7 +245,32 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Sign Out Action ΓöÇΓöÇ */}
+      {/* ── Switch Role Action ── */}
+      <button
+        id="btn-switch-role"
+        type="button"
+        style={{
+          width: '100%',
+          marginBottom: 12,
+          padding: '12px',
+          borderRadius: 10,
+          background: '#EBF3FC',
+          border: '1px solid #BFDBFE',
+          color: '#0A58CA',
+          fontWeight: 600,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+          fontSize: '0.88rem',
+        }}
+        onClick={() => navigate('/')}
+      >
+        ← Switch Platform Role
+      </button>
+
+      {/* ── Sign Out Action ── */}
       <button
         id="btn-sign-out"
         type="button"
