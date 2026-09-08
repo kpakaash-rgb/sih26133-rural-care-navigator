@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import RoleSelection from './pages/RoleSelection'
 import PatientApp from './pages/patient/PatientApp'
-import DoctorPlaceholder from './pages/doctor/DoctorPlaceholder'
+import DoctorApp from './pages/doctor/DoctorApp'
 import WorkerApp from './pages/worker/WorkerApp'
 
 /**
@@ -11,7 +11,7 @@ import WorkerApp from './pages/worker/WorkerApp'
  * Architecture:
  * /          → Role Selection (Patient / Doctor / Frontline Worker)
  * /patient/* → Patient Flow (Preserves all existing 21 screens and state transitions)
- * /doctor/*  → Doctor Module (Placeholder until Phase 5)
+ * /doctor/*  → Doctor Flow (Preserves existing state-machine navigation and 8 screens)
  * /worker/*  → Frontline Worker Module (Complete SPA flow)
  */
 function App() {
@@ -24,9 +24,9 @@ function App() {
       <Route path="/patient" element={<PatientApp />} />
       <Route path="/patient/*" element={<PatientApp />} />
 
-      {/* Doctor Module Placeholder */}
-      <Route path="/doctor" element={<DoctorPlaceholder />} />
-      <Route path="/doctor/*" element={<DoctorPlaceholder />} />
+      {/* Doctor Application */}
+      <Route path="/doctor" element={<DoctorApp />} />
+      <Route path="/doctor/*" element={<DoctorApp />} />
 
       {/* Frontline Worker Module */}
       <Route path="/worker/*" element={<WorkerApp />} />
