@@ -85,12 +85,15 @@ function App() {
       <Route path="/" element={<RoleSelection />} />
 
       {/* Patient Application */}
+      <Route path="/patient" element={<PatientApp />} />
       <Route path="/patient/*" element={<PatientApp />} />
 
-      {/* Doctor Module Placeholder (Integration in Phase 3) */}
+      {/* Doctor Module Placeholder */}
+      <Route path="/doctor" element={<DoctorPlaceholder />} />
       <Route path="/doctor/*" element={<DoctorPlaceholder />} />
 
-      {/* Frontline Worker Module Placeholder (Integration in Phase 4) */}
+      {/* Frontline Worker Module Placeholder */}
+      <Route path="/worker" element={<WorkerPlaceholder />} />
       <Route path="/worker/*" element={<WorkerPlaceholder />} />
 
       {/* Catch-all Fallback */}
