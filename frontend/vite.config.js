@@ -22,7 +22,24 @@ export default defineConfig({
 
       workbox: {
         navigateFallback: '/',
+        // Don't let the service worker intercept Worker-app routes
+        navigateFallbackDenylist: [/^\/worker/],
       },
     }),
   ],
-})
+
+  // ── Dev server: rewrite /worker/* to worker.html ──────────────────────────
+  server: {
+    open: false,
+  },
+
+  // ── Multi-page build ───────────────────────────────────────────────────────
+  build: {
+    rollupOptions: {
+      input: {
+        main:   `${import.meta.dirname}/index.html`,
+        worker: `${import.meta.dirname}/worker.html`,
+      },
+    },
+  },
+})
