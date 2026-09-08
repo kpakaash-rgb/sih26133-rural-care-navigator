@@ -1,264 +1,101 @@
-import { useState } from 'react'
+import React from 'react'
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom'
+import { Users, ArrowLeft } from 'lucide-react'
+import RoleSelection from './pages/RoleSelection'
+import PatientApp from './pages/patient/PatientApp'
+import DoctorPlaceholder from './pages/doctor/DoctorPlaceholder'
 
-import {
-  Welcome,
-  Login,
-  Registration,
-  Home,
-  Symptoms,
-  CareGuidance,
-  Healthcare,
-  FacilityDetails,
-  Availability,
-  Booking,
-  AppointmentConfirmed,
-  Appointments,
-  ReferralCreated,
-  HealthJourney,
-  TrackReferral,
-  FollowUp,
-  Schemes,
-  SchemeDetails,
-  MobileClinic,
-  Abha,
-} from './pages/patient'
-
-import { SCREENS } from './utils/constants'
-
-import './App.css'
-
-function App() {
-  const [currentScreen, setCurrentScreen] = useState(SCREENS.WELCOME)
-
-  const [selectedScheme, setSelectedScheme] = useState(null)
-
-  const [triageData, setTriageData] = useState({
-    urgency: null,
-    recommended_care: null,
-    reason: null,
-    emergency: false,
-    reportedSymptoms: [],
-    problemDescription: '',
-  })
-
-  const [bookingData, setBookingData] = useState({
-    facility: 'PHC Malshiras',
-    service: 'General Medicine',
-    date: 'Tuesday, Oct 24',
-    dateKey: 'today',
-    time: '10:30 AM',
-    type: 'In-person',
-    typeKey: 'in_person',
-  })
-
-  // ---------------------------------------------------------
-  // Navigation handler
-  // ---------------------------------------------------------
-
-  const handleNavigate = (screenId, data) => {
-    if (data) {
-      // Government scheme details
-      if (screenId === SCREENS.SCHEME_DETAILS) {
-        setSelectedScheme(data)
-      }
-
-      // AI Triage → Care Guidance
-      else if (screenId === SCREENS.CARE_GUIDANCE) {
-        setTriageData({
-          urgency: data.urgency ?? null,
-          recommended_care: data.recommended_care ?? null,
-          reason: data.reason ?? null,
-          emergency: Boolean(data.emergency),
-          reportedSymptoms: data.reportedSymptoms ?? [],
-          problemDescription: data.problemDescription ?? '',
-        })
-      }
-
-      // Appointment / booking data
-      else {
-        setBookingData((prev) => ({
-          ...prev,
-          ...data,
-        }))
-      }
-    }
-
-    setCurrentScreen(screenId)
-  }
-
-  // ---------------------------------------------------------
-  // Update appointment information
-  // ---------------------------------------------------------
-
-  const handleUpdateBooking = (data) => {
-    setBookingData((prev) => ({
-      ...prev,
-      ...data,
-    }))
-  }
-
-  // ---------------------------------------------------------
-  // Render active screen
-  // ---------------------------------------------------------
+/**
+ * Temporary Frontline Worker Module placeholder.
+ * Replaced in Phase 4 when Worker routing is un-nested and integrated.
+ */
+function WorkerPlaceholder() {
+  const navigate = useNavigate()
 
   return (
-    <div className="app-container">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '24px',
+      background: '#F8FAFC',
+      fontFamily: 'Inter, sans-serif',
+      textAlign: 'center',
+    }}>
+      <div style={{
+        width: 64,
+        height: 64,
+        borderRadius: 16,
+        background: '#DCFCE7',
+        color: '#059669',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+      }}>
+        <Users size={32} />
+      </div>
 
-      {/* =====================================================
-          AUTHENTICATION
-      ===================================================== */}
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0F172A', marginBottom: 8 }}>
+        Frontline Worker Module
+      </h1>
 
-      {currentScreen === SCREENS.WELCOME && (
-        <Welcome onNavigate={handleNavigate} />
-      )}
+      <p style={{ color: '#64748B', maxWidth: 360, marginBottom: 24, fontSize: '0.95rem', lineHeight: 1.5 }}>
+        Integration in progress. Sub-router migration will complete in Phase 4.
+      </p>
 
-      {currentScreen === SCREENS.LOGIN && (
-        <Login onNavigate={handleNavigate} />
-      )}
-
-      {currentScreen === SCREENS.REGISTRATION && (
-        <Registration onNavigate={handleNavigate} />
-      )}
-
-      {/* =====================================================
-          HOME
-      ===================================================== */}
-
-      {currentScreen === SCREENS.HOME && (
-        <Home onNavigate={handleNavigate} />
-      )}
-
-      {/* =====================================================
-          AI TRIAGE
-      ===================================================== */}
-
-      {currentScreen === SCREENS.SYMPTOMS && (
-        <Symptoms onNavigate={handleNavigate} />
-      )}
-
-      {currentScreen === SCREENS.CARE_GUIDANCE && (
-        <CareGuidance
-          onNavigate={handleNavigate}
-          triageResult={triageData}
-          reportedSymptoms={triageData.reportedSymptoms}
-        />
-      )}
-
-      {/* =====================================================
-          HEALTHCARE
-      ===================================================== */}
-
-      {currentScreen === SCREENS.HEALTHCARE && (
-        <Healthcare onNavigate={handleNavigate} />
-      )}
-
-      {currentScreen === SCREENS.FACILITY_DETAILS && (
-        <FacilityDetails onNavigate={handleNavigate} />
-      )}
-
-      {/* =====================================================
-          APPOINTMENTS
-      ===================================================== */}
-
-      {currentScreen === SCREENS.AVAILABILITY && (
-        <Availability
-          onNavigate={handleNavigate}
-          bookingData={bookingData}
-          onUpdateBooking={handleUpdateBooking}
-        />
-      )}
-
-      {currentScreen === SCREENS.BOOKING && (
-        <Booking
-          onNavigate={handleNavigate}
-          bookingData={bookingData}
-        />
-      )}
-
-      {currentScreen === SCREENS.APPOINTMENT_CONFIRMED && (
-        <AppointmentConfirmed
-          onNavigate={handleNavigate}
-          bookingData={bookingData}
-        />
-      )}
-
-      {currentScreen === SCREENS.APPOINTMENTS && (
-        <Appointments
-          onNavigate={handleNavigate}
-          bookingData={bookingData}
-        />
-      )}
-
-      {/* =====================================================
-          REFERRALS
-      ===================================================== */}
-
-      {currentScreen === SCREENS.REFERRAL && (
-        <ReferralCreated
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {currentScreen === SCREENS.HEALTH_JOURNEY && (
-        <HealthJourney
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {currentScreen === SCREENS.TRACK_REFERRAL && (
-        <TrackReferral
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {/* =====================================================
-          FOLLOW UP
-      ===================================================== */}
-
-      {currentScreen === SCREENS.FOLLOW_UP && (
-        <FollowUp
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {/* =====================================================
-          GOVERNMENT SCHEMES
-      ===================================================== */}
-
-      {currentScreen === SCREENS.SCHEMES && (
-        <Schemes
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {currentScreen === SCREENS.SCHEME_DETAILS && (
-        <SchemeDetails
-          onNavigate={handleNavigate}
-          schemeData={selectedScheme}
-        />
-      )}
-
-      {/* =====================================================
-          MOBILE CLINIC
-      ===================================================== */}
-
-      {currentScreen === SCREENS.MOBILE_CLINIC && (
-        <MobileClinic
-          onNavigate={handleNavigate}
-        />
-      )}
-
-      {/* =====================================================
-          ABHA
-      ===================================================== */}
-
-      {currentScreen === SCREENS.ABHA && (
-        <Abha
-          onNavigate={handleNavigate}
-        />
-      )}
-
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '10px 20px',
+          borderRadius: 12,
+          background: '#0A58CA',
+          color: '#FFFFFF',
+          border: 'none',
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
+      >
+        <ArrowLeft size={18} />
+        Back to Role Selection
+      </button>
     </div>
+  )
+}
+
+/**
+ * Root Application Router
+ *
+ * Architecture:
+ * /          → Role Selection (Patient / Doctor / Frontline Worker)
+ * /patient/* → Patient Flow (Preserves all existing 21 screens and state transitions)
+ * /doctor/*  → Doctor Module (Placeholder until Phase 3)
+ * /worker/*  → Frontline Worker Module (Placeholder until Phase 4)
+ */
+function App() {
+  return (
+    <Routes>
+      {/* Role Selection Landing */}
+      <Route path="/" element={<RoleSelection />} />
+
+      {/* Patient Application */}
+      <Route path="/patient/*" element={<PatientApp />} />
+
+      {/* Doctor Module Placeholder (Integration in Phase 3) */}
+      <Route path="/doctor/*" element={<DoctorPlaceholder />} />
+
+      {/* Frontline Worker Module Placeholder (Integration in Phase 4) */}
+      <Route path="/worker/*" element={<WorkerPlaceholder />} />
+
+      {/* Catch-all Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   )
 }
 

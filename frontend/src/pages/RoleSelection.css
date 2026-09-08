@@ -1,0 +1,226 @@
+.role-selection-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 45%, #F8FAFC 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 16px 40px;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1E293B;
+}
+
+.role-selection-container {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Header & Brand */
+.role-brand-header {
+  text-align: center;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.role-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #EBF3FC;
+  color: #0A58CA;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(10, 88, 202, 0.15);
+}
+
+.role-brand-logo-wrap {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #0A58CA 0%, #2563EB 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  box-shadow: 0 8px 20px rgba(10, 88, 202, 0.25);
+  color: #FFFFFF;
+}
+
+.role-brand-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+}
+
+.role-brand-subtitle {
+  font-size: 0.9rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Role Cards Grid */
+.role-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.role-card-btn {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 18px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.role-card-btn:hover {
+  transform: translateY(-2px);
+  border-color: #0A58CA;
+  box-shadow: 0 8px 24px rgba(10, 88, 202, 0.12);
+}
+
+.role-card-btn:active {
+  transform: scale(0.99);
+}
+
+/* Specific Role Card Theme Variations */
+.role-card-patient .role-icon-box {
+  background: #EBF3FC;
+  color: #0A58CA;
+}
+
+.role-card-doctor .role-icon-box {
+  background: #EDE9FE;
+  color: #6D28D9;
+}
+
+.role-card-worker .role-icon-box {
+  background: #DCFCE7;
+  color: #059669;
+}
+
+.role-icon-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.role-card-btn:hover .role-icon-box {
+  transform: scale(1.06);
+}
+
+.role-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.role-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.role-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.role-tag-live {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.role-tag-dev {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.role-card-desc {
+  font-size: 0.8125rem;
+  color: #64748B;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.role-arrow-icon {
+  color: #94A3B8;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.role-card-btn:hover .role-arrow-icon {
+  transform: translateX(3px);
+  color: #0A58CA;
+}
+
+/* Platform Trust Footer */
+.role-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #E2E8F0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.role-footer-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #64748B;
+}
+
+.role-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.role-footer-copy {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  margin: 0;
+}
