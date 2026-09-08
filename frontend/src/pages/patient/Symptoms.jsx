@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { triageSymptoms } from '../../services/api'
 
 const COMMON_SYMPTOMS_LIST = [
   'Fever',
@@ -41,41 +42,10 @@ export default function Symptoms({ onNavigate }) {
     setErrorMessage('')
 
     try {
-      const response = await fetch(
-        'http://127.0.0.1:8000/api/v1/triage',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            symptoms: selectedSymptoms,
-            description: problemDescription.trim(),
-          }),
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(`Triage API returned ${response.status}`)
-      }
-
-      const result = await response.json()
-
-      console.log('AI Triage Result:', result)
-
-      /*
-       * Backend response:
-       *
-       * {
-       *   urgency: "needs_attention",
-       *   recommended_care: "Primary Health Centre (PHC)",
-       *   reason: "...",
-       *   emergency: false
-       * }
-       *
-       * Store both the triage result and the symptoms entered
-       * by the patient.
-       */
+      const result = await triageSymptoms({
+        symptoms: selectedSymptoms,
+        description: problemDescription.trim(),
+      })
 
       if (onNavigate) {
         onNavigate(SCREENS.CARE_GUIDANCE, {
@@ -88,10 +58,9 @@ export default function Symptoms({ onNavigate }) {
         })
       }
     } catch (error) {
-      console.error('Triage API error:', error)
-
       setErrorMessage(
-        'Unable to connect to the care guidance service. Please make sure the backend is running and try again.'
+        error.message ||
+          'Unable to connect to the care guidance service. Please try again.'
       )
     } finally {
       setIsLoading(false)

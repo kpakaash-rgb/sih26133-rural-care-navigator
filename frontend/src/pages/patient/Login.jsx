@@ -2,24 +2,67 @@ import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { requestOtp, verifyOtp } from '../../services/api'
 
 export default function Login({ onNavigate }) {
   const [mobileNumber, setMobileNumber] = useState('')
   const [showOtpStep, setShowOtpStep] = useState(false)
   const [otpCode, setOtpCode] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [demoOtp, setDemoOtp] = useState(null)
 
-  const handleGetOtp = (e) => {
+  const handleGetOtp = async (e) => {
     e.preventDefault()
-    if (!mobileNumber.trim()) {
-      setShowOtpStep(true)
+    setError(null)
+    const cleanMobile = mobileNumber.replace(/\D/g, '')
+
+    if (cleanMobile.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number.')
       return
     }
-    setShowOtpStep(true)
+
+    setLoading(true)
+    try {
+      const data = await requestOtp(cleanMobile)
+      setShowOtpStep(true)
+      if (data?.demo_otp) {
+        setDemoOtp(data.demo_otp)
+        setOtpCode(data.demo_otp)
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to send OTP. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleVerifyOtp = (e) => {
+  const handleVerifyOtp = async (e) => {
     e.preventDefault()
-    onNavigate(SCREENS.HOME)
+    setError(null)
+    const cleanOtp = otpCode.trim()
+    const cleanMobile = mobileNumber.replace(/\D/g, '')
+
+    if (!cleanOtp) {
+      setError('Please enter the OTP.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const data = await verifyOtp(cleanMobile, cleanOtp)
+      if (data?.access_token) {
+        localStorage.setItem('access_token', data.access_token)
+      }
+      if (data?.patient) {
+        localStorage.setItem('patient', JSON.stringify(data.patient))
+      }
+      onNavigate(SCREENS.HOME, { patient: data?.patient })
+    } catch (err) {
+      setError(err.message || 'Verification failed. Please check the OTP.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -36,6 +79,27 @@ export default function Login({ onNavigate }) {
 
         {/* Login Form Card */}
         <div className="login-card">
+          {error && (
+            <div
+              style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fca5a5',
+                borderRadius: '6px',
+                padding: '10px 12px',
+                marginBottom: '14px',
+                color: '#991b1b',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+              role="alert"
+            >
+              <span aria-hidden="true">⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+
           {!showOtpStep ? (
             <form onSubmit={handleGetOtp} className="login-form">
               <label htmlFor="mobileInput" className="field-label">
@@ -52,20 +116,67 @@ export default function Login({ onNavigate }) {
                   id="mobileInput"
                   type="tel"
                   className="clean-text-input"
-                  placeholder="Enter your mobile number"
+                  placeholder="Enter 10-digit mobile number"
                   value={mobileNumber}
-                  onChange={(e) => setMobileNumber(e.target.value)}
+                  onChange={(e) => {
+                    setMobileNumber(e.target.value)
+                    if (error) setError(null)
+                  }}
                   maxLength={10}
+                  disabled={loading}
                 />
               </div>
 
-              <button type="submit" className="login-btn-primary">
-                <span>Get OTP</span>
+              <button
+                type="submit"
+                className="login-btn-primary"
+                disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'wait' : 'pointer' }}
+              >
+                <span>{loading ? 'Requesting OTP...' : 'Get OTP'}</span>
                 <span className="btn-arrow-glyph" aria-hidden="true">→</span>
               </button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="login-form">
+              {demoOtp && (
+                <div
+                  style={{
+                    backgroundColor: '#eff6ff',
+                    border: '1px solid #bfdbfe',
+                    borderRadius: '6px',
+                    padding: '8px 12px',
+                    marginBottom: '14px',
+                    color: '#1e40af',
+                    fontSize: '12.5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>Demo OTP: <strong>{demoOtp}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOtpCode(demoOtp)
+                      if (error) setError(null)
+                    }}
+                    style={{
+                      background: '#dbeafe',
+                      border: '1px solid #93c5fd',
+                      borderRadius: '4px',
+                      padding: '2px 8px',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      color: '#1e40af',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Auto-fill
+                  </button>
+                </div>
+              )}
+
               <label htmlFor="otpInput" className="field-label">
                 Enter OTP (Sent to {mobileNumber || 'your number'})
               </label>
@@ -80,22 +191,36 @@ export default function Login({ onNavigate }) {
                   id="otpInput"
                   type="text"
                   className="clean-text-input"
-                  placeholder="Enter 4 or 6-digit OTP"
+                  placeholder="Enter 6-digit OTP"
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
+                  onChange={(e) => {
+                    setOtpCode(e.target.value)
+                    if (error) setError(null)
+                  }}
                   maxLength={6}
                   autoFocus
+                  disabled={loading}
                 />
               </div>
 
-              <button type="submit" className="login-btn-primary">
-                <span>Verify & Login</span>
+              <button
+                type="submit"
+                className="login-btn-primary"
+                disabled={loading}
+                style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'wait' : 'pointer' }}
+              >
+                <span>{loading ? 'Verifying...' : 'Verify & Login'}</span>
                 <span className="btn-arrow-glyph" aria-hidden="true">→</span>
               </button>
               <button
                 type="button"
                 className="link-change-number"
-                onClick={() => setShowOtpStep(false)}
+                onClick={() => {
+                  setShowOtpStep(false)
+                  setError(null)
+                  setDemoOtp(null)
+                }}
+                disabled={loading}
               >
                 Change mobile number
               </button>

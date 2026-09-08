@@ -1,11 +1,70 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { getFacilityDetails, getFacilityServices } from '../../services/api'
 
-export default function FacilityDetails({ onNavigate }) {
+function formatFacilityType(type) {
+  switch (type) {
+    case 'PRIMARY_HEALTH_CENTRE':
+      return 'Primary Health Centre'
+    case 'COMMUNITY_HEALTH_CENTRE':
+      return 'Community Health Centre'
+    case 'DISTRICT_HOSPITAL':
+      return 'District Hospital'
+    case 'SUB_CENTRE':
+      return 'Sub-Centre'
+    case 'MOBILE_CLINIC':
+      return 'Mobile Medical Unit'
+    default:
+      return type || 'Healthcare Facility'
+  }
+}
+
+export default function FacilityDetails({ onNavigate, facility: passedFacility, facilityId }) {
   const [activeTab, setActiveTab] = useState('services')
+  const [facility, setFacility] = useState(() => ({
+    id: facilityId || passedFacility?.id || 1,
+    name: passedFacility?.name || 'PHC Malshiras',
+    category: passedFacility?.category || 'Primary Health Centre',
+    address: passedFacility?.raw?.address || passedFacility?.address || '124 Main Road, Malshiras',
+  }))
+
+  const [services, setServices] = useState([
+    { id: 1, name: 'Doctor', available: true },
+    { id: 2, name: 'Basic tests', available: true },
+    { id: 3, name: 'Medicines', available: true },
+  ])
+
+  useEffect(() => {
+    let isMounted = true
+    const targetId = facilityId || passedFacility?.id || 1
+
+    Promise.all([
+      getFacilityDetails(targetId).catch(() => null),
+      getFacilityServices(targetId).catch(() => null),
+    ]).then(([details, srvs]) => {
+      if (isMounted) {
+        if (details) {
+          setFacility({
+            id: details.id,
+            name: details.name,
+            category: formatFacilityType(details.type),
+            address: details.address,
+            raw: details,
+          })
+        }
+        if (Array.isArray(srvs) && srvs.length > 0) {
+          setServices(srvs)
+        }
+      }
+    })
+
+    return () => {
+      isMounted = false
+    }
+  }, [facilityId, passedFacility])
 
   const handleEmergencyCall = () => {
     window.location.href = 'tel:108'
@@ -19,18 +78,25 @@ export default function FacilityDetails({ onNavigate }) {
 
   const handleBookAppointment = () => {
     if (onNavigate) {
-      onNavigate(SCREENS.AVAILABILITY)
+      onNavigate(SCREENS.AVAILABILITY, {
+        facility: facility.name,
+        facilityId: facility.id,
+      })
     }
   }
 
   const handleCheckTimes = () => {
     if (onNavigate) {
-      onNavigate(SCREENS.AVAILABILITY)
+      onNavigate(SCREENS.AVAILABILITY, {
+        facility: facility.name,
+        facilityId: facility.id,
+      })
     }
   }
 
   const handleDirections = () => {
-    window.open('https://maps.google.com/?q=PHC+Malshiras', '_blank')
+    const query = encodeURIComponent(facility.name + ', ' + facility.address)
+    window.open(`https://maps.google.com/?q=${query}`, '_blank')
   }
 
   const handleCallFacility = () => {
@@ -73,8 +139,8 @@ export default function FacilityDetails({ onNavigate }) {
         {/* Facility Identity Header Card */}
         <section className="facility-hero-card">
           <div className="facility-hero-header">
-            <h1 className="facility-hero-name">PHC Malshiras</h1>
-            <p className="facility-hero-type">Primary Health Centre</p>
+            <h1 className="facility-hero-name">{facility.name}</h1>
+            <p className="facility-hero-type">{facility.category}</p>
           </div>
 
           <div className="facility-hero-meta-row">
@@ -84,7 +150,7 @@ export default function FacilityDetails({ onNavigate }) {
             </span>
             <div className="facility-address-inline">
               <span className="address-pin-glyph" aria-hidden="true">📍</span>
-              <span>124 Main Road, Malshiras</span>
+              <span>{facility.address}</span>
             </div>
           </div>
         </section>
@@ -94,86 +160,32 @@ export default function FacilityDetails({ onNavigate }) {
           <h2 className="facility-section-heading">AVAILABLE SERVICES</h2>
 
           <div className="compact-services-card">
-            {/* Service 1: Doctor */}
-            <div className="compact-service-row">
-              <div className="service-icon-and-title">
-                <span className="service-glyph-box" aria-hidden="true">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#004b87"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M4.5 3v5a4.5 4.5 0 0 0 9 0V3" />
-                    <path d="M9 12.5v3.5a3 3 0 0 0 3 3h1a3 3 0 0 0 3-3v-1.5" />
-                    <circle cx="16" cy="14.5" r="1.5" fill="#004b87" />
-                  </svg>
+            {services.map((srv, idx) => (
+              <div key={srv.id || idx} className="compact-service-row">
+                <div className="service-icon-and-title">
+                  <span className="service-glyph-box" aria-hidden="true">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#004b87"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4.5 3v5a4.5 4.5 0 0 0 9 0V3" />
+                      <path d="M9 12.5v3.5a3 3 0 0 0 3 3h1a3 3 0 0 0 3-3v-1.5" />
+                      <circle cx="16" cy="14.5" r="1.5" fill="#004b87" />
+                    </svg>
+                  </span>
+                  <span className="service-name-text">{srv.name}</span>
+                </div>
+                <span className={`service-status-pill ${srv.available !== false ? 'status-available' : 'status-limited'}`}>
+                  {srv.available !== false ? 'Available' : 'Limited'}
                 </span>
-                <span className="service-name-text">Doctor</span>
               </div>
-              <span className="service-status-pill status-available">
-                Available
-              </span>
-            </div>
-
-            {/* Service 2: Tests */}
-            <div className="compact-service-row">
-              <div className="service-icon-and-title">
-                <span className="service-glyph-box" aria-hidden="true">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#004b87"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M6 18h8" />
-                    <path d="M3 22h18" />
-                    <path d="M14 22a7 7 0 1 0 0-14h-1" />
-                    <path d="M9 14h2" />
-                    <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
-                    <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
-                  </svg>
-                </span>
-                <span className="service-name-text">Tests</span>
-              </div>
-              <span className="service-status-pill status-limited">
-                ▲ Limited
-              </span>
-            </div>
-
-            {/* Service 3: Medicines */}
-            <div className="compact-service-row">
-              <div className="service-icon-and-title">
-                <span className="service-glyph-box" aria-hidden="true">
-                  <svg
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#004b87"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="4" width="18" height="16" rx="3" />
-                    <path d="M12 9v6" stroke="#004b87" strokeWidth="2" />
-                    <path d="M9 12h6" stroke="#004b87" strokeWidth="2" />
-                  </svg>
-                </span>
-                <span className="service-name-text">Medicines</span>
-              </div>
-              <span className="service-status-pill status-available">
-                Available
-              </span>
-            </div>
+            ))}
           </div>
         </section>
 

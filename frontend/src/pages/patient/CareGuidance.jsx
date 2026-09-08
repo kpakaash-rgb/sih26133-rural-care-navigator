@@ -47,81 +47,82 @@ return 'Routine healthcare is appropriate unless your symptoms worsen.'
 }
 }
 
-const handleEmergencyCall = () => {
-window.location.href = 'tel:108'
-}
-
-const handleFindCare = () => {
-if (onNavigate) {
-onNavigate(SCREENS.HEALTHCARE)
-}
-}
-
-const handleEditFeeling = () => {
-if (onNavigate) {
-onNavigate(SCREENS.SYMPTOMS)
-}
-}
-
-const handleNavClick = (tabId) => {
-setActiveTab(tabId)
-
-```
-if (tabId === 'home' || tabId === SCREENS.HOME) {
-  if (onNavigate) {
-    onNavigate(SCREENS.HOME)
+  const handleEmergencyCall = () => {
+    window.location.href = 'tel:108'
   }
-}
-```
 
-}
+  const handleFindCare = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.HEALTHCARE, {
+        triageData: triageResult,
+        urgency,
+        recommendedCare,
+      })
+    }
+  }
 
-return ( <div className="care-guidance-screen-wrapper">
-{/* Brand Header with SOS */}
-<Header
-title="Rural Care Navigator"
-showLogo
-rightAction={ <SOSButton
-         label="SOS"
-         icon="▲"
-         onClick={handleEmergencyCall}
-       />
-}
-/>
+  const handleEditFeeling = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.SYMPTOMS)
+    }
+  }
 
-```
-  {/* Main Vertically Scrollable Content */}
-  <main className="care-guidance-scrollable-content">
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId)
+    if (tabId === 'home' || tabId === SCREENS.HOME) {
+      if (onNavigate) {
+        onNavigate(SCREENS.HOME)
+      }
+    }
+  }
 
-    {/* Urgency Section */}
-    <section className="urgency-question-section">
-      <h2 className="urgency-question-heading">
-        How soon should you get care?
-      </h2>
+  return (
+    <div className="care-guidance-screen-wrapper">
+      {/* Brand Header with SOS */}
+      <Header
+        title="Rural Care Navigator"
+        showLogo
+        rightAction={
+          <SOSButton
+            label="SOS"
+            icon="▲"
+            onClick={handleEmergencyCall}
+          />
+        }
+      />
 
-      <div
-        className={`needs-attention-card urgency-${urgency}`}
-      >
-        <div className="attention-badge-title">
-          {getUrgencyTitle()}
-        </div>
+      {/* Main Vertically Scrollable Content */}
+      <main className="care-guidance-scrollable-content">
 
-        <p className="attention-card-desc">
-          {getUrgencyMessage()}
-        </p>
-      </div>
-    </section>
+        {/* Urgency Section */}
+        <section className="urgency-question-section">
+          <h2 className="urgency-question-heading">
+            How soon should you get care?
+          </h2>
 
-    {/* Guidance Header */}
-    <section className="care-guidance-intro">
-      <h1 className="guidance-main-title">
-        Your Care Guidance
-      </h1>
+          <div
+            className={`needs-attention-card urgency-${urgency}`}
+          >
+            <div className="attention-badge-title">
+              {getUrgencyTitle()}
+            </div>
 
-      <p className="guidance-subtitle">
-        Based on the symptoms you reported today.
-      </p>
-    </section>
+            <p className="attention-card-desc">
+              {getUrgencyMessage()}
+            </p>
+          </div>
+        </section>
+
+        {/* Guidance Header */}
+        <section className="care-guidance-intro">
+          <h1 className="guidance-main-title">
+            Your Care Guidance
+          </h1>
+
+          <p className="guidance-subtitle">
+            AI-assisted care guidance based on the symptoms you reported today.
+          </p>
+        </section>
 
     {/* Reported Symptoms */}
     <section className="reported-symptoms-card">

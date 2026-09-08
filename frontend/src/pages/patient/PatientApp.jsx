@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -25,13 +25,53 @@ import {
 } from './index'
 
 import { SCREENS } from '../../utils/constants'
+import { getMe, clearPatientSession } from '../../services/api'
 import '../../App.css'
 
 export default function PatientApp() {
   const navigate = useNavigate()
-  const [currentScreen, setCurrentScreen] = useState(SCREENS.WELCOME)
+  const [currentScreen, setCurrentScreen] = useState(() => (
+    localStorage.getItem('access_token') ? SCREENS.HOME : SCREENS.WELCOME
+  ))
+
+  const [patient, setPatient] = useState(() => {
+    try {
+      const cached = localStorage.getItem('patient')
+      return cached ? JSON.parse(cached) : null
+    } catch {
+      return null
+    }
+  })
+
+  // Verify and refresh patient profile when active session token exists
+  useEffect(() => {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      getMe()
+        .then((data) => {
+          if (data) {
+            setPatient(data)
+            localStorage.setItem('patient', JSON.stringify(data))
+          }
+        })
+        .catch((err) => {
+          if (err.status === 401) {
+            clearPatientSession()
+            setPatient(null)
+            setCurrentScreen(SCREENS.WELCOME)
+          }
+        })
+    }
+  }, [])
+
+  const handleLogout = () => {
+    clearPatientSession()
+    setPatient(null)
+    setCurrentScreen(SCREENS.WELCOME)
+  }
 
   const [selectedScheme, setSelectedScheme] = useState(null)
+  const [selectedFacility, setSelectedFacility] = useState(null)
 
   const [triageData, setTriageData] = useState({
     urgency: null,
@@ -58,6 +98,12 @@ export default function PatientApp() {
 
   const handleNavigate = (screenId, data) => {
     if (data) {
+      if (data.patient) {
+        setPatient(data.patient)
+      }
+      if (data.facility) {
+        setSelectedFacility(data.facility)
+      }
       // Government scheme details
       if (screenId === SCREENS.SCHEME_DETAILS) {
         setSelectedScheme(data)
@@ -156,7 +202,11 @@ export default function PatientApp() {
       ===================================================== */}
 
       {currentScreen === SCREENS.HOME && (
-        <Home onNavigate={handleNavigate} />
+        <Home
+          onNavigate={handleNavigate}
+          patient={patient}
+          onLogout={handleLogout}
+        />
       )}
 
       {/* =====================================================
@@ -180,11 +230,18 @@ export default function PatientApp() {
       ===================================================== */}
 
       {currentScreen === SCREENS.HEALTHCARE && (
-        <Healthcare onNavigate={handleNavigate} />
+        <Healthcare
+          onNavigate={handleNavigate}
+          triageData={triageData.urgency ? triageData : null}
+        />
       )}
 
       {currentScreen === SCREENS.FACILITY_DETAILS && (
-        <FacilityDetails onNavigate={handleNavigate} />
+        <FacilityDetails
+          onNavigate={handleNavigate}
+          facility={selectedFacility}
+          facilityId={selectedFacility?.id}
+        />
       )}
 
       {/* =====================================================
@@ -286,6 +343,8 @@ export default function PatientApp() {
       {currentScreen === SCREENS.ABHA && (
         <Abha
           onNavigate={handleNavigate}
+          patient={patient}
+          onLogout={handleLogout}
         />
       )}
 

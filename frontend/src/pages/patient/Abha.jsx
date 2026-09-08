@@ -4,7 +4,7 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 
-export default function Abha({ onNavigate }) {
+export default function Abha({ onNavigate, patient, onLogout }) {
   const [activeTab, setActiveTab] = useState('profile')
   const [healthInfoModal, setHealthInfoModal] = useState(false)
   const [manageModal, setManageModal] = useState(false)
@@ -44,10 +44,10 @@ export default function Abha({ onNavigate }) {
     }, 4000)
   }
 
-  const abhaData = {
-    number: '91-XXXX-XXXX-XXXX',
-    status: 'Connected',
-  }
+  const abhaNumber = patient?.abha_number || '14-1234-5678-9012'
+  const patientName = patient?.full_name || 'Ramesh Kumar'
+  const patientDistrict = patient?.district || 'Solapur'
+  const patientMobile = patient?.mobile || '9876543210'
 
   return (
     <div className="abha-screen-wrapper">
@@ -80,14 +80,36 @@ export default function Abha({ onNavigate }) {
                 </svg>
               </div>
               <div className="abha-number-column">
-                <span className="abha-number-label">ABHA Number</span>
-                <span className="abha-number-value">{abhaData.number}</span>
+                <span className="abha-number-label">{patientName}</span>
+                <span className="abha-number-value">{abhaNumber}</span>
               </div>
             </div>
 
             <div className="abha-status-pill">
               <span className="status-dot" aria-hidden="true" />
-              <span>{abhaData.status}</span>
+              <span>Connected</span>
+            </div>
+          </div>
+
+          {/* Profile Details List */}
+          <div style={{
+            margin: '14px 0',
+            padding: '10px 12px',
+            background: '#f8fafc',
+            borderRadius: '6px',
+            fontSize: '12.5px',
+            color: '#475569',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '6px',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>District:</span>
+              <strong style={{ color: '#0f172a' }}>{patientDistrict}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Registered Mobile:</span>
+              <strong style={{ color: '#0f172a' }}>{patientMobile}</strong>
             </div>
           </div>
 
@@ -120,6 +142,39 @@ export default function Abha({ onNavigate }) {
               <span>Manage Connection</span>
             </button>
           </div>
+
+          {/* Log Out Action */}
+          {onLogout && (
+            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #e2e8f0' }}>
+              <button
+                type="button"
+                onClick={onLogout}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '10px 14px',
+                  backgroundColor: '#fff1f2',
+                  border: '1px solid #fecdd3',
+                  borderRadius: '6px',
+                  color: '#e11d48',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.15s ease',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                <span>Log Out</span>
+              </button>
+            </div>
+          )}
         </article>
 
         {/* Prototype Feedback Notifications */}

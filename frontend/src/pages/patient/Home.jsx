@@ -1,11 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { getAppointments } from '../../services/api'
 
-export default function Home({ onNavigate }) {
+export default function Home({ onNavigate, patient }) {
   const [activeTab, setActiveTab] = useState('home')
+  const [appointmentsCount, setAppointmentsCount] = useState(0)
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token')
+    if (token) {
+      getAppointments()
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setAppointmentsCount(data.length)
+          }
+        })
+        .catch(() => {
+          // Graceful fallback to default state
+        })
+    }
+  }, [])
+
+  const displayName = patient?.full_name || 'Ramesh Kumar'
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -43,7 +62,7 @@ export default function Home({ onNavigate }) {
       <main className="home-scrollable-content">
         {/* Patient Greeting */}
         <section className="home-greeting-section">
-          <h1 className="home-greeting-name">Good morning, John</h1>
+          <h1 className="home-greeting-name">Good morning, {displayName}</h1>
           <p className="home-greeting-question">What do you need help with today?</p>
         </section>
 
@@ -94,7 +113,9 @@ export default function Home({ onNavigate }) {
           tabIndex={0}
           onClick={() => onNavigate && onNavigate(SCREENS.APPOINTMENTS)}
         >
-          <span className="notification-dot" aria-label="1 unread notification" />
+          {appointmentsCount > 0 && (
+            <span className="notification-dot" aria-label={`${appointmentsCount} appointments`} />
+          )}
           <div className="tile-icon" aria-hidden="true">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
