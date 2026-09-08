@@ -2,6 +2,35 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 
+function formatTime(timeStr) {
+  if (!timeStr) return ''
+  if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr
+  const parts = timeStr.split(':')
+  if (parts.length < 2) return timeStr
+  let hour = parseInt(parts[0], 10)
+  const minute = parts[1]
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  hour = hour % 12 || 12
+  return `${hour}:${minute} ${ampm}`
+}
+
+function formatFacilityType(type) {
+  switch (type) {
+    case 'PRIMARY_HEALTH_CENTRE':
+      return 'Primary Health Centre'
+    case 'COMMUNITY_HEALTH_CENTRE':
+      return 'Community Health Centre'
+    case 'DISTRICT_HOSPITAL':
+      return 'District Hospital'
+    case 'SUB_CENTRE':
+      return 'Sub-Centre'
+    case 'MOBILE_CLINIC':
+      return 'Mobile Medical Unit'
+    default:
+      return type || 'Healthcare Facility'
+  }
+}
+
 export default function AppointmentConfirmed({ onNavigate, bookingData }) {
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -14,7 +43,10 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
   }
 
   const handleGetDirections = () => {
-    window.open('https://maps.google.com/?q=PHC+Malshiras', '_blank')
+    const query = encodeURIComponent(
+      (appointmentDetails.facility || 'PHC Malshiras') + ', Solapur'
+    )
+    window.open(`https://maps.google.com/?q=${query}`, '_blank')
   }
 
   const handleBackToHome = () => {
@@ -23,16 +55,20 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
     }
   }
 
-  // Appointment details with fallbacks matching Stitch reference
+  const appt = bookingData?.createdAppointment
+  const rawDate = appt?.appointment_date || bookingData?.dateRaw || bookingData?.date || 'Available Date'
+
   const appointmentDetails = {
-    facility: bookingData?.facility || 'PHC Malshiras',
-    facilityType: 'Primary Health Centre',
-    service: bookingData?.service || 'General Medicine',
+    id: appt?.id || bookingData?.appointmentId,
+    facility: appt?.facility_name || appt?.facility?.name || bookingData?.facility || 'PHC Malshiras',
+    facilityType: appt?.facility?.type ? formatFacilityType(appt.facility.type) : 'Primary Health Centre',
+    service: appt?.service_name || appt?.service?.name || bookingData?.service || 'General Medicine',
     type: bookingData?.type || 'In-person',
-    date: bookingData?.date
-      ? bookingData.date.replace('Tuesday', 'Tue').replace('Wednesday', 'Wed').replace('Thursday', 'Thu')
-      : 'Tue, Oct 24',
-    time: bookingData?.time || '10:30 AM',
+    date: rawDate,
+    time: appt?.start_time
+      ? `${formatTime(appt.start_time)} - ${formatTime(appt.end_time)}`
+      : bookingData?.time || '10:30 AM',
+    status: appt?.status || 'SCHEDULED',
   }
 
   return (
@@ -68,17 +104,33 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
 
         {/* Appointment Summary Card */}
         <article className="confirmed-summary-card">
-          {/* Top: Facility Identity */}
+          {/* Top: Facility Identity and Appointment ID */}
           <div className="confirmed-facility-header">
-            <div className="confirmed-facility-title-row">
-              <span className="confirmed-clinic-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="3" width="18" height="18" rx="4" stroke="#004b87" strokeWidth="2" />
-                  <path d="M12 8v8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </span>
-              <h2 className="confirmed-facility-name">{appointmentDetails.facility}</h2>
+            <div className="confirmed-facility-title-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="confirmed-clinic-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="3" width="18" height="18" rx="4" stroke="#004b87" strokeWidth="2" />
+                    <path d="M12 8v8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </span>
+                <h2 className="confirmed-facility-name">{appointmentDetails.facility}</h2>
+              </div>
+              {appointmentDetails.id && (
+                <span
+                  style={{
+                    backgroundColor: '#e0f2fe',
+                    color: '#0369a1',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    padding: '3px 8px',
+                    borderRadius: '4px',
+                  }}
+                >
+                  APT #{appointmentDetails.id}
+                </span>
+              )}
             </div>
             <p className="confirmed-facility-type">{appointmentDetails.facilityType}</p>
           </div>
@@ -92,8 +144,10 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
               <span className="confirmed-grid-value">{appointmentDetails.service}</span>
             </div>
             <div className="confirmed-grid-col">
-              <span className="confirmed-grid-label">TYPE</span>
-              <span className="confirmed-grid-value">{appointmentDetails.type}</span>
+              <span className="confirmed-grid-label">STATUS</span>
+              <span className="confirmed-grid-value" style={{ color: '#16a34a', fontWeight: 600 }}>
+                {appointmentDetails.status}
+              </span>
             </div>
           </div>
 
@@ -130,7 +184,7 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
             className="confirmed-primary-btn"
             onClick={handleViewAppointment}
           >
-            View My Appointment
+            View My Appointments
           </button>
 
           {/* Secondary Action: Get Directions */}
@@ -169,3 +223,4 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
     </div>
   )
 }
+

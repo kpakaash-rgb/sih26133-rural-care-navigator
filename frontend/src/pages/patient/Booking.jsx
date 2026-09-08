@@ -1,8 +1,14 @@
+import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { bookAppointment } from '../../services/api'
 
 export default function Booking({ onNavigate, bookingData }) {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isConflict, setIsConflict] = useState(false)
+
   const handleSosClick = () => {
     window.location.href = 'tel:108'
   }
@@ -13,15 +19,59 @@ export default function Booking({ onNavigate, bookingData }) {
     }
   }
 
-  const handleConfirmAppointment = () => {
-    if (onNavigate) {
-      onNavigate(SCREENS.APPOINTMENT_CONFIRMED)
-    }
-  }
-
   const handleChangeTime = () => {
     if (onNavigate) {
       onNavigate(SCREENS.AVAILABILITY)
+    }
+  }
+
+  const handleConfirmAppointment = async () => {
+    const token = localStorage.getItem('access_token')
+    if (!token) {
+      setErrorMessage('Please log in with your mobile number before booking an appointment.')
+      return
+    }
+
+    if (!bookingData?.facilityId || !bookingData?.serviceId || !bookingData?.slotId) {
+      setErrorMessage('Missing booking details. Please select an available slot.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setErrorMessage('')
+    setIsConflict(false)
+
+    try {
+      const appointment = await bookAppointment({
+        facility_id: bookingData.facilityId,
+        service_id: bookingData.serviceId,
+        availability_slot_id: bookingData.slotId,
+      })
+
+      if (onNavigate) {
+        onNavigate(SCREENS.APPOINTMENT_CONFIRMED, {
+          ...bookingData,
+          createdAppointment: appointment,
+          appointmentId: appointment.id,
+          status: appointment.status,
+        })
+      }
+    } catch (err) {
+      if (
+        err.status === 409 ||
+        err.message?.toLowerCase().includes('already') ||
+        err.message?.toLowerCase().includes('conflict') ||
+        err.message?.toLowerCase().includes('cannot be booked')
+      ) {
+        setErrorMessage('That slot is no longer available. Please choose another slot.')
+        setIsConflict(true)
+      } else {
+        setErrorMessage(
+          err.message || 'Unable to book appointment. Please check connection and try again.'
+        )
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -60,6 +110,47 @@ export default function Booking({ onNavigate, bookingData }) {
             Review your appointment details before confirming.
           </p>
         </section>
+
+        {/* Error / Conflict Alert Banner */}
+        {errorMessage && (
+          <div
+            role="alert"
+            style={{
+              backgroundColor: isConflict ? '#fffbeb' : '#fee2e2',
+              border: `1px solid ${isConflict ? '#fde68a' : '#f87171'}`,
+              borderRadius: '6px',
+              padding: '12px 14px',
+              margin: '0 16px 16px',
+              color: isConflict ? '#92400e' : '#991b1b',
+              fontSize: '13px',
+              lineHeight: 1.4,
+            }}
+          >
+            <p style={{ fontWeight: 600, margin: '0 0 6px' }}>
+              {isConflict ? 'Slot Unavailable' : 'Booking Error'}
+            </p>
+            <p style={{ margin: 0 }}>{errorMessage}</p>
+            {isConflict && (
+              <button
+                type="button"
+                onClick={handleChangeTime}
+                style={{
+                  marginTop: '8px',
+                  backgroundColor: '#92400e',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Choose Another Slot →
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Form Guide Label */}
         <div className="booking-check-label-row">
@@ -171,7 +262,12 @@ export default function Booking({ onNavigate, bookingData }) {
           <button
             type="button"
             className="booking-confirm-btn"
+            disabled={isSubmitting || isConflict}
             onClick={handleConfirmAppointment}
+            style={{
+              opacity: isSubmitting || isConflict ? 0.6 : 1,
+              cursor: isSubmitting ? 'wait' : isConflict ? 'not-allowed' : 'pointer',
+            }}
           >
             <span className="btn-glyph-circle-check" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -179,13 +275,14 @@ export default function Booking({ onNavigate, bookingData }) {
                 <polyline points="16 10 11 15 8 12" />
               </svg>
             </span>
-            <span>Confirm Appointment</span>
+            <span>{isSubmitting ? 'Confirming Visit...' : 'Confirm Appointment'}</span>
           </button>
 
           {/* Secondary Action: Change Time */}
           <button
             type="button"
             className="booking-change-time-btn"
+            disabled={isSubmitting}
             onClick={handleChangeTime}
           >
             <span className="btn-glyph-calendar-edit" aria-hidden="true">
@@ -207,3 +304,4 @@ export default function Booking({ onNavigate, bookingData }) {
     </div>
   )
 }
+

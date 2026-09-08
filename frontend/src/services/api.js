@@ -205,3 +205,58 @@ export async function getFacilityDetails(facilityId, params = {}) {
 export async function getFacilityServices(facilityId) {
   return apiRequest(`/facilities/${facilityId}/services`);
 }
+
+/**
+ * Get consultation availability slots for a healthcare facility.
+ * @param {number|string} facilityId
+ * @param {{ service_id?: number|string, date?: string, status?: string }} [params={}]
+ */
+export async function getFacilityAvailability(facilityId, params = {}) {
+  const query = new URLSearchParams();
+  if (params.service_id != null) query.set('service_id', params.service_id.toString());
+  if (params.date) query.set('date', params.date);
+  if (params.status) query.set('status', params.status);
+
+  const queryString = query.toString();
+  const endpoint = queryString
+    ? `/facilities/${facilityId}/availability?${queryString}`
+    : `/facilities/${facilityId}/availability`;
+  return apiRequest(endpoint);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Appointments API Helpers
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Book an appointment consultation slot.
+ * @param {{ facility_id: number, service_id: number, availability_slot_id: number }} payload
+ */
+export async function bookAppointment(payload) {
+  return apiRequest('/appointments', {
+    method: 'POST',
+    body: JSON.stringify({
+      facility_id: Number(payload.facility_id),
+      service_id: Number(payload.service_id),
+      availability_slot_id: Number(payload.availability_slot_id),
+    }),
+  });
+}
+
+/**
+ * Retrieve details for a specific appointment.
+ * @param {number|string} appointmentId
+ */
+export async function getAppointmentDetails(appointmentId) {
+  return apiRequest(`/appointments/${appointmentId}`);
+}
+
+/**
+ * Cancel an appointment and release its availability slot.
+ * @param {number|string} appointmentId
+ */
+export async function cancelAppointment(appointmentId) {
+  return apiRequest(`/appointments/${appointmentId}/cancel`, {
+    method: 'POST',
+  });
+}

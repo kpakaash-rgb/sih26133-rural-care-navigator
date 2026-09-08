@@ -1,11 +1,72 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { getAppointments, cancelAppointment } from '../../services/api'
 
-export default function Appointments({ onNavigate, bookingData }) {
+function formatTime(timeStr) {
+  if (!timeStr) return ''
+  if (timeStr.includes('AM') || timeStr.includes('PM')) return timeStr
+  const parts = timeStr.split(':')
+  if (parts.length < 2) return timeStr
+  let hour = parseInt(parts[0], 10)
+  const minute = parts[1]
+  const ampm = hour >= 12 ? 'PM' : 'AM'
+  hour = hour % 12 || 12
+  return `${hour}:${minute} ${ampm}`
+}
+
+export default function Appointments({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('journey')
+  const [appointments, setAppointments] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [cancellingId, setCancellingId] = useState(null)
+
+  const fetchAppointments = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+    try {
+      const data = await getAppointments()
+      if (Array.isArray(data)) {
+        setAppointments(data)
+      } else {
+        setAppointments([])
+      }
+    } catch (err) {
+      setErrorMessage(
+        err.message || 'Unable to load appointments. Please check connection.'
+      )
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true
+
+    getAppointments()
+      .then((data) => {
+        if (isMounted) {
+          setAppointments(Array.isArray(data) ? data : [])
+          setIsLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setErrorMessage(
+            err.message || 'Unable to load appointments. Please check connection.'
+          )
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -30,25 +91,36 @@ export default function Appointments({ onNavigate, bookingData }) {
     }
   }
 
-  const upcomingAppointment = {
-    facility: bookingData?.facility || 'PHC Malshiras',
-    service: bookingData?.service || 'General Medicine',
-    status: 'Confirmed',
-    date: bookingData?.date
-      ? bookingData.date.replace('Tuesday', 'Tue').replace('Wednesday', 'Wed').replace('Thursday', 'Thu')
-      : 'Tue, Oct 24',
-    time: bookingData?.time || '10:30 AM',
-    type: bookingData?.type || 'In-person',
+  const handleCancelAppointment = async (apptId) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) {
+      return
+    }
+
+    setCancellingId(apptId)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      await cancelAppointment(apptId)
+      setSuccessMessage('Appointment cancelled successfully.')
+      // Refresh appointment data from backend
+      await fetchAppointments()
+    } catch (err) {
+      setErrorMessage(
+        err.message || 'Unable to cancel appointment. Please try again.'
+      )
+    } finally {
+      setCancellingId(null)
+    }
   }
 
-  const pastAppointments = [
-    {
-      id: 'past-1',
-      facility: 'PHC Example',
-      service: 'General Medicine',
-      status: 'Completed',
-    },
-  ]
+  const upcomingAppointments = appointments.filter(
+    (a) => a.status === 'SCHEDULED' || a.status === 'BOOKED'
+  )
+
+  const pastAppointments = appointments.filter(
+    (a) => a.status === 'COMPLETED' || a.status === 'CANCELLED'
+  )
 
   return (
     <div className="appointments-screen-wrapper">
@@ -66,94 +138,227 @@ export default function Appointments({ onNavigate, bookingData }) {
           <h1 className="appointments-main-title">My Appointments</h1>
         </section>
 
-        {/* Section 1: UPCOMING */}
-        <section className="appointments-group-section">
-          <h2 className="appointments-section-label">UPCOMING</h2>
+        {/* Feedback Messages */}
+        {successMessage && (
+          <div
+            role="status"
+            style={{
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              margin: '0 16px 12px',
+              color: '#065f46',
+              fontSize: '13px',
+            }}
+          >
+            {successMessage}
+          </div>
+        )}
 
-          {/* Upcoming Appointment Card */}
-          <article className="upcoming-appointment-card">
-            {/* Header: Title, Service, and Status Badge */}
-            <div className="appointment-card-top-row">
-              <div className="appointment-identity">
-                <h3 className="appointment-facility-name">{upcomingAppointment.facility}</h3>
-                <p className="appointment-service-name">{upcomingAppointment.service}</p>
-              </div>
-              <div className="appointment-confirmed-badge">
-                <span className="confirmed-badge-check" aria-hidden="true">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="16 10 11 15 8 12" />
-                  </svg>
-                </span>
-                <span>{upcomingAppointment.status}</span>
-              </div>
-            </div>
+        {errorMessage && (
+          <div
+            role="alert"
+            style={{
+              backgroundColor: '#fee2e2',
+              border: '1px solid #f87171',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              margin: '0 16px 12px',
+              color: '#991b1b',
+              fontSize: '13px',
+            }}
+          >
+            {errorMessage}
+          </div>
+        )}
 
-            {/* Meta Row: Date & Time */}
-            <div className="appointment-meta-inline-row">
-              <div className="meta-chip-item">
-                <span className="meta-chip-icon" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                    <line x1="16" y1="2" x2="16" y2="6" />
-                    <line x1="8" y1="2" x2="8" y2="6" />
-                    <line x1="3" y1="10" x2="21" y2="10" />
-                  </svg>
-                </span>
-                <span>{upcomingAppointment.date}</span>
-              </div>
+        {isLoading ? (
+          <div style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
+            <p>Loading your appointments...</p>
+          </div>
+        ) : (
+          <>
+            {/* Section 1: UPCOMING */}
+            <section className="appointments-group-section">
+              <h2 className="appointments-section-label">UPCOMING</h2>
 
-              <div className="meta-chip-item">
-                <span className="meta-chip-icon" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
-                </span>
-                <span>{upcomingAppointment.time}</span>
-              </div>
-            </div>
-
-            {/* Meta Row: Type / Location */}
-            <div className="appointment-type-row">
-              <span className="type-pin-icon" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
-              </span>
-              <span className="type-text-label">{upcomingAppointment.type}</span>
-            </div>
-
-            {/* Card Action Button */}
-            <div className="appointment-card-action">
-              <button
-                type="button"
-                className="appointment-view-details-btn"
-                onClick={handleViewDetails}
-              >
-                View Details
-              </button>
-            </div>
-          </article>
-        </section>
-
-        {/* Section 2: PAST APPOINTMENTS */}
-        <section className="appointments-group-section">
-          <h2 className="appointments-section-label">PAST APPOINTMENTS</h2>
-
-          {pastAppointments.map((past) => (
-            <article key={past.id} className="past-appointment-card">
-              <div className="appointment-card-top-row">
-                <div className="appointment-identity">
-                  <h3 className="past-facility-name">{past.facility}</h3>
-                  <p className="past-service-name">{past.service}</p>
+              {upcomingAppointments.length === 0 ? (
+                <div
+                  style={{
+                    backgroundColor: '#f8fafc',
+                    border: '1px dashed #cbd5e1',
+                    borderRadius: '8px',
+                    padding: '24px 16px',
+                    textAlign: 'center',
+                    margin: '0 16px',
+                  }}
+                >
+                  <p style={{ color: '#64748b', fontSize: '13px', margin: '0 0 12px' }}>
+                    No upcoming appointments scheduled.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate && onNavigate(SCREENS.HEALTHCARE)}
+                    style={{
+                      backgroundColor: '#004b87',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Find Facilities & Book
+                  </button>
                 </div>
-                <span className="past-completed-badge">{past.status}</span>
-              </div>
-            </article>
-          ))}
-        </section>
+              ) : (
+                upcomingAppointments.map((appt) => {
+                  const facilityName =
+                    appt.facility_name || appt.facility?.name || 'Healthcare Facility'
+                  const serviceName =
+                    appt.service_name || appt.service?.name || 'General Medicine'
+                  const timeDisplay =
+                    appt.start_time && appt.end_time
+                      ? `${formatTime(appt.start_time)} - ${formatTime(appt.end_time)}`
+                      : formatTime(appt.start_time) || '10:00 AM'
+                  const dateDisplay = appt.appointment_date || 'Upcoming'
+                  const isCancelling = cancellingId === appt.id
+
+                  return (
+                    <article key={appt.id} className="upcoming-appointment-card">
+                      {/* Header: Title, Service, and Status Badge */}
+                      <div className="appointment-card-top-row">
+                        <div className="appointment-identity">
+                          <h3 className="appointment-facility-name">{facilityName}</h3>
+                          <p className="appointment-service-name">{serviceName}</p>
+                        </div>
+                        <div className="appointment-confirmed-badge">
+                          <span className="confirmed-badge-check" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="16 10 11 15 8 12" />
+                            </svg>
+                          </span>
+                          <span>{appt.status}</span>
+                        </div>
+                      </div>
+
+                      {/* Meta Row: Date & Time */}
+                      <div className="appointment-meta-inline-row">
+                        <div className="meta-chip-item">
+                          <span className="meta-chip-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                              <line x1="16" y1="2" x2="16" y2="6" />
+                              <line x1="8" y1="2" x2="8" y2="6" />
+                              <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                          </span>
+                          <span>{dateDisplay}</span>
+                        </div>
+
+                        <div className="meta-chip-item">
+                          <span className="meta-chip-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                          </span>
+                          <span>{timeDisplay}</span>
+                        </div>
+                      </div>
+
+                      {/* Meta Row: Type / Appointment ID */}
+                      <div className="appointment-type-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                          <span className="type-pin-icon" aria-hidden="true">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                          </span>
+                          <span className="type-text-label">In-person</span>
+                        </div>
+                        <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600 }}>
+                          APT #{appt.id}
+                        </span>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="appointment-card-action" style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          className="appointment-view-details-btn"
+                          onClick={handleViewDetails}
+                          style={{ flex: 1 }}
+                        >
+                          View Journey
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCancelAppointment(appt.id)}
+                          disabled={isCancelling}
+                          style={{
+                            flex: 1,
+                            backgroundColor: '#fff',
+                            border: '1px solid #ef4444',
+                            color: '#b91c1c',
+                            borderRadius: '6px',
+                            padding: '9px 12px',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: isCancelling ? 'wait' : 'pointer',
+                            opacity: isCancelling ? 0.6 : 1,
+                          }}
+                        >
+                          {isCancelling ? 'Cancelling...' : 'Cancel'}
+                        </button>
+                      </div>
+                    </article>
+                  )
+                })
+              )}
+            </section>
+
+            {/* Section 2: PAST / CANCELLED APPOINTMENTS */}
+            {pastAppointments.length > 0 && (
+              <section className="appointments-group-section">
+                <h2 className="appointments-section-label">PAST / CANCELLED</h2>
+
+                {pastAppointments.map((past) => {
+                  const isCancelled = past.status === 'CANCELLED'
+                  const facName = past.facility_name || past.facility?.name || 'Healthcare Facility'
+                  const srvName = past.service_name || past.service?.name || 'General Medicine'
+
+                  return (
+                    <article key={past.id} className="past-appointment-card">
+                      <div className="appointment-card-top-row">
+                        <div className="appointment-identity">
+                          <h3 className="past-facility-name">{facName}</h3>
+                          <p className="past-service-name">
+                            {srvName} • {past.appointment_date}
+                          </p>
+                        </div>
+                        <span
+                          className="past-completed-badge"
+                          style={{
+                            backgroundColor: isCancelled ? '#fee2e2' : '#f1f5f9',
+                            color: isCancelled ? '#b91c1c' : '#475569',
+                          }}
+                        >
+                          {past.status}
+                        </span>
+                      </div>
+                    </article>
+                  )
+                })}
+              </section>
+            )}
+          </>
+        )}
       </main>
 
       {/* Fixed Bottom Navigation with Journey tab active */}
@@ -161,3 +366,4 @@ export default function Appointments({ onNavigate, bookingData }) {
     </div>
   )
 }
+
