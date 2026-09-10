@@ -148,7 +148,7 @@ class ConversationMemory:
     last_prompt: str = ""
     last_intent: ConversationIntent = ConversationIntent.UNKNOWN
     dialogue_history: List[Dict[str, str]] = field(default_factory=list)
-    call_phase: str = "GREETING"  # GREETING, NAME, AGE, GENDER, LOCALITY, SYMPTOMS, DURATION, SAFETY_QUESTIONS, TRIAGE_PRESENTED, BOOKING_ASK, BOOKING_TYPE, BOOKING_CONFIRM, ENDED, EMERGENCY
+    call_phase: str = "GREETING"  # GREETING, NAME, AGE, LOCALITY, SYMPTOMS, DURATION, SAFETY_QUESTIONS, TRIAGE_PRESENTED, BOOKING_ASK, BOOKING_TYPE, BOOKING_CONFIRM, ENDED, EMERGENCY
 
     def __post_init__(self):
         if self.caller_phone and not self.phone_number:
@@ -410,7 +410,8 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
             clean,
             context={"waiting_for": "age" if memory.call_phase == "AGE" else None, "call_phase": memory.call_phase}
         )
-        action.gender = extract_gender_from_text(clean)
+        # Note: Gender is not collected or inferred during IVR voice intake
+        action.gender = None
         action.additional_notes = extract_additional_notes_from_text(clean)
 
         # 12. Contextual Intent Determination
@@ -561,14 +562,6 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
                 prompt = f"Dhanyavaad {memory.patient_name or ''} ji. Aple vay kiti ahe?"
             else:
                 prompt = f"Thank you {memory.patient_name or ''}. How old are you?"
-
-        elif memory.call_phase == "GENDER":
-            if is_hi:
-                prompt = "Aapka gender kya hai - purush, mahila, ya anya?"
-            elif is_mr:
-                prompt = "Aaple ling kay ahe - purush, stree, kinva itar?"
-            else:
-                prompt = "What is your gender - male, female, or other?"
 
         elif memory.call_phase == "LOCALITY":
             if is_hi:
@@ -782,8 +775,6 @@ class LocalModelConversationAgentProvider(ConversationAgentProvider):
             action.patient_name = fallback_action.patient_name
         if action.age is None and fallback_action.age is not None:
             action.age = fallback_action.age
-        if not action.gender and fallback_action.gender:
-            action.gender = fallback_action.gender
         if not action.locality and fallback_action.locality:
             action.locality = fallback_action.locality
         if not action.duration and fallback_action.duration:
@@ -930,9 +921,6 @@ class ConversationAgent:
 
         if action.age is not None and memory.age is None:
             memory.age = action.age
-
-        if action.gender and not memory.gender:
-            memory.gender = action.gender
 
         if action.additional_notes:
             if memory.additional_notes:
@@ -1158,13 +1146,11 @@ class ConversationAgent:
                     memory.call_phase = "TRIAGE_PRESENTED"
             else:
                 # New / unknown caller intake:
-                # NAME -> AGE -> GENDER -> LOCALITY -> SYMPTOMS -> DURATION -> SAFETY_QUESTIONS -> TRIAGE
+                # NAME -> AGE -> LOCALITY -> SYMPTOMS -> DURATION -> SAFETY_QUESTIONS -> TRIAGE
                 if not memory.patient_name:
                     memory.call_phase = "NAME"
                 elif memory.age is None:
                     memory.call_phase = "AGE"
-                elif not memory.gender:
-                    memory.call_phase = "GENDER"
                 elif not memory.locality:
                     memory.call_phase = "LOCALITY"
                 elif not memory.symptoms:

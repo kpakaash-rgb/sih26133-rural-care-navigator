@@ -110,14 +110,33 @@ def test_intake_rejects_invalid_age():
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Test 7: Gender Extraction
+# Test 7: Gender Is Not Prompted or Required During IVR Intake
 # ──────────────────────────────────────────────────────────────────────────────
-def test_intake_extracts_gender():
-    assert extract_gender_from_text("female patient") == "female"
-    assert extract_gender_from_text("she is 30 years old") == "female"
-    assert extract_gender_from_text("male, 45 years") == "male"
-    assert extract_gender_from_text("mahila mariz") == "female"
-    assert extract_gender_from_text("purush mariz") == "male"
+def test_intake_skips_gender_in_progression(db_session):
+    agent = ConversationAgent()
+    mem = ConversationMemory(language="en-IN")
+
+    # Turn 1: Caller provides name
+    speech1, act1 = agent.handle_turn("My name is Anand Verma", mem, db=db_session)
+    assert mem.patient_name == "Anand Verma"
+    assert mem.call_phase == "AGE"
+    assert "old" in speech1.lower() or "age" in speech1.lower()
+
+    # Turn 2: Caller provides age -> Bot MUST ask for Locality/Village, NOT Gender!
+    speech2, act2 = agent.handle_turn("I am 42 years old", mem, db=db_session)
+    assert mem.age == 42
+    assert mem.gender is None  # Gender is not asked or inferred
+    assert mem.call_phase == "LOCALITY"
+    assert "village" in speech2.lower() or "town" in speech2.lower() or "where" in speech2.lower()
+    assert "gender" not in speech2.lower()
+    assert "male" not in speech2.lower()
+    assert "female" not in speech2.lower()
+
+    # Turn 3: Caller provides locality -> Bot asks for symptoms
+    speech3, act3 = agent.handle_turn("I am calling from Malshiras", mem, db=db_session)
+    assert mem.locality == "Malshiras"
+    assert mem.call_phase == "SYMPTOMS"
+    assert "symptom" in speech3.lower() or "issue" in speech3.lower() or "describe" in speech3.lower()
 
 
 # ──────────────────────────────────────────────────────────────────────────────

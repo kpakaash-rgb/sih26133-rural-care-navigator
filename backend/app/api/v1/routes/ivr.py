@@ -1523,11 +1523,6 @@ async def exotel_voicebot_stream(
                 session.state = IVRState.WAITING_FOR_AGE
                 tool_called_name = "collect_patient_demographics"
                 tool_summary = f"name={memory.patient_name}, awaiting age"
-            elif memory.call_phase == "GENDER":
-                mark_name = "gender_prompt"
-                session.state = IVRState.WAITING_FOR_GENDER
-                tool_called_name = "collect_patient_demographics"
-                tool_summary = f"name={memory.patient_name}, awaiting gender"
             elif memory.call_phase == "SAFETY_QUESTIONS":
                 mark_name = "safety_prompt"
                 session.state = IVRState.WAITING_FOR_SAFETY
