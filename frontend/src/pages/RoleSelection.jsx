@@ -109,18 +109,6 @@ export default function RoleSelection() {
 
         </main>
 
-        {/* Platform Footer */}
-        <footer className="role-footer">
-          <div className="role-footer-indicators">
-            <span><span className="role-dot"></span>{t('roleSelection.connected')}</span>
-            <span><span className="role-dot"></span>{t('roleSelection.securityActive')}</span>
-            <span><span className="role-dot"></span>{t('roleSelection.offlinePwa')}</span>
-          </div>
-          <p className="role-footer-copy">
-            Smart India Hackathon • SIH 26133
-          </p>
-        </footer>
-
       </div>
     </div>
   )

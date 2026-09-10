@@ -1,4 +1,5 @@
 import React from 'react'
+import { Globe, ChevronDown } from 'lucide-react'
 import { useTranslation, SUPPORTED_LANGUAGES } from '../i18n'
 
 export default function LanguageSelector({ variant = 'header' }) {
@@ -29,7 +30,7 @@ export default function LanguageSelector({ variant = 'header' }) {
 
   return (
     <div className="language-selector-wrapper">
-      <span className="lang-icon" aria-hidden="true">🌐</span>
+      <Globe size={15} className="lang-icon" aria-hidden="true" />
       <select
         className="language-selector-select"
         value={language}
@@ -42,6 +43,7 @@ export default function LanguageSelector({ variant = 'header' }) {
           </option>
         ))}
       </select>
+      <ChevronDown size={14} className="lang-chevron" aria-hidden="true" />
     </div>
   )
 }
