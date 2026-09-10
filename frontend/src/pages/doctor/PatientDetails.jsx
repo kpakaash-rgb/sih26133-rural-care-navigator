@@ -3,7 +3,7 @@ import {
   ArrowLeft, Phone, Video, Send, 
   ChevronDown, ChevronUp, Activity, FileText, 
   CalendarDays, 
-  LayoutDashboard, Users, UserCircle, BriefcaseMedical,
+  LayoutDashboard, Users, UserCircle,
   Clock, ShieldAlert, Sparkles, RefreshCw
 } from 'lucide-react';
 import { getDoctorPatientClinicalSummary } from '../../services/api';
@@ -104,8 +104,14 @@ export default function PatientDetails({
             <ArrowLeft size={24} />
           </button>
           <div className="header-brand">
-            <BriefcaseMedical size={20} strokeWidth={2.5} />
-            <span>Rural Care Navigator</span>
+            <img
+              src="/mythri-icon.png"
+              alt="Mythri"
+              width="22"
+              height="22"
+              style={{ objectFit: 'contain', borderRadius: '4px' }}
+            />
+            <span>Mythri</span>
           </div>
         </div>
         <div className="header-actions">

@@ -8,8 +8,8 @@
 export const translations = {
   en: {
     common: {
-      appName: 'Rural Care Navigator',
-      tagline: 'Healthcare guidance for rural communities',
+      appName: 'Mythri',
+      tagline: 'Mythri — Your Companion for Better Rural Healthcare',
       back: 'Back',
       save: 'Save',
       cancel: 'Cancel',
@@ -285,8 +285,8 @@ export const translations = {
       offlinePwa: 'Offline PWA',
     },
     auth: {
-      welcomeTitle: 'Welcome to Rural Care Navigator',
-      welcomeSubtitle: 'Your companion for easy access to healthcare in rural communities.',
+      welcomeTitle: 'Welcome to Mythri',
+      welcomeSubtitle: 'Mythri — Your Companion for Better Rural Healthcare',
       welcomeBack: 'Welcome Back',
       loginSubtitle: 'Login to access your healthcare information and services.',
       login: 'Patient Login',
@@ -306,7 +306,7 @@ export const translations = {
       verifyAndLogin: 'Verify & Login',
       verifying: 'Verifying...',
       changeMobile: 'Change mobile number',
-      newPrompt: 'New to Rural Care Navigator?',
+      newPrompt: 'New to Mythri?',
       emergencyHelp: 'Need urgent medical help?',
       callEmergency: 'Call Emergency Help',
       regTitle: 'Patient Registration',
@@ -337,7 +337,7 @@ export const translations = {
       emergencyContact: 'Emergency Contact Number',
       emergencyContactPlaceholder: '10-digit mobile number (Optional)',
       emergencyContactHelp: 'Optional family or friend contact for medical emergency situations.',
-      onboardingConsentText: 'I agree to provide these details for accessing Rural Care Navigator healthcare services.',
+      onboardingConsentText: 'I agree to provide these details for accessing Mythri healthcare services.',
       createProfileBtn: 'Create Profile',
       creatingProfileBtn: 'Creating Profile...',
       otpRequiredTitle: 'OTP Verification Required',
@@ -353,8 +353,8 @@ export const translations = {
 
   hi: {
     common: {
-      appName: 'रूरल केयर नेविगेटर',
-      tagline: 'ग्रामीण समुदायों के लिए स्वास्थ्य सेवा मार्गदर्शन',
+      appName: 'Mythri',
+      tagline: 'Mythri — Your Companion for Better Rural Healthcare',
       back: 'वापस',
       save: 'सुरक्षित करें',
       cancel: 'रद्द करें',
@@ -630,8 +630,8 @@ export const translations = {
       offlinePwa: 'ऑफलाइन पीडब्ल्यूए',
     },
     auth: {
-      welcomeTitle: 'रूरल केयर नेविगेटर में आपका स्वागत है',
-      welcomeSubtitle: 'ग्रामीण समुदायों में स्वास्थ्य सेवा तक आसान पहुँच के लिए आपका साथी।',
+      welcomeTitle: 'Mythri में आपका स्वागत है',
+      welcomeSubtitle: 'Mythri — बेहतर ग्रामीण स्वास्थ्य सेवा के लिए आपका साथी।',
       welcomeBack: 'वापसी पर स्वागत है',
       loginSubtitle: 'अपनी स्वास्थ्य जानकारी और सेवाओं तक पहुँचने के लिए लॉगिन करें।',
       login: 'मरीज़ लॉगिन',
@@ -651,7 +651,7 @@ export const translations = {
       verifyAndLogin: 'सत्यापित करें और लॉगिन करें',
       verifying: 'सत्यापित किया जा रहा है...',
       changeMobile: 'मोबाइल नंबर बदलें',
-      newPrompt: 'रूरल केयर नेविगेटर में नए हैं?',
+      newPrompt: 'Mythri में नए हैं?',
       emergencyHelp: 'क्या तत्काल चिकित्सा सहायता की आवश्यकता है?',
       callEmergency: 'आपातकालीन सहायता को कॉल करें',
       regTitle: 'मरीज़ पंजीकरण',
@@ -682,7 +682,7 @@ export const translations = {
       emergencyContact: 'आपातकालीन संपर्क नंबर',
       emergencyContactPlaceholder: '10 अंकों का मोबाइल नंबर (वैकल्पिक)',
       emergencyContactHelp: 'आपातकालीन स्थितियों के लिए परिवार या मित्र का संपर्क (वैकल्पिक)।',
-      onboardingConsentText: 'मैं रूरल केयर नेविगेटर स्वास्थ्य सेवाओं तक पहुँचने के लिए यह विवरण प्रदान करने के लिए सहमत हूँ।',
+      onboardingConsentText: 'मैं Mythri स्वास्थ्य सेवाओं तक पहुँचने के लिए यह विवरण प्रदान करने के लिए सहमत हूँ।',
       createProfileBtn: 'प्रोफ़ाइल बनाएं',
       creatingProfileBtn: 'प्रोफ़ाइल बनाई जा रही है...',
       otpRequiredTitle: 'ओटीपी सत्यापन आवश्यक',
@@ -698,8 +698,8 @@ export const translations = {
 
   mr: {
     common: {
-      appName: 'रूरल केअर नेव्हिगेटर',
-      tagline: 'ग्रामीण भागासाठी आरोग्य सेवा मार्गदर्शन',
+      appName: 'Mythri',
+      tagline: 'Mythri — Your Companion for Better Rural Healthcare',
       back: 'मागे',
       save: 'जतन करा',
       cancel: 'रद्द करा',
@@ -975,8 +975,8 @@ export const translations = {
       offlinePwa: 'ऑफलाइन पीडब्ल्यूए',
     },
     auth: {
-      welcomeTitle: 'रूरल केअर नेव्हिगेटरमध्ये आपले स्वागत आहे',
-      welcomeSubtitle: 'ग्रामीण भागातील आरोग्य सेवेच्या सुलभ प्रवेशासाठी तुमचा सोबती.',
+      welcomeTitle: 'Mythri मध्ये आपले स्वागत आहे',
+      welcomeSubtitle: 'Mythri — चांगल्या ग्रामीण आरोग्य सेवेसाठी तुमचा सोबती.',
       welcomeBack: 'पुन्हा स्वागत आहे',
       loginSubtitle: 'तुमची आरोग्य माहिती आणि सेवा मिळवण्यासाठी लॉगिन करा.',
       login: 'रुग्ण लॉगिन',
@@ -996,7 +996,7 @@ export const translations = {
       verifyAndLogin: 'पडताळा आणि लॉगिन करा',
       verifying: 'पडताळणी सुरू आहे...',
       changeMobile: 'मोबाईल नंबर बदला',
-      newPrompt: 'रूरल केअर नेव्हिगेटरवर नवीन आहात?',
+      newPrompt: 'Mythri वर नवीन आहात?',
       emergencyHelp: 'तातडीने वैद्यकीय मदत हवी आहे का?',
       callEmergency: 'आपत्कालीन मदतीला कॉल करा',
       regTitle: 'रुग्ण नोंदणी',
@@ -1027,7 +1027,7 @@ export const translations = {
       emergencyContact: 'आपत्कालीन संपर्क नंबर',
       emergencyContactPlaceholder: '10 अंकी मोबाईल नंबर (पर्यायी)',
       emergencyContactHelp: 'आपत्कालीन परिस्थितीसाठी कुटुंब किंवा मित्राचा संपर्क (पर्यायी).',
-      onboardingConsentText: 'मी रूरल केअर नेव्हिगेटर आरोग्य सेवा मिळवण्यासाठी हा तपशील देण्यास सहमत आहे.',
+      onboardingConsentText: 'मी Mythri आरोग्य सेवा मिळवण्यासाठी हा तपशील देण्यास सहमत आहे.',
       createProfileBtn: 'प्रोफाइल तयार करा',
       creatingProfileBtn: 'प्रोफाइल तयार होत आहे...',
       otpRequiredTitle: 'ओटीपी पडताळणी आवश्यक',

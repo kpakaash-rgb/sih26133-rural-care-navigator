@@ -330,13 +330,13 @@ export default function ProfilePage() {
         onClick={handleSignOut}
       >
         <LogOut size={18} />
-        Sign Out of Rural Care Device
+        Sign Out of Device
       </button>
 
-      {/* ΓöÇΓöÇ Footer Branding ΓöÇΓöÇ */}
+      {/* ── Footer Branding ── */}
       <footer className="pf-footer">
-        <p className="pf-footer-brand">Rural Care Navigator ΓÇó v2.4 (NHM Certified)</p>
-        <p className="pf-footer-sub">National Health Mission ΓÇó Frontline Build #849</p>
+        <p className="pf-footer-brand">Mythri • v2.4 (NHM Certified)</p>
+        <p className="pf-footer-sub">National Health Mission • Frontline Build #849</p>
       </footer>
 
     </div>

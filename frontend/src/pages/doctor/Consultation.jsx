@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Asterisk, Sparkles, Plus, X, 
-  LayoutDashboard, Users, CalendarDays, UserCircle, BriefcaseMedical,
+  LayoutDashboard, Users, CalendarDays, UserCircle,
   CheckCircle2, ShieldAlert
 } from 'lucide-react';
 import { getDoctorPatientClinicalSummary, createDoctorConsultation } from '../../services/api';
@@ -124,8 +124,14 @@ export default function Consultation({
             <ArrowLeft size={24} />
           </button>
           <div className="header-brand">
-            <BriefcaseMedical size={20} strokeWidth={2.5} />
-            <span>Rural Care Navigator</span>
+            <img
+              src="/mythri-icon.png"
+              alt="Mythri"
+              width="22"
+              height="22"
+              style={{ objectFit: 'contain', borderRadius: '4px' }}
+            />
+            <span>Mythri</span>
           </div>
         </div>
         <div className="header-actions">

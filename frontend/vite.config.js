@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'Rural Care Navigator',
-        short_name: 'Rural Care',
-        description: 'Lightweight rural healthcare access and care coordination platform.',
+        name: 'Mythri',
+        short_name: 'Mythri',
+        description: 'Mythri — Your Companion for Better Rural Healthcare',
         start_url: '/',
         scope: '/',
         display: 'standalone',
@@ -55,4 +55,4 @@ export default defineConfig({
       },
     },
   },
-})
+})

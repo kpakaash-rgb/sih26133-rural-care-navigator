@@ -89,12 +89,13 @@ export default function LoginPage() {
         {/* ΓöÇΓöÇ Branding ΓöÇΓöÇ */}
         <div className="login-brand">
           <div className="login-logo-wrap">
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <rect x="5" y="2" width="8" height="30" rx="2" fill="white"/>
-              <rect x="2" y="13" width="30" height="8" rx="2" fill="white"/>
-            </svg>
+            <img
+              src="/mythri-icon.png"
+              alt="Mythri"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px', background: '#FFFFFF' }}
+            />
           </div>
-          <h1 className="login-app-name">Rural Care Navigator</h1>
+          <h1 className="login-app-name">Mythri</h1>
           <p className="login-app-role">Frontline Healthcare Worker</p>
         </div>
 

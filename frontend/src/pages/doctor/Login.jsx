@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BriefcaseMedical, Smartphone, Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
+import { Smartphone, Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
 
 export default function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,10 +8,14 @@ export default function Login({ onLogin }) {
     <div className="app-container">
       {/* --- BRANDING HEADER --- */}
       <header className="brand-header">
-        <div className="brand-icon">
-          <BriefcaseMedical size={28} strokeWidth={2} />
+        <div className="brand-icon" style={{ background: '#FFFFFF', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}>
+          <img
+            src="/mythri-icon.png"
+            alt="Mythri"
+            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '10px' }}
+          />
         </div>
-        <h1 className="brand-name">Rural Care Navigator</h1>
+        <h1 className="brand-name">Mythri</h1>
         <p className="brand-role">Doctor / Healthcare Professional</p>
       </header>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, PlusSquare, Send, CheckCircle2,
   AlertTriangle, Eye, X,
-  BriefcaseMedical, LayoutDashboard, Users, CalendarDays, UserCircle
+  LayoutDashboard, Users, CalendarDays, UserCircle
 } from 'lucide-react';
 import { 
   getFacilities, 
@@ -166,8 +166,14 @@ export default function CreateReferral({ navigate, patientId, appointmentId }) {
             <ArrowLeft size={24} />
           </button>
           <div className="header-brand">
-            <BriefcaseMedical size={20} strokeWidth={2.5} />
-            <span>Rural Care Navigator</span>
+            <img
+              src="/mythri-icon.png"
+              alt="Mythri"
+              width="22"
+              height="22"
+              style={{ objectFit: 'contain', borderRadius: '4px' }}
+            />
+            <span>Mythri</span>
           </div>
         </div>
       </header>

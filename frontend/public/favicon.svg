@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
   <defs>
-    <linearGradient id="rcn-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00478F" />
-      <stop offset="100%" stop-color="#0A58CA" />
+    <linearGradient id="mythri-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E7490" />
+      <stop offset="100%" stop-color="#047857" />
     </linearGradient>
   </defs>
   <!-- Rounded Base -->
-  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#rcn-grad)" />
+  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#mythri-grad)" />
   <!-- Medical Cross -->
   <path d="M19 10h10a2 2 0 0 1 2 2v7h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7v7a2 2 0 0 1-2 2H19a2 2 0 0 1-2-2v-7h-7a2 2 0 0 1-2-2V21a2 2 0 0 1 2-2h7v-7a2 2 0 0 1 2-2z" fill="#FFFFFF" />
   <!-- Health Pulse Lifeline -->

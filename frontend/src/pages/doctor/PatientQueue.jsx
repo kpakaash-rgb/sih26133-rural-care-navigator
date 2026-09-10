@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BriefcaseMedical, Bell, UserCircle, LayoutDashboard, Users, CalendarDays, 
+import { useState, useEffect, useCallback } from 'react';
+import {
+  Bell, UserCircle, LayoutDashboard, Users, CalendarDays,
   ArrowRight, PlayCircle, Clock, AlertTriangle, RefreshCw, CheckCircle2
 } from 'lucide-react';
 import { getDoctorQueue } from '../../services/api';
@@ -55,12 +55,18 @@ export default function PatientQueue({ navigate, _onLogout, openPatient, startCo
       {/* Header */}
       <header className="global-header">
         <div className="header-brand">
-          <BriefcaseMedical size={20} strokeWidth={2.5} />
-          <span>Rural Care Navigator</span>
+          <img
+            src="/mythri-icon.png"
+            alt="Mythri"
+            width="22"
+            height="22"
+            style={{ objectFit: 'contain', borderRadius: '4px' }}
+          />
+          <span>Mythri</span>
         </div>
         <div className="header-actions">
-          <button 
-            onClick={refreshQueue} 
+          <button
+            onClick={refreshQueue}
             title="Refresh queue"
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
           >
@@ -88,10 +94,10 @@ export default function PatientQueue({ navigate, _onLogout, openPatient, startCo
 
       {/* Queue Summary Card */}
       <div style={{
-        background: 'var(--white, #fff)', 
-        border: '1px solid var(--border, #e2e8f0)', 
-        borderRadius: '12px', 
-        padding: '1rem', 
+        background: 'var(--white, #fff)',
+        border: '1px solid var(--border, #e2e8f0)',
+        borderRadius: '12px',
+        padding: '1rem',
         marginBottom: '1.5rem',
         boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
       }}>
@@ -123,7 +129,7 @@ export default function PatientQueue({ navigate, _onLogout, openPatient, startCo
         </div>
 
         <div style={{
-          fontSize: '0.75rem', 
+          fontSize: '0.75rem',
           color: 'var(--text-muted)',
           display: 'flex',
           alignItems: 'center',
@@ -204,8 +210,8 @@ export default function PatientQueue({ navigate, _onLogout, openPatient, startCo
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', marginTop: '0.875rem' }}>
-                  <button 
-                    className="btn-primary" 
+                  <button
+                    className="btn-primary"
                     style={{
                       flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center',
                       gap: '0.5rem', padding: '0.7rem'
@@ -214,8 +220,8 @@ export default function PatientQueue({ navigate, _onLogout, openPatient, startCo
                   >
                     <PlayCircle size={18} /> Start Consultation
                   </button>
-                  <button 
-                    className="btn-outline" 
+                  <button
+                    className="btn-outline"
                     style={{
                       display: 'flex', alignItems: 'center', gap: '0.25rem',
                       padding: '0.7rem 0.9rem'

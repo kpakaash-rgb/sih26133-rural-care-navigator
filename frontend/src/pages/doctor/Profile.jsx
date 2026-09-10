@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  BriefcaseMedical, Bell, Clock, Settings2,
+  Bell, Clock, Settings2,
   ShieldCheck, LogOut, MapPin, BadgeCheck,
   LayoutDashboard, Users, CalendarDays, UserCircle, RefreshCw
 } from 'lucide-react';
@@ -151,8 +151,14 @@ export default function Profile({ navigate, onLogout }) {
       {/* Global Header */}
       <header className="global-header">
         <div className="header-brand">
-          <BriefcaseMedical size={20} strokeWidth={2.5} />
-          <span>Rural Care Navigator</span>
+          <img
+            src="/mythri-icon.png"
+            alt="Mythri"
+            width="22"
+            height="22"
+            style={{ objectFit: 'contain', borderRadius: '4px' }}
+          />
+          <span>Mythri</span>
         </div>
         <div className="header-actions">
           <button

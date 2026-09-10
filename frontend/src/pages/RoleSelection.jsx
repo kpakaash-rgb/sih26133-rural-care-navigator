@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { HeartPulse, Stethoscope, ArrowRight, ShieldCheck, Activity } from 'lucide-react'
+import { HeartPulse, Stethoscope, ArrowRight, ShieldCheck } from 'lucide-react'
 import { getStaffSession } from '../services/api'
 import { useLanguage } from '../i18n'
 import LanguageSelector from '../components/LanguageSelector'
@@ -47,12 +47,16 @@ export default function RoleSelection() {
           </div>
 
           <div className="role-brand-logo-wrap">
-            <Activity size={30} strokeWidth={2.4} />
+            <img
+              src="/mythri-icon.png"
+              alt="Mythri"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '14px', background: '#FFFFFF' }}
+            />
           </div>
 
           <h1 className="role-brand-title">{t('common.appName')}</h1>
           <p className="role-brand-subtitle">
-            {t('roleSelection.platformSubtitle')}
+            {t('common.tagline')}
           </p>
         </header>
 

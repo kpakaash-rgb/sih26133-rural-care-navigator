@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  BriefcaseMedical, Bell, Clock,
+  Bell, Clock,
   LayoutDashboard, Users, CalendarDays, UserCircle,
   PlayCircle, RefreshCw, CheckCircle2
 } from 'lucide-react';
@@ -85,8 +85,14 @@ export default function Appointments({ navigate, _onLogout, openPatient, startCo
       {/* Header */}
       <header className="global-header">
         <div className="header-brand">
-          <BriefcaseMedical size={20} strokeWidth={2.5} />
-          <span>Rural Care Navigator</span>
+          <img
+            src="/mythri-icon.png"
+            alt="Mythri"
+            width="22"
+            height="22"
+            style={{ objectFit: 'contain', borderRadius: '4px' }}
+          />
+          <span>Mythri</span>
         </div>
         <div className="header-actions">
           <button 

@@ -23,11 +23,11 @@ export const SCREENS = {
 }
 
 export const SCREEN_TITLES = {
-  [SCREENS.WELCOME]: 'Rural Care Navigator',
+  [SCREENS.WELCOME]: 'Mythri',
   [SCREENS.LOGIN]: 'Patient Login',
   [SCREENS.REGISTRATION]: 'Patient Registration',
   [SCREENS.ONBOARDING]: 'Complete Your Profile',
-  [SCREENS.HOME]: 'Rural Care Navigator',
+  [SCREENS.HOME]: 'Mythri',
   [SCREENS.SYMPTOMS]: 'Check Symptoms',
   [SCREENS.CARE_GUIDANCE]: 'Care Guidance',
   [SCREENS.HEALTHCARE]: 'Nearby Healthcare',

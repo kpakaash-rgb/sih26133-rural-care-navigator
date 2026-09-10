@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  BriefcaseMedical, Bell, AlertTriangle, Users, 
+import { useState, useEffect, useCallback } from 'react';
+import {
+  Bell, AlertTriangle, Users,
   Calendar, CheckCircle2, Clock, Eye, ChevronRight,
   LayoutDashboard, UserCircle, CalendarDays, RefreshCw
 } from 'lucide-react';
@@ -58,12 +58,18 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
       {/* Header */}
       <header className="global-header">
         <div className="header-brand">
-          <BriefcaseMedical size={20} strokeWidth={2.5} />
-          <span>Rural Care Navigator</span>
+          <img
+            src="/mythri-icon.png"
+            alt="Mythri"
+            width="22"
+            height="22"
+            style={{ objectFit: 'contain', borderRadius: '4px' }}
+          />
+          <span>Mythri</span>
         </div>
         <div className="header-actions">
-          <button 
-            onClick={refreshDashboard} 
+          <button
+            onClick={refreshDashboard}
             title="Refresh dashboard"
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
           >
@@ -73,7 +79,7 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
           <span className="header-indicator"></span>
         </div>
       </header>
-      
+
       {/* Role */}
       <p className="role-text">{doctor?.specialization || 'General Medicine'} • {facilityName}</p>
 
@@ -121,14 +127,14 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
         <div className="queue-bg-icon">
           <Users size={140} strokeWidth={1} />
         </div>
-        
+
         <div className="queue-header">
           <h2 className="queue-title">Patient Queue</h2>
           <span className="queue-badge">
             {loading ? 'Checking...' : `${dashboardData?.waiting_patients_count ?? 0} Waiting (${dashboardData?.queue_status || 'NORMAL'})`}
           </span>
         </div>
-        
+
         <div className="queue-stats">
           <div>
             <p className="queue-label">Facility</p>
@@ -141,7 +147,7 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
             </p>
           </div>
         </div>
-        
+
         <button className="queue-btn" onClick={() => { if (navigate) navigate('patients'); }}>
           <Eye size={18} strokeWidth={2.5} />
           View Patient Queue
@@ -183,7 +189,7 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
       {/* Today's Appointments List */}
       <div className="section-header">
         <h2 className="section-title">Today's Schedule & Consultations</h2>
-        <button 
+        <button
           onClick={() => { if (navigate) navigate('appointments'); }}
           className="view-all"
           style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -216,7 +222,7 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '8px', marginTop: '0.5rem' }}>
-                <button 
+                <button
                   className="btn btn-primary appt-btn"
                   style={{ flex: 1 }}
                   onClick={() => {
@@ -229,7 +235,7 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
                 >
                   Start Consultation
                 </button>
-                <button 
+                <button
                   className="btn-outline appt-btn"
                   style={{ width: 'auto', padding: '0.5rem 1rem' }}
                   onClick={() => {
@@ -253,8 +259,8 @@ export default function Dashboard({ navigate, openPatient, startConsultation }) 
             <Calendar size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.4 }} />
             <p style={{ fontWeight: '600', color: 'var(--text-dark)', marginBottom: '4px' }}>No Scheduled Appointments</p>
             <p style={{ fontSize: '0.85rem' }}>All consultations for today are either complete or patients can be seen via the Patient Queue.</p>
-            <button 
-              className="btn btn-primary" 
+            <button
+              className="btn btn-primary"
               style={{ marginTop: '1rem', width: 'auto', display: 'inline-flex', padding: '0.5rem 1.25rem' }}
               onClick={() => { if (navigate) navigate('patients'); }}
             >
