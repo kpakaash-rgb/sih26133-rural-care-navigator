@@ -11,7 +11,25 @@
  * - Safe JSON parsing
  */
 
-const API_BASE = '/api/v1';
+/**
+ * Resolves the base URL for backend API requests.
+ * Supports VITE_API_BASE_URL from environment with safe normalization:
+ * - If VITE_API_BASE_URL is 'https://sih26133-rural-care-navigator.onrender.com', returns 'https://sih26133-rural-care-navigator.onrender.com/api/v1'
+ * - If VITE_API_BASE_URL is 'https://sih26133-rural-care-navigator.onrender.com/api/v1', returns 'https://sih26133-rural-care-navigator.onrender.com/api/v1'
+ * - If not provided (local development with Vite proxy), defaults to '/api/v1'
+ */
+function getApiBase() {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+  if (!envUrl) {
+    return '/api/v1';
+  }
+  if (envUrl.endsWith('/api/v1')) {
+    return envUrl;
+  }
+  return `${envUrl}/api/v1`;
+}
+
+const API_BASE = getApiBase();
 
 /**
  * Make an HTTP request to the backend API.
