@@ -7,97 +7,6 @@ import {
 import { getWorkerPatients } from '../../../services/api'
 import './PatientsPage.css'
 
-const DEMO_PATIENTS = [
-  {
-    id: 'P104827',
-    name: 'Anitha Kumar',
-    age: 42,
-    gender: 'Female',
-    village: 'Kovilur, Ward 3',
-    category: 'General Assessment',
-    risk: 'Needs Attention',
-    initials: 'AK',
-    lastVisit: 'Today, 09:30 AM',
-    tag: 'pp-badge-amber',
-    accent: 'pp-card-attention',
-  },
-  {
-    id: 'P104812',
-    name: 'Meena Kumari',
-    age: 26,
-    gender: 'Female',
-    village: 'Rampur Tola, Ward 2',
-    category: 'Antenatal Care',
-    risk: 'High Risk',
-    initials: 'MK',
-    lastVisit: 'Yesterday',
-    tag: 'pp-badge-red',
-    accent: 'pp-card-urgent',
-  },
-  {
-    id: 'P104803',
-    name: 'Sunita Yadav',
-    age: 23,
-    gender: 'Female',
-    village: 'Main Basti, Block A',
-    category: 'Postnatal Care',
-    risk: 'Routine',
-    initials: 'SY',
-    lastVisit: '3 days ago',
-    tag: 'pp-badge-green',
-  },
-  {
-    id: 'P104791',
-    name: 'Raju Singh',
-    age: 4,
-    gender: 'Male',
-    village: 'Rampur Tola, Ward 2',
-    category: 'Child Immunisation',
-    risk: 'Routine',
-    initials: 'RS',
-    lastVisit: '4 days ago',
-    tag: 'pp-badge-blue',
-  },
-  {
-    id: 'P104778',
-    name: 'Prabha Devi',
-    age: 34,
-    gender: 'Female',
-    village: 'Khera Mod, Sector 1',
-    category: 'Antenatal Care',
-    risk: 'Routine',
-    initials: 'PD',
-    lastVisit: '1 week ago',
-    tag: 'pp-badge-green',
-  },
-  {
-    id: 'P104765',
-    name: 'Ramesh Prasad',
-    age: 52,
-    gender: 'Male',
-    village: 'Old Colony, Ward 7',
-    category: 'NCD Screening',
-    risk: 'High Risk',
-    initials: 'RP',
-    lastVisit: '5 days ago',
-    tag: 'pp-badge-red',
-    accent: 'pp-card-urgent',
-  },
-  {
-    id: 'P104752',
-    name: 'Laxmi Bai',
-    age: 38,
-    gender: 'Female',
-    village: 'Main Basti, Block A',
-    category: 'Nutrition Support',
-    risk: 'Needs Attention',
-    initials: 'LB',
-    lastVisit: '2 days ago',
-    tag: 'pp-badge-amber',
-    accent: 'pp-card-attention',
-  },
-]
-
 const FILTERS = ['All', 'Needs Attention', 'High Risk', 'Routine', 'Antenatal Care']
 
 export default function PatientsPage() {
@@ -134,11 +43,7 @@ export default function PatientsPage() {
     }
   }, [query])
 
-  // Combine live registered patients at top, with fallback demo patients
-  const allPatients = [
-    ...livePatients,
-    ...DEMO_PATIENTS.filter((dp) => !livePatients.some((lp) => String(lp.id) === String(dp.id) || lp.name.toLowerCase() === dp.name.toLowerCase()))
-  ]
+  const allPatients = livePatients
 
   const filtered = allPatients.filter((p) => {
     const matchesSearch =

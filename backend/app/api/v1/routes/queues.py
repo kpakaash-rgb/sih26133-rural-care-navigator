@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.exceptions import AuthorizationError
 from backend.app.core.response import success_response
-from backend.app.core.security import TokenData, get_current_worker
+from backend.app.core.security import TokenData, get_current_facility_staff
 from backend.app.database.connection import get_db
 from backend.app.repositories.facility_repository import FacilityRepository
 from backend.app.repositories.hospital_queue_repository import HospitalQueueRepository
@@ -65,16 +65,17 @@ async def get_facility_queue(
 async def update_facility_queue(
     facility_id: int,
     payload: HospitalQueueUpdate,
-    current_worker: TokenData = Depends(get_current_worker),
+    current_staff: TokenData = Depends(get_current_facility_staff),
     queue_service: HospitalQueueService = Depends(get_queue_service),
 ):
     """
     Update live queue status and waiting estimations for a healthcare facility.
 
-    Requires role='WORKER'. Ensures the worker only modifies their assigned facility.
+    Requires role in ('WORKER', 'DOCTOR'). Ensures the staff member only modifies their assigned facility.
     """
-    if current_worker.facility_id is not None and current_worker.facility_id != facility_id:
-        raise AuthorizationError(f"Worker is not authorized to modify queue for facility #{facility_id}")
+    if current_staff.facility_id is not None and current_staff.facility_id != facility_id:
+        role_title = "Doctor" if current_staff.role == "DOCTOR" else "Worker"
+        raise AuthorizationError(f"{role_title} is not authorized to modify queue for facility #{facility_id}")
 
     updated_queue = queue_service.update_queue(
         facility_id=facility_id,

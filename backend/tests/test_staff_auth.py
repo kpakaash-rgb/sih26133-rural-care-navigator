@@ -183,7 +183,7 @@ def test_doctor_can_access_doctor_endpoint(client: TestClient, staff_test_setup:
 
 
 def test_doctor_cannot_access_worker_endpoints(client: TestClient, staff_test_setup: dict):
-    """7. Doctor JWT attempting to access Worker-only intake or queue modification returns 403 Forbidden."""
+    """7. Doctor JWT attempting to access Worker-only intake returns 403; cross-facility queue update returns 403."""
     ctx = staff_test_setup
 
     # Worker-only patient creation
@@ -194,13 +194,28 @@ def test_doctor_cannot_access_worker_endpoints(client: TestClient, staff_test_se
     )
     assert res1.status_code == 403
 
-    # Worker-only queue update
-    res2 = client.put(
+    # Worker-only profile retrieval
+    res_w_me = client.get(
+        "/api/v1/auth/worker/me",
+        headers=ctx["doctor_headers"],
+    )
+    assert res_w_me.status_code == 403
+
+    # Doctor can update their own facility queue
+    res_own = client.put(
         f"/api/v1/facilities/{ctx['f1'].id}/queue",
         json={"waiting_patients": 10, "estimated_wait_minutes": 30, "status": "NORMAL"},
         headers=ctx["doctor_headers"],
     )
-    assert res2.status_code == 403
+    assert res_own.status_code == 200
+
+    # Doctor cannot update another facility's queue (f2)
+    res_other = client.put(
+        f"/api/v1/facilities/{ctx['f2'].id}/queue",
+        json={"waiting_patients": 10, "estimated_wait_minutes": 30, "status": "NORMAL"},
+        headers=ctx["doctor_headers"],
+    )
+    assert res_other.status_code == 403
 
 
 def test_unauthenticated_request_returns_401(client: TestClient):

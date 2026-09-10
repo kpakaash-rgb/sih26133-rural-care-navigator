@@ -49,9 +49,11 @@ class MobileClinicService:
         district: Optional[str] = None,
         lat: Optional[float] = None,
         lon: Optional[float] = None,
+        max_distance_km: Optional[float] = 100.0,
     ) -> List[Dict[str, Any]]:
         """
-        Discover active mobile medical units with optional district filter and approximate distance.
+        Discover active mobile medical units with optional district filter, approximate distance,
+        and geographic radius filtering.
         """
         clinics = self.mobile_clinic_repo.list_active(district=district)
         results = []
@@ -60,6 +62,8 @@ class MobileClinicService:
             dist: Optional[float] = None
             if lat is not None and lon is not None and clinic.latitude is not None and clinic.longitude is not None:
                 dist = calculate_haversine_distance(lat, lon, clinic.latitude, clinic.longitude)
+                if max_distance_km is not None and dist > max_distance_km:
+                    continue
             results.append((clinic, dist))
 
         # Sort by distance if coordinates were provided

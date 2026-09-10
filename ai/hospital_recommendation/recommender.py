@@ -212,13 +212,16 @@ def recommend_hospitals(
         .options(selectinload(Facility.services))
     )
 
+    if request.district and request.district.strip():
+        stmt = stmt.where(Facility.district.ilike(f"%{request.district.strip()}%"))
+
     facilities = list(db.scalars(stmt).all())
 
     if not facilities:
         return HospitalRecommendationResponse(
             required_services=request.required_services,
             recommendations=[],
-            message="No active healthcare facilities are available.",
+            message="No nearby healthcare facilities are available in the current service area.",
         )
 
     # Load all queue records in one query.
@@ -233,6 +236,21 @@ def recommend_hospitals(
     recommendations: List[HospitalRecommendation] = []
 
     for facility in facilities:
+        distance_km = _calculate_distance(
+            request.latitude,
+            request.longitude,
+            facility,
+        )
+
+        # Geographic Radius Filtering:
+        # If coordinates are provided, eliminate facilities outside the supported service radius.
+        if (
+            request.latitude is not None
+            and request.longitude is not None
+            and request.max_distance_km is not None
+        ):
+            if distance_km is None or distance_km > request.max_distance_km:
+                continue
 
         matched_services, missing_services = _match_services(
             request.required_services,
@@ -257,12 +275,6 @@ def recommend_hospitals(
             queue.status
             if queue
             else "UNKNOWN"
-        )
-
-        distance_km = _calculate_distance(
-            request.latitude,
-            request.longitude,
-            facility,
         )
 
         score = _calculate_score(
@@ -311,7 +323,9 @@ def recommend_hospitals(
         : request.max_results
     ]
 
-    if request.required_services:
+    if not recommendations:
+        message = "No nearby healthcare facilities are available in the current service area."
+    elif request.required_services:
         message = (
             "Hospitals ranked using required medical "
             "services/equipment, queue status, waiting time, "

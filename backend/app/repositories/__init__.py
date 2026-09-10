@@ -20,6 +20,7 @@ from backend.app.repositories.doctor_repository import DoctorRepository
 from backend.app.repositories.worker_repository import WorkerRepository
 from backend.app.repositories.screening_repository import ScreeningRepository
 from backend.app.repositories.voice_encounter_repository import VoiceEncounterRepository
+from backend.app.repositories.sms_conversation_repository import SMSConversationRepository
 
 __all__ = [
     "AppointmentRepository",
@@ -38,6 +39,7 @@ __all__ = [
     "ScreeningRepository",
     "WorkerRepository",
     "VoiceEncounterRepository",
+    "SMSConversationRepository",
 ]
 
 

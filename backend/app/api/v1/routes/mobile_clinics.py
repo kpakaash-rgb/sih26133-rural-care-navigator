@@ -42,12 +42,13 @@ async def list_mobile_clinics(
     district: Optional[str] = Query(None, description="Filter by district (e.g. Solapur)"),
     lat: Optional[float] = Query(None, ge=-90, le=90, description="Patient latitude for distance calculation"),
     lon: Optional[float] = Query(None, ge=-180, le=180, description="Patient longitude for distance calculation"),
+    max_distance_km: Optional[float] = Query(100.0, description="Maximum search radius in km (default: 100 km)"),
     clinic_service: MobileClinicService = Depends(get_mobile_clinic_service),
 ):
     """
     Public directory of active Mobile Medical Units, routes, and village visit schedules.
     """
-    clinics = clinic_service.list_clinics(district=district, lat=lat, lon=lon)
+    clinics = clinic_service.list_clinics(district=district, lat=lat, lon=lon, max_distance_km=max_distance_km)
     return success_response(
         data=clinics,
         message="Mobile clinics retrieved successfully",

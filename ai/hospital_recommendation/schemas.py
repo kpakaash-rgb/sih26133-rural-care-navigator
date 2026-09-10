@@ -31,6 +31,11 @@ class HospitalRecommendationRequest(BaseModel):
         description="Medical services or equipment required by the patient.",
     )
 
+    district: Optional[str] = Field(
+        None,
+        description="Optional patient district or administrative region filter.",
+    )
+
     latitude: Optional[float] = Field(
         None,
         description="Patient latitude.",
@@ -39,6 +44,13 @@ class HospitalRecommendationRequest(BaseModel):
     longitude: Optional[float] = Field(
         None,
         description="Patient longitude.",
+    )
+
+    max_distance_km: Optional[float] = Field(
+        100.0,
+        ge=1.0,
+        le=1000.0,
+        description="Maximum geographic service radius in km (default: 100 km).",
     )
 
     max_results: int = Field(

@@ -186,27 +186,28 @@ export default function Healthcare({ onNavigate, triageData }) {
             setIsAiRecommended(true)
             const mapped = data.map((item, index) => {
               const fac = item.facility || {}
-              const distanceKm = typeof item.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : (index === 0 ? '0.8 km' : `${(index + 1) * 2.5} km`)
-              const waitMins = typeof item.queue_wait_minutes === 'number' ? item.queue_wait_minutes : (index === 0 ? 15 : 25)
+              const distanceKm = typeof item.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : 'Area-based'
+              const waitMins = typeof item.estimated_wait_minutes === 'number' ? item.estimated_wait_minutes : (typeof item.queue_wait_minutes === 'number' ? item.queue_wait_minutes : 0)
+              const waitPts = typeof item.waiting_patients === 'number' ? item.waiting_patients : 0
 
               return {
-                id: fac.id || index + 1,
-                name: fac.name || 'Healthcare Facility',
-                category: formatFacilityType(fac.type, t),
-                type: fac.type || 'PRIMARY_HEALTH_CENTRE',
+                id: item.facility_id || fac.id || index + 1,
+                name: item.hospital_name || fac.name || 'Healthcare Facility',
+                category: formatFacilityType(item.facility_type || fac.type, t),
+                type: item.facility_type || fac.type || 'PRIMARY_HEALTH_CENTRE',
                 distance: distanceKm,
                 distance_km: item.distance_km,
-                services: (fac.services && fac.services.length > 0)
-                  ? fac.services.map((s) => s.name || s)
-                  : requiredServices,
+                services: (item.matched_services && item.matched_services.length > 0)
+                  ? item.matched_services
+                  : (fac.services && fac.services.length > 0 ? fac.services.map((s) => s.name || s) : requiredServices),
                 reason: item.recommendation_reason || (index === 0
                   ? 'Recommended primary care facility with shortest wait time.'
                   : 'Alternative healthcare facility in your service network.'),
-                queueStatus: waitMins > 45 ? 'BUSY' : waitMins > 90 ? 'OVERLOADED' : 'NORMAL',
-                waitingPatients: Math.max(1, Math.round(waitMins / 5)),
+                queueStatus: item.queue_status || (waitMins > 45 ? 'BUSY' : 'NORMAL'),
+                waitingPatients: waitPts,
                 estimatedWaitMinutes: waitMins,
-                address: fac.address || fac.district || 'Solapur District',
-                phone: fac.phone || '1800-11-4477',
+                address: item.address || fac.address || fac.district || 'Healthcare Facility',
+                phone: fac.phone || '108 / 104 Emergency Helpline',
                 status: fac.status || 'ACTIVE',
                 raw: fac,
               }
@@ -218,21 +219,21 @@ export default function Healthcare({ onNavigate, triageData }) {
             if (isMounted && Array.isArray(allFacs)) {
               setIsAiRecommended(false)
               setFacilities(
-                allFacs.map((fac, index) => ({
+                allFacs.map((fac) => ({
                   id: fac.id,
                   name: fac.name,
                   category: formatFacilityType(fac.type, t),
                   type: fac.type,
-                  distance: `${(index + 1) * 1.5} km`,
+                  distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
                   services: (fac.services && fac.services.length > 0)
                     ? fac.services.map((s) => s.name || s)
                     : ['General Medicine'],
-                  reason: 'Nearest registered healthcare center in your district.',
-                  queueStatus: 'NORMAL',
-                  waitingPatients: 3,
-                  estimatedWaitMinutes: 15,
-                  address: fac.address || fac.district || 'Solapur District',
-                  phone: fac.phone || '1800-11-4477',
+                  reason: 'Registered healthcare center in your district.',
+                  queueStatus: fac.queue?.status || 'NORMAL',
+                  waitingPatients: fac.queue?.waiting_patients ?? 0,
+                  estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
+                  address: fac.address || fac.district || 'Healthcare Facility',
+                  phone: fac.phone || '108 / 104 Emergency Helpline',
                   status: fac.status || 'ACTIVE',
                   raw: fac,
                 }))
@@ -248,21 +249,21 @@ export default function Healthcare({ onNavigate, triageData }) {
             if (isMounted && Array.isArray(allFacs)) {
               setIsAiRecommended(false)
               setFacilities(
-                allFacs.map((fac, index) => ({
+                allFacs.map((fac) => ({
                   id: fac.id,
                   name: fac.name,
                   category: formatFacilityType(fac.type, t),
                   type: fac.type,
-                  distance: `${(index + 1) * 1.5} km`,
+                  distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
                   services: (fac.services && fac.services.length > 0)
                     ? fac.services.map((s) => s.name || s)
                     : ['General Medicine'],
                   reason: 'Registered healthcare center in your area.',
-                  queueStatus: 'NORMAL',
-                  waitingPatients: 2,
-                  estimatedWaitMinutes: 10,
-                  address: fac.address || fac.district || 'Solapur District',
-                  phone: fac.phone || '1800-11-4477',
+                  queueStatus: fac.queue?.status || 'NORMAL',
+                  waitingPatients: fac.queue?.waiting_patients ?? 0,
+                  estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
+                  address: fac.address || fac.district || 'Healthcare Facility',
+                  phone: fac.phone || '108 / 104 Emergency Helpline',
                   status: fac.status || 'ACTIVE',
                   raw: fac,
                 }))

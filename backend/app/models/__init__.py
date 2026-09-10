@@ -24,6 +24,7 @@ from backend.app.models.worker import Worker
 from backend.app.models.screening import Screening
 from backend.app.models.consultation import Consultation
 from backend.app.models.voice_encounter import VoiceEncounter
+from backend.app.models.sms_conversation import SMSConversation
 
 __all__ = [
     "Appointment",
@@ -44,6 +45,7 @@ __all__ = [
     "Worker",
     "Screening",
     "VoiceEncounter",
+    "SMSConversation",
 ]
 
 

@@ -9,14 +9,6 @@ import {
 import { getPatientDetailsById, getFacilities, createWorkerReferral } from '../../../services/api'
 import './ReferPatientPage.css'
 
-/* ── Fallback Demo Data ── */
-const defaultPatient = {
-  name: 'Anitha Kumar', initials: 'AK', gender: 'Female',
-  id: 'P104827', age: 42, village: 'Kovilur',
-  visitTime: 'Today, 09:30 AM',
-  lastVitals: '138/88 mmHg',
-}
-
 const REASONS = [
   'Further clinical assessment required',
   'Suspected high-risk pregnancy',
@@ -24,11 +16,6 @@ const REASONS = [
   'Respiratory distress',
   'Post-screening follow-up',
   'Immunisation adverse reaction',
-]
-
-const DEFAULT_FACILITIES = [
-  { id: 2, name: 'Kovilur Primary Health Centre', type: 'Sub-district PHC', sector: 'Sector B-4', km: 4.2, doctor: 'Dr. R. Sundaram', transit: '~15 mins', open: true },
-  { id: 3, name: 'Ramanathapuram District Hospital', type: 'District Hospital', sector: 'Sector A-1', km: 18.5, doctor: 'Dr. P. Muthu', transit: '~45 mins', open: true },
 ]
 
 const PRIORITIES = [
@@ -52,26 +39,33 @@ const PRIORITIES = [
   },
 ]
 
-const DEMO_NOTES = `Patient reports persistent fever for 3 days with elevated BP (138/88) and mild respiratory fatigue. Vitals recorded during morning home visit. Routine antipyretic advised locally; awaiting medical officer evaluation.`
-
 /* ── Component ── */
 export default function ReferPatientPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const routePatientId = location.state?.patientId
 
-  const [patient, setPatient] = useState(defaultPatient)
-  const [facilities, setFacilities] = useState(DEFAULT_FACILITIES)
+  const [patient, setPatient] = useState({
+    id: routePatientId || 1,
+    name: 'Community Patient',
+    initials: 'CP',
+    gender: 'Patient',
+    age: 35,
+    village: 'Field Sector',
+    visitTime: 'Active Session',
+    lastVitals: 'Standard Assessment',
+  })
+  const [facilities, setFacilities] = useState([])
   const [reason,   setReason]   = useState(REASONS[0])
-  const [facility, setFacility] = useState(DEFAULT_FACILITIES[0])
+  const [facility, setFacility] = useState(null)
   const [priority, setPriority] = useState('urgent')
-  const [notes,    setNotes]    = useState(DEMO_NOTES)
+  const [notes,    setNotes]    = useState('')
   const [loading,  setLoading]  = useState(false)
   const [success,  setSuccess]  = useState(false)
   const [apiError, setApiError] = useState('')
   const [idCopied, setIdCopied] = useState(false)
   const [ptCopied, setPtCopied] = useState(false)
-  const [referralId, setReferralId] = useState('REF-2026-1842')
+  const [referralId, setReferralId] = useState('')
 
   useEffect(() => {
     let isMounted = true

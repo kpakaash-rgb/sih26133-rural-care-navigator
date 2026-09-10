@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from backend.app.api.v1.routes.auth import get_current_patient
@@ -28,7 +28,12 @@ from backend.app.repositories.referral_repository import ReferralRepository
 from backend.app.schemas.sms import (
     CareSummarySMSRequest,
     CareSummarySMSResponse,
+    DemoInboundSMSRequest,
+    DemoInboundSMSResponse,
+    InboundSMSRequest,
+    InboundSMSResponse,
 )
+from backend.app.services.sms_conversation_service import SMSConversationService
 from backend.app.services.sms_service import SMSService
 
 router = APIRouter(prefix="/sms", tags=["SMS Notifications"])
@@ -170,4 +175,110 @@ async def send_care_summary_sms(
     return success_response(
         data=response_data.model_dump(),
         message=response_data.message,
+    )
+
+
+@router.post("/inbound", summary="Inbound SMS Gateway Webhook")
+async def receive_inbound_sms(
+    request: Request,
+    db: Session = Depends(get_db),
+    sms_service: SMSService = Depends(get_sms_service),
+):
+    """
+    Provider-neutral Inbound SMS Webhook handler.
+    Receives incoming SMS from basic phones, executes the two-way conversation state
+    machine, and dispatches the outbound reply via the configured SMS gateway.
+    """
+    content_type = request.headers.get("content-type", "")
+    data = {}
+    if "application/json" in content_type:
+        try:
+            data = await request.json()
+        except Exception:
+            data = {}
+    else:
+        try:
+            form = await request.form()
+            data = dict(form)
+        except Exception:
+            try:
+                data = await request.json()
+            except Exception:
+                data = {}
+
+    mobile = (
+        data.get("mobile")
+        or data.get("sender")
+        or data.get("from")
+        or data.get("From")
+        or data.get("msisdn")
+        or ""
+    )
+    message = (
+        data.get("message")
+        or data.get("body")
+        or data.get("text")
+        or data.get("Body")
+        or data.get("msg")
+        or ""
+    )
+    provider_msg_id = (
+        data.get("provider_message_id")
+        or data.get("msg_id")
+        or data.get("message_id")
+        or data.get("id")
+        or data.get("MessageSid")
+    )
+
+    conv_service = SMSConversationService(db)
+    result = conv_service.process_inbound_message(
+        mobile=str(mobile),
+        message=str(message),
+        provider_message_id=str(provider_msg_id) if provider_msg_id else None,
+        is_demo=False,
+    )
+
+    outbound_ok = False
+    if result.get("success") and result.get("reply") and mobile:
+        dispatch = sms_service.send_sms(mobile=str(mobile), message=result["reply"])
+        outbound_ok = dispatch.success
+
+    return success_response(
+        data={
+            "success": result.get("success", False),
+            "reply": result.get("reply", ""),
+            "next_state": result.get("next_state", "UNKNOWN"),
+            "demo_mode": False,
+            "outbound_delivered": outbound_ok,
+        },
+        message="Inbound SMS processed successfully",
+    )
+
+
+@router.post("/inbound/demo", summary="Demo Inbound SMS simulator")
+async def demo_inbound_sms(
+    payload: DemoInboundSMSRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Safe demo sandbox endpoint executing the exact two-way SMS conversation service.
+    Essential for live demonstrations and testing without real carrier credentials.
+    """
+    conv_service = SMSConversationService(db)
+    result = conv_service.process_inbound_message(
+        mobile=payload.mobile,
+        message=payload.message,
+        provider_message_id=payload.provider_message_id,
+        is_demo=True,
+    )
+
+    return success_response(
+        data={
+            "demo_mode": True,
+            "reply": result.get("reply", ""),
+            "next_state": result.get("next_state", "UNKNOWN"),
+            "mobile": payload.mobile,
+            "conversation": result.get("conversation"),
+        },
+        message="Demo SMS processed",
     )

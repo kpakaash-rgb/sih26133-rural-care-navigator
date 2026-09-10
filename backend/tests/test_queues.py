@@ -181,3 +181,199 @@ def test_hospital_recommendation_reflects_updated_queue(client: TestClient, test
     assert matched["waiting_patients"] == 25
     assert matched["estimated_wait_minutes"] == 90
     assert matched["queue_status"] == "OVERLOADED"
+
+
+def test_doctor_can_update_own_facility_queue(client: TestClient, test_facility: Facility):
+    """Authenticated Doctor can update their own facility's queue."""
+    doc_token = create_access_token(
+        subject="DOC-10101",
+        role="DOCTOR",
+        extra_claims={"facility_id": test_facility.id},
+    )
+    doc_headers = {"Authorization": f"Bearer {doc_token}"}
+
+    res = client.put(
+        f"/api/v1/facilities/{test_facility.id}/queue",
+        json={
+            "waiting_patients": 7,
+            "estimated_wait_minutes": 25,
+            "status": "NORMAL",
+        },
+        headers=doc_headers,
+    )
+    assert res.status_code == 200
+    data = res.json()["data"]
+    assert data["waiting_patients"] == 7
+    assert data["estimated_wait_minutes"] == 25
+
+
+def test_doctor_cannot_update_other_facility_queue(client: TestClient, test_facility: Facility, db_session: Session):
+    """Doctor from Facility A cannot update Facility B queue (403 Forbidden)."""
+    # Create Facility B
+    fac_b = Facility(
+        name="CHC Akluj",
+        type="COMMUNITY_HEALTH_CENTRE",
+        address="Station Road, Akluj",
+        district="Solapur",
+        latitude=17.8872,
+        longitude=75.0214,
+        status="ACTIVE",
+    )
+    db_session.add(fac_b)
+    db_session.commit()
+    db_session.refresh(fac_b)
+
+    # Doctor assigned to test_facility (Facility A)
+    doc_token = create_access_token(
+        subject="DOC-10101",
+        role="DOCTOR",
+        extra_claims={"facility_id": test_facility.id},
+    )
+    doc_headers = {"Authorization": f"Bearer {doc_token}"}
+
+    res = client.put(
+        f"/api/v1/facilities/{fac_b.id}/queue",
+        json={
+            "waiting_patients": 30,
+            "estimated_wait_minutes": 90,
+            "status": "OVERLOADED",
+        },
+        headers=doc_headers,
+    )
+    assert res.status_code == 403
+    assert "not authorized" in res.json()["message"].lower()
+
+
+def test_patient_cannot_update_facility_queue(client: TestClient, test_facility: Facility):
+    """Patient role cannot update facility queue (403 Forbidden)."""
+    pat_token = create_access_token(
+        subject="1",
+        role="PATIENT",
+        extra_claims={"mobile": "9876543210"},
+    )
+    pat_headers = {"Authorization": f"Bearer {pat_token}"}
+
+    res = client.put(
+        f"/api/v1/facilities/{test_facility.id}/queue",
+        json={
+            "waiting_patients": 0,
+            "estimated_wait_minutes": 0,
+            "status": "NORMAL",
+        },
+        headers=pat_headers,
+    )
+    assert res.status_code == 403
+
+
+def test_explicit_queue_change_reverses_recommendation_ranking(
+    client: TestClient, db_session: Session
+):
+    """
+    CRITICAL INTEGRATION TEST:
+    Verifies that changing PostgreSQL hospital queue data directly changes recommendation ranking.
+
+    Initial Setup:
+      Facility A: wait = 20 mins (waiting = 5)
+      Facility B: wait = 60 mins (waiting = 20)
+      Both active, same service, similar distance from patient (Solapur area).
+      -> Recommendation MUST rank Facility A ABOVE Facility B.
+
+    Update:
+      Staff updates Facility A queue in PostgreSQL to wait = 120 mins (waiting = 50).
+      Facility B remains wait = 60 mins.
+      -> Recommendation MUST dynamically rank Facility B ABOVE Facility A.
+    """
+    # Clean previous facilities in this test if any
+    fac_a = Facility(
+        name="Facility A Hospital",
+        type="PRIMARY_HEALTH_CENTRE",
+        address="Sector 1, Test Nagar",
+        district="Solapur",
+        latitude=17.8500,
+        longitude=74.9000,
+        status="ACTIVE",
+    )
+    fac_b = Facility(
+        name="Facility B Hospital",
+        type="PRIMARY_HEALTH_CENTRE",
+        address="Sector 2, Test Nagar",
+        district="Solapur",
+        latitude=17.8510,
+        longitude=74.9010,
+        status="ACTIVE",
+    )
+    db_session.add_all([fac_a, fac_b])
+    db_session.flush()
+
+    s_a = FacilityService(facility_id=fac_a.id, name="General Medicine", available=True)
+    s_b = FacilityService(facility_id=fac_b.id, name="General Medicine", available=True)
+    db_session.add_all([s_a, s_b])
+    db_session.flush()
+
+    # Initial Queues: Facility A (20 min wait), Facility B (60 min wait)
+    q_a = HospitalQueue(
+        facility_id=fac_a.id,
+        waiting_patients=5,
+        estimated_wait_minutes=20,
+        status="NORMAL",
+    )
+    q_b = HospitalQueue(
+        facility_id=fac_b.id,
+        waiting_patients=20,
+        estimated_wait_minutes=60,
+        status="BUSY",
+    )
+    db_session.add_all([q_a, q_b])
+    db_session.commit()
+
+    # Auth tokens for staff updates
+    worker_a_token = create_access_token(
+        subject="FHW-001",
+        role="WORKER",
+        extra_claims={"facility_id": fac_a.id},
+    )
+    headers_a = {"Authorization": f"Bearer {worker_a_token}"}
+
+    # STEP 1: Query Recommendation initially
+    req_payload = {
+        "required_services": ["General Medicine"],
+        "district": "Solapur",
+        "latitude": 17.8505,
+        "longitude": 74.9005,
+        "max_results": 10,
+    }
+    res1 = client.post("/api/v1/hospital-recommendation", json=req_payload)
+    assert res1.status_code == 200
+    recs1 = res1.json()["data"]["recommendations"]
+
+    fac_a_idx1 = next((i for i, r in enumerate(recs1) if r["facility_id"] == fac_a.id), None)
+    fac_b_idx1 = next((i for i, r in enumerate(recs1) if r["facility_id"] == fac_b.id), None)
+
+    assert fac_a_idx1 is not None and fac_b_idx1 is not None
+    # Facility A (20 min wait) ranks HIGHER (lower index) than Facility B (60 min wait)
+    assert fac_a_idx1 < fac_b_idx1, f"Expected Facility A ({fac_a_idx1}) to outrank Facility B ({fac_b_idx1})"
+
+    # STEP 2: Update Facility A queue in PostgreSQL via live PUT API
+    update_res = client.put(
+        f"/api/v1/facilities/{fac_a.id}/queue",
+        json={
+            "waiting_patients": 50,
+            "estimated_wait_minutes": 120,
+            "status": "OVERLOADED",
+        },
+        headers=headers_a,
+    )
+    assert update_res.status_code == 200
+    assert update_res.json()["data"]["estimated_wait_minutes"] == 120
+
+    # STEP 3: Query Recommendation again with same criteria
+    res2 = client.post("/api/v1/hospital-recommendation", json=req_payload)
+    assert res2.status_code == 200
+    recs2 = res2.json()["data"]["recommendations"]
+
+    fac_a_idx2 = next((i for i, r in enumerate(recs2) if r["facility_id"] == fac_a.id), None)
+    fac_b_idx2 = next((i for i, r in enumerate(recs2) if r["facility_id"] == fac_b.id), None)
+
+    assert fac_a_idx2 is not None and fac_b_idx2 is not None
+    # Facility B (60 min wait) now dynamically outranks Facility A (120 min wait)
+    assert fac_b_idx2 < fac_a_idx2, f"Expected Facility B ({fac_b_idx2}) to outrank Facility A ({fac_a_idx2}) after queue update"

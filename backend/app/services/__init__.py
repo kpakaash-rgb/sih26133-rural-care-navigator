@@ -58,6 +58,7 @@ from backend.app.services.exotel_voice_service import (
 )
 from backend.app.services.scheme_service import SchemeService
 from backend.app.services.sms_service import SMSService
+from backend.app.services.sms_conversation_service import SMSConversationService
 
 __all__ = [
     "AppointmentService",
@@ -72,6 +73,7 @@ __all__ = [
     "SarvamTTSService",
     "SchemeService",
     "SMSService",
+    "SMSConversationService",
     "TTSAudioResult",
     "TTSError",
     "build_spoken_response",

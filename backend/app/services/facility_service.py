@@ -94,11 +94,13 @@ class FacilityService:
         facility_type: Optional[str] = None,
         user_lat: Optional[float] = None,
         user_lon: Optional[float] = None,
+        max_distance_km: Optional[float] = 100.0,
     ) -> List[Dict[str, Any]]:
         """
         List all active facilities matching optional filters.
 
-        If user coordinates are provided, calculates distance for each facility and sorts by proximity.
+        If user coordinates are provided, calculates distance for each facility,
+        eliminates facilities beyond max_distance_km, and sorts by proximity.
         """
         facilities = self.facility_repo.list_facilities(
             district=district,
@@ -112,7 +114,12 @@ class FacilityService:
         ]
 
         if user_lat is not None and user_lon is not None:
-            # Sort by distance if available
+            if max_distance_km is not None:
+                formatted = [
+                    f for f in formatted
+                    if f["distance_km"] is not None and f["distance_km"] <= max_distance_km
+                ]
+            # Sort by distance
             formatted.sort(key=lambda x: (x["distance_km"] is None, x["distance_km"] or 0))
 
         return formatted

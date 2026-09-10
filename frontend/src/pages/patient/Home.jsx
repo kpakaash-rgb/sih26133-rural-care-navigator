@@ -26,7 +26,7 @@ export default function Home({ onNavigate, patient }) {
     }
   }, [])
 
-  const displayName = patient?.full_name || 'Ramesh Kumar'
+  const displayName = patient?.full_name || 'Patient'
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'

@@ -197,6 +197,18 @@ async def get_current_doctor(
     return current_user
 
 
+async def get_current_facility_staff(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    """
+    Dependency that enforces valid authentication with 'WORKER' or 'DOCTOR' role
+    and ensures facility context is present.
+    """
+    if current_user.role not in ("WORKER", "DOCTOR"):
+        raise AuthorizationError("Access forbidden: Healthcare Staff (Worker or Doctor) role required")
+    return current_user
+
+
 def require_roles(allowed_roles: List[str]):
     """
     FastAPI dependency factory for role-based access control.

@@ -46,10 +46,10 @@ export default function Abha({ onNavigate, patient, onLogout }) {
     }, 4000)
   }
 
-  const abhaNumber = patient?.abha_number || '14-1234-5678-9012'
-  const patientName = patient?.full_name || 'Ramesh Kumar'
-  const patientDistrict = patient?.district || 'Solapur'
-  const patientMobile = patient?.mobile || '9876543210'
+  const abhaNumber = patient?.abha_number || (patient?.id ? `14-${String(patient.id).padStart(4, '0')}-0000-0000` : 'Not Linked')
+  const patientName = patient?.full_name || 'Registered Patient'
+  const patientDistrict = patient?.district || '—'
+  const patientMobile = patient?.mobile || '—'
 
   return (
     <div className="abha-screen-wrapper">

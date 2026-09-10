@@ -52,18 +52,21 @@ async def list_facilities(
     type: Optional[str] = Query(None, description="Filter by facility type (e.g. 'PRIMARY_HEALTH_CENTRE')"),
     lat: Optional[float] = Query(None, description="User latitude for distance calculation"),
     lon: Optional[float] = Query(None, description="User longitude for distance calculation"),
+    max_distance_km: Optional[float] = Query(100.0, description="Maximum search radius in km when coordinates are provided (default: 100 km)"),
     facility_service: FacilityService = Depends(get_facility_service),
 ):
     """
     Retrieve all operational healthcare facilities matching criteria.
 
-    Calculates great-circle distance in kilometers when coordinates are supplied.
+    Calculates great-circle distance in kilometers when coordinates are supplied
+    and filters to facilities within the geographic search radius.
     """
     facilities = facility_service.list_facilities(
         district=district,
         facility_type=type,
         user_lat=lat,
         user_lon=lon,
+        max_distance_km=max_distance_km,
     )
     return success_response(
         data=facilities,

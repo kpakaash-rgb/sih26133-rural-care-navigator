@@ -9,14 +9,6 @@ import {
 import { getPatientDetailsById, savePatientScreening } from '../../../services/api'
 import './ScreeningPage.css'
 
-/* ── Fallback Demo Patient ── */
-const defaultPatient = {
-  name: 'Anitha Kumar',
-  id: 'P104827',
-  initials: 'AK',
-  meta: 'Female, 28 Yrs • Kovilur Village',
-}
-
 /* ── Symptoms ────────────────────────────────────────────────────── */
 const SYMPTOMS_LIST = [
   'Fever', 'Cough', 'Breathing Difficulty', 'Pain',
@@ -67,10 +59,16 @@ export default function ScreeningPage() {
   const location = useLocation()
   const routePatientId = location.state?.patientId
 
-  const [patient, setPatient] = useState(defaultPatient)
-  const [symptoms,    setSymptoms]    = useState(['Fever', 'Cough', 'Breathing Difficulty', 'Headache'])
+  const [patient, setPatient] = useState({
+    id: routePatientId || 1,
+    displayId: routePatientId ? `P${String(routePatientId).padStart(6, '0')}` : 'Patient',
+    name: 'Community Patient',
+    initials: 'CP',
+    meta: 'Field Health Screening',
+  })
+  const [symptoms,    setSymptoms]    = useState([])
   const [description, setDescription] = useState('')
-  const [vitals,      setVitals]      = useState({ temp: '38.2', bp: '138/88', hr: '96', spo2: '95' })
+  const [vitals,      setVitals]      = useState({ temp: '', bp: '', hr: '', spo2: '' })
   const [copied,      setCopied]      = useState(false)
   const [submitted,   setSubmitted]   = useState(false)
   const [loading,     setLoading]     = useState(false)

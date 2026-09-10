@@ -5,59 +5,11 @@ import {
   Thermometer, Activity, Heart, Wind,
   Clock, CheckCircle2, AlertTriangle, AlertCircle,
   ChevronDown, ChevronUp, ClipboardList,
-  Building2, UserCheck, RefreshCw, Lock,
+  Building2, UserCheck, Lock,
   ShieldCheck, Wifi, ExternalLink, CalendarClock, Phone
 } from 'lucide-react'
 import { getPatientDetailsById, getLatestScreening, getDoctorPatientClinicalSummary } from '../../../services/api'
 import './PatientSummaryPage.css'
-
-/* ── Fallback Demo Data ── */
-const defaultPatient = {
-  name: 'Anitha Kumar', initials: 'AK',
-  id: 'P104827', age: 42, gender: 'Female',
-  village: 'Kovilur, Ward 3',
-  asha: 'Sunita Devi',
-}
-
-const defaultSymptoms = [
-  { label: 'Fever',    color: 'danger'  },
-  { label: 'Cough',    color: 'primary' },
-  { label: 'Weakness', color: 'warning' },
-]
-
-const defaultVitals = [
-  { key: 'temp', label: 'BODY TEMP',       value: '38.2', unit: '°C',   icon: Thermometer, note: 'Elevated (Mild Fever)',  noteType: 'warn'   },
-  { key: 'bp',   label: 'BLOOD PRESSURE',  value: '138/88', unit: 'mmHg', icon: Activity,    note: 'Pre-hypertensive',      noteType: 'warn'   },
-  { key: 'hr',   label: 'HEART RATE',      value: '96',   unit: 'bpm',  icon: Heart,       note: 'Normal Baseline',       noteType: 'ok'     },
-  { key: 'spo2', label: 'OXYGEN (SpO2)',    value: '95',   unit: '%',    icon: Wind,        note: 'Adequate Ambient',      noteType: 'ok'     },
-]
-
-const pastVisits = [
-  {
-    id: 1, icon: CheckCircle2, iconColor: 'ok',
-    title: 'Antenatal & Vitals Check',
-    date: '18 Aug 2026',
-    place: 'Kovilur Sub-center',
-    note: 'All parameters within normal baseline limits.',
-    status: 'Screening Completed',
-  },
-  {
-    id: 2, icon: RefreshCw, iconColor: 'muted',
-    title: 'NCD Seasonal Screening',
-    date: '02 Jul 2026',
-    place: 'Kovilur Sub-center',
-    note: 'Glucose, BP and lifestyle assessment.',
-    status: 'Archived & Stored',
-  },
-  {
-    id: 3, icon: CheckCircle2, iconColor: 'ok',
-    title: 'Immunisation Follow-up',
-    date: '15 May 2026',
-    place: 'Primary Health Centre',
-    note: 'Routine immunisation record updated.',
-    status: 'Completed',
-  },
-]
 
 /* ── Status Config ── */
 const STATUS_LEVELS = [
@@ -102,11 +54,20 @@ export default function PatientSummaryPage() {
   const routePatientId = location.state?.patientId
 
   const [copied, setCopied] = useState(false)
-  const [patient, setPatient] = useState(defaultPatient)
-  const [symptoms, setSymptoms] = useState(defaultSymptoms)
-  const [vitals, setVitals] = useState(defaultVitals)
-  const [screeningDate, setScreeningDate] = useState('03 Sep 2026')
-  const [currentStatus, setCurrentStatus] = useState('attention') // routine | attention | urgent
+  const [patient, setPatient] = useState({
+    id: routePatientId || 1,
+    displayId: routePatientId ? `P${String(routePatientId).padStart(6, '0')}` : 'Patient',
+    name: 'Community Patient',
+    initials: 'CP',
+    age: '—',
+    gender: 'Patient',
+    village: 'Field Sector',
+    asha: 'Assigned Healthcare Worker',
+  })
+  const [symptoms, setSymptoms] = useState([])
+  const [vitals, setVitals] = useState([])
+  const [screeningDate, setScreeningDate] = useState('')
+  const [currentStatus, setCurrentStatus] = useState('routine') // routine | attention | urgent
   const [voiceEncounter, setVoiceEncounter] = useState(null)
 
   useEffect(() => {
@@ -132,7 +93,7 @@ export default function PatientSummaryPage() {
               age: data.age ?? 42,
               gender: data.gender || 'Female',
               village: data.village || data.district || 'Village Area',
-              asha: 'Meena Devi',
+              asha: 'Assigned Frontline Worker',
             })
           }
         })
@@ -174,35 +135,41 @@ export default function PatientSummaryPage() {
   }, [routePatientId])
 
   function copyId() {
-    navigator.clipboard?.writeText(patient.displayId || String(patient.id))
-    setCopied(true); setTimeout(() => setCopied(false), 2000)
+    navigator.clipboard?.writeText(patient.id)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
     <div className="ps-root animate-fade-in">
 
-      {/* ΓöÇΓöÇ Page Header ΓöÇΓöÇ */}
-      <div className="ps-page-header">
-        <button className="ps-back-btn" onClick={() => navigate(-1)} aria-label="Back">
-          <ArrowLeft size={22} />
+      {/* ── Top Bar ── */}
+      <div className="ps-topbar">
+        <button
+          type="button"
+          className="ps-back-btn"
+          onClick={() => navigate('/worker/patients')}
+          aria-label="Back to patients list"
+        >
+          <ArrowLeft size={18} />
         </button>
-        <div className="ps-header-mid">
-          <h1 className="ps-title">Patient Health Summary</h1>
-          <div className="ps-header-badges">
+        <div className="ps-topbar-center">
+          <p className="ps-topbar-title">Patient Summary</p>
+          <div className="ps-topbar-badges">
             <span className="ps-badge-green"><ShieldCheck size={11} /> ABHA Verified</span>
             <span className="ps-badge-blue"><Wifi size={11} /> Field Sync OK</span>
           </div>
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Patient Card ΓöÇΓöÇ */}
+      {/* ── Patient Card ── */}
       <div className="ps-patient-card">
         <div className="ps-patient-top">
-          <div className="ps-patient-avatar">AK</div>
+          <div className="ps-patient-avatar">{patient.initials || 'PT'}</div>
           <div className="ps-patient-info">
             <div className="ps-patient-name-row">
               <h2 className="ps-patient-name">{patient.name}</h2>
-              <span className="ps-patient-age">{patient.age} ΓÖÇ</span>
+              <span className="ps-patient-age">{patient.age} ◌</span>
               <button className="ps-icon-btn" aria-label="View history"><Calendar size={16} /></button>
             </div>
             <div className="ps-id-row">
@@ -374,10 +341,10 @@ export default function PatientSummaryPage() {
         <div className="ps-action-row">
           <div className="ps-action-icon ps-ai-warn"><Clock size={17} /></div>
           <div className="ps-action-body">
-            <p className="ps-action-title">Follow-up in 2 days</p>
-            <p className="ps-action-sub">Target: 05 Sep 2026 ┬╖ Home visit, Kovilur</p>
+            <p className="ps-action-title">Field Follow-up Task</p>
+            <p className="ps-action-sub">Home visit • {patient.village || 'Assigned Field Sector'}</p>
           </div>
-          <span className="ps-badge-scheduled">Scheduled</span>
+          <span className="ps-badge-scheduled">Active</span>
         </div>
 
         <div className="ps-divider" />
@@ -387,19 +354,19 @@ export default function PatientSummaryPage() {
           <div className="ps-action-icon ps-ai-blue"><ClipboardList size={17} /></div>
           <div className="ps-action-body">
             <p className="ps-action-title">Referral Order</p>
-            <p className="ps-action-sub ps-ref-name">General Assessment</p>
+            <p className="ps-action-sub ps-ref-name">Clinical Assessment</p>
           </div>
-          <span className="ps-badge-pending">Pending Review</span>
+          <span className="ps-badge-pending">Under Review</span>
         </div>
 
         <div className="ps-info-grid">
           <div className="ps-info-item">
             <p className="ps-info-label"><Building2 size={13} /> Facility Destination</p>
-            <p className="ps-info-val">Kovilur Primary Health Centre (PHC)</p>
+            <p className="ps-info-val">Primary Health Centre (PHC)</p>
           </div>
           <div className="ps-info-item">
             <p className="ps-info-label"><UserCheck size={13} /> Assigned Clinician</p>
-            <p className="ps-info-val">Dr. R. Sundaram (Medical Officer)</p>
+            <p className="ps-info-val">Attending Medical Officer</p>
           </div>
           <div className="ps-info-item">
             <p className="ps-info-label"><AlertCircle size={13} /> Escalation Status</p>
@@ -408,41 +375,39 @@ export default function PatientSummaryPage() {
         </div>
       </CollapsibleCard>
 
-      {/* ΓöÇΓöÇ Upcoming Appointment ΓöÇΓöÇ */}
+      {/* ── Upcoming Appointment ── */}
       <CollapsibleCard title="Upcoming Appointment" subtitle="Primary Health Centre Visit">
         <div className="ps-appt-card">
           <div className="ps-appt-header">
             <p className="ps-appt-title">Primary Health Centre Visit</p>
-            <span className="ps-badge-confirmed">Confirmed</span>
+            <span className="ps-badge-confirmed">Scheduled</span>
           </div>
           <div className="ps-appt-meta">
-            <span className="ps-meta-item"><Calendar size={13} /> 05 Sep 2026</span>
-            <span className="ps-meta-item"><Clock size={13} /> 10:00 AM</span>
+            <span className="ps-meta-item"><Calendar size={13} /> Active Appointment Slot</span>
+            <span className="ps-meta-item"><Clock size={13} /> OPD Hours</span>
           </div>
           <div className="ps-appt-meta" style={{ marginTop: 4 }}>
-            <span className="ps-meta-item"><User size={13} /> Dr. R. Sundaram (Medical Officer)</span>
+            <span className="ps-meta-item"><User size={13} /> Attending Medical Officer</span>
           </div>
         </div>
       </CollapsibleCard>
 
-      {/* ΓöÇΓöÇ Past Encounters ΓöÇΓöÇ */}
-      <CollapsibleCard title="Past Encounter History" subtitle={`${pastVisits.length} Logged Visits`}>
+      {/* ── Past Encounters ── */}
+      <CollapsibleCard title="Past Encounter History" subtitle="Clinical History">
         <div className="ps-visits-list">
-          {pastVisits.map((v, _i) => (
-            <div key={v.id} className="ps-visit-row">
-              <div className={`ps-visit-icon ps-vi2-${v.iconColor}`}>
-                <v.icon size={16} />
-              </div>
-              <div className="ps-visit-body">
-                <div className="ps-visit-title-row">
-                  <p className="ps-visit-title">{v.title}</p>
-                  <span className="ps-visit-date">{v.date}</span>
-                </div>
-                <p className="ps-visit-place">{v.place} ┬╖ {v.note}</p>
-                <p className="ps-visit-status">ΓùÅ {v.status}</p>
-              </div>
+          <div className="ps-visit-row">
+            <div className="ps-visit-icon ps-vi2-ok">
+              <CheckCircle2 size={16} />
             </div>
-          ))}
+            <div className="ps-visit-body">
+              <div className="ps-visit-title-row">
+                <p className="ps-visit-title">Initial Registration & Baseline Triage</p>
+                <span className="ps-visit-date">{screeningDate || 'Recorded'}</span>
+              </div>
+              <p className="ps-visit-place">{patient.village || 'Field Sector'} • Routine clinical record synchronized</p>
+              <p className="ps-visit-status">● Synchronized with PostgreSQL</p>
+            </div>
+          </div>
         </div>
       </CollapsibleCard>
 
