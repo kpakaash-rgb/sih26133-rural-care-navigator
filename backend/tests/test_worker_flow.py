@@ -291,3 +291,313 @@ def test_worker_cannot_modify_other_facility_queue(client: TestClient, worker_te
     )
     assert res.status_code == 403
     assert "not authorized" in res.json()["message"].lower()
+
+
+def test_worker_can_retrieve_facility_follow_ups_and_referrals(client: TestClient, worker_test_setup: dict, db_session: Session):
+    """12. Worker retrieves only their facility's follow-ups and referrals with patient profile data."""
+    ctx = worker_test_setup
+    # Create patient registered to Facility 1
+    p1 = Patient(
+        full_name="Radha Rani",
+        mobile="9876599001",
+        age=30,
+        gender="Female",
+        village="Kovilur",
+        district="Solapur",
+        facility_id=ctx["f1"].id,
+    )
+    # Create patient registered to Facility 2
+    p2 = Patient(
+        full_name="Kishore Kumar",
+        mobile="9876599002",
+        age=42,
+        gender="Male",
+        village="Old Colony",
+        district="Solapur",
+        facility_id=ctx["f2"].id,
+    )
+    db_session.add_all([p1, p2])
+    db_session.flush()
+
+    # Create follow-up for p1 (Facility 1) and p2 (Facility 2)
+    from backend.app.models.follow_up import FollowUp
+    fu1 = FollowUp(
+        patient_id=p1.id,
+        follow_up_date="2026-09-10",
+        notes="Review blood pressure",
+        status="PENDING",
+    )
+    fu2 = FollowUp(
+        patient_id=p2.id,
+        follow_up_date="2026-09-11",
+        notes="Diabetic foot check",
+        status="PENDING",
+    )
+    db_session.add_all([fu1, fu2])
+    db_session.commit()
+
+    # Worker 1 queries follow-ups
+    res1 = client.get("/api/v1/follow-ups", headers=ctx["w1_headers"])
+    assert res1.status_code == 200
+    fu_list = res1.json()["data"]
+    fu_ids = [f["id"] for f in fu_list]
+    assert fu1.id in fu_ids
+    assert fu2.id not in fu_ids
+    # Check patient profile is populated
+    matched_fu = next(f for f in fu_list if f["id"] == fu1.id)
+    assert matched_fu["patient"]["full_name"] == "Radha Rani"
+    assert matched_fu["patient"]["village"] == "Kovilur"
+
+    # Worker 2 queries follow-ups
+    res2 = client.get("/api/v1/follow-ups", headers=ctx["w2_headers"])
+    assert res2.status_code == 200
+    w2_fu_ids = [f["id"] for f in res2.json()["data"]]
+    assert fu2.id in w2_fu_ids
+    assert fu1.id not in w2_fu_ids
+
+
+def test_worker_can_complete_follow_up(client: TestClient, worker_test_setup: dict, db_session: Session):
+    """13. Worker can mark a follow-up complete for their facility."""
+    ctx = worker_test_setup
+    p1 = Patient(
+        full_name="Gopal Das",
+        mobile="9876599003",
+        facility_id=ctx["f1"].id,
+    )
+    db_session.add(p1)
+    db_session.flush()
+
+    from backend.app.models.follow_up import FollowUp
+    fu = FollowUp(
+        patient_id=p1.id,
+        follow_up_date="2026-09-10",
+        notes="Post-fever recovery check",
+        status="PENDING",
+    )
+    db_session.add(fu)
+    db_session.commit()
+
+    # Worker 1 completes the follow up
+    res = client.post(f"/api/v1/follow-ups/{fu.id}/complete", headers=ctx["w1_headers"])
+    assert res.status_code == 200
+    assert res.json()["data"]["status"] == "COMPLETED"
+
+
+def test_worker_cannot_complete_other_facility_follow_up(client: TestClient, worker_test_setup: dict, db_session: Session):
+    """14. Worker 2 cannot complete Worker 1's facility follow-up (facility isolation)."""
+    ctx = worker_test_setup
+    p1 = Patient(
+        full_name="Gopal Das 2",
+        mobile="9876599004",
+        facility_id=ctx["f1"].id,
+    )
+    db_session.add(p1)
+    db_session.flush()
+
+    from backend.app.models.follow_up import FollowUp
+    fu = FollowUp(
+        patient_id=p1.id,
+        follow_up_date="2026-09-10",
+        notes="Facility 1 only checkup",
+        status="PENDING",
+    )
+    db_session.add(fu)
+    db_session.commit()
+
+    # Worker 2 attempts to complete Worker 1's follow up
+    res = client.post(f"/api/v1/follow-ups/{fu.id}/complete", headers=ctx["w2_headers"])
+    assert res.status_code == 403
+    assert "outside assigned facility" in res.json()["message"].lower()
+
+
+def test_worker_dashboard_stats_success(client: TestClient, worker_test_setup: dict):
+    """15. Authenticated worker retrieves dashboard stats."""
+    ctx = worker_test_setup
+    res = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w1_headers"])
+    assert res.status_code == 200
+    body = res.json()
+    assert body["success"] is True
+    data = body["data"]
+    for key in (
+        "total_patients",
+        "pending_tasks",
+        "urgent_cases",
+        "completed_today",
+        "follow_ups_due",
+        "pending_referrals",
+        "today_screenings",
+        "urgent_alert",
+        "recent_tasks",
+    ):
+        assert key in data
+
+
+def test_worker_dashboard_stats_facility_isolation(
+    client: TestClient, worker_test_setup: dict, db_session: Session
+):
+    """16. Statistics belong only to worker's assigned facility and do not count another facility's records."""
+    ctx = worker_test_setup
+    from backend.app.models.follow_up import FollowUp
+    from backend.app.models.referral import Referral
+
+    # Facility 1 patient and records
+    p1 = Patient(
+        full_name="Facility 1 Patient",
+        mobile="9876500011",
+        facility_id=ctx["f1"].id,
+    )
+    # Facility 2 patient and records
+    p2 = Patient(
+        full_name="Facility 2 Patient",
+        mobile="9876500022",
+        facility_id=ctx["f2"].id,
+    )
+    db_session.add_all([p1, p2])
+    db_session.flush()
+
+    fu1 = FollowUp(
+        patient_id=p1.id,
+        follow_up_date="2026-09-10",
+        notes="F1 checkup",
+        status="PENDING",
+    )
+    fu2 = FollowUp(
+        patient_id=p2.id,
+        follow_up_date="2026-09-10",
+        notes="F2 checkup",
+        status="PENDING",
+    )
+    r1 = Referral(
+        patient_id=p1.id,
+        to_facility_id=ctx["f1"].id,
+        reason="F1 Referral",
+        priority="ROUTINE",
+        status="PENDING",
+    )
+    r2 = Referral(
+        patient_id=p2.id,
+        to_facility_id=ctx["f2"].id,
+        reason="F2 Referral",
+        priority="ROUTINE",
+        status="PENDING",
+    )
+    db_session.add_all([fu1, fu2, r1, r2])
+    db_session.commit()
+
+    # Worker 1 query
+    res1 = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w1_headers"])
+    assert res1.status_code == 200
+    d1 = res1.json()["data"]
+    assert d1["total_patients"] >= 1
+    assert d1["follow_ups_due"] >= 1
+    assert d1["pending_referrals"] >= 1
+
+    # Worker 2 query
+    res2 = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w2_headers"])
+    assert res2.status_code == 200
+    d2 = res2.json()["data"]
+
+    # Verify task IDs in recent_tasks for Worker 1 do not contain F2 records
+    w1_task_ids = [t["id"] for t in d1["recent_tasks"]]
+    assert fu1.id in w1_task_ids or r1.id in w1_task_ids
+    assert fu2.id not in w1_task_ids
+    assert r2.id not in w1_task_ids
+
+
+def test_worker_dashboard_stats_completion_updates(
+    client: TestClient, worker_test_setup: dict, db_session: Session
+):
+    """17. Task completion reflects in updated statistics."""
+    ctx = worker_test_setup
+    from backend.app.models.follow_up import FollowUp
+
+    p = Patient(
+        full_name="Updatable Patient",
+        mobile="9876500033",
+        facility_id=ctx["f1"].id,
+    )
+    db_session.add(p)
+    db_session.flush()
+
+    fu = FollowUp(
+        patient_id=p.id,
+        follow_up_date="2026-09-10",
+        notes="Dynamic stat test",
+        status="PENDING",
+    )
+    db_session.add(fu)
+    db_session.commit()
+
+    # Initial stats
+    res_before = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w1_headers"])
+    before = res_before.json()["data"]
+
+    # Complete follow-up
+    res_comp = client.post(f"/api/v1/follow-ups/{fu.id}/complete", headers=ctx["w1_headers"])
+    assert res_comp.status_code == 200
+
+    # Refetched stats
+    res_after = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w1_headers"])
+    after = res_after.json()["data"]
+
+    assert after["follow_ups_due"] == before["follow_ups_due"] - 1
+    assert after["completed_today"] == before["completed_today"] + 1
+
+
+def test_worker_dashboard_stats_unauthorized_rejected(
+    client: TestClient, worker_test_setup: dict
+):
+    """18. Unauthorized and non-worker roles are rejected."""
+    # 1. No token
+    res_no_auth = client.get("/api/v1/worker/dashboard/stats")
+    assert res_no_auth.status_code == 401
+
+    # 2. Patient token
+    patient_token = create_access_token(
+        subject="1",
+        role="PATIENT",
+        extra_claims={"mobile": "9876543210"},
+    )
+    res_patient = client.get(
+        "/api/v1/worker/dashboard/stats",
+        headers={"Authorization": f"Bearer {patient_token}"},
+    )
+    assert res_patient.status_code == 403
+
+
+def test_worker_dashboard_stats_urgent_alert(
+    client: TestClient, worker_test_setup: dict, db_session: Session
+):
+    """19. Urgent referrals or screenings trigger urgent alert card."""
+    ctx = worker_test_setup
+    from backend.app.models.referral import Referral
+
+    p = Patient(
+        full_name="Emergency Mother",
+        mobile="9876500099",
+        village="Kovilur Hamlet",
+        facility_id=ctx["f1"].id,
+    )
+    db_session.add(p)
+    db_session.flush()
+
+    ref = Referral(
+        patient_id=p.id,
+        to_facility_id=ctx["f1"].id,
+        reason="Severe antenatal hypertension",
+        priority="EMERGENCY",
+        status="PENDING",
+    )
+    db_session.add(ref)
+    db_session.commit()
+
+    res = client.get("/api/v1/worker/dashboard/stats", headers=ctx["w1_headers"])
+    assert res.status_code == 200
+    data = res.json()["data"]
+    assert data["urgent_cases"] >= 1
+    alert = data["urgent_alert"]
+    assert alert["has_urgent"] is True
+    assert alert["patient_name"] == "Emergency Mother"
+    assert alert["priority"] == "EMERGENCY"
+    assert "antenatal hypertension" in alert["reason"].lower()
+

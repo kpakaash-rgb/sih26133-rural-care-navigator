@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from backend.app.core.exceptions import NotFoundError, ValidationAppError
+from backend.app.core.exceptions import AuthorizationError, NotFoundError, ValidationAppError
 from backend.app.models.referral import Referral
 from backend.app.repositories.appointment_repository import AppointmentRepository
 from backend.app.repositories.facility_repository import FacilityRepository
@@ -40,9 +40,22 @@ class ReferralService:
 
     def _format_referral(self, ref: Referral) -> Dict[str, Any]:
         """Format a Referral ORM instance into an API dictionary response."""
+        patient_data = None
+        if ref.patient:
+            patient_data = {
+                "id": ref.patient.id,
+                "full_name": ref.patient.full_name or f"Patient #{ref.patient.id}",
+                "mobile": ref.patient.mobile,
+                "age": ref.patient.age,
+                "gender": ref.patient.gender,
+                "village": ref.patient.village,
+                "district": ref.patient.district,
+            }
+
         return {
             "id": ref.id,
             "patient_id": ref.patient_id,
+            "patient": patient_data,
             "from_facility_id": ref.from_facility_id,
             "from_facility": {
                 "id": ref.from_facility.id,
@@ -156,6 +169,11 @@ class ReferralService:
         referrals = self.referral_repo.get_referrals_by_patient(patient_id)
         return [self._format_referral(r) for r in referrals]
 
+    def get_facility_referrals(self, facility_id: int) -> List[Dict[str, Any]]:
+        """Retrieve all referrals linked to a facility (incoming or outgoing)."""
+        referrals = self.referral_repo.get_referrals_by_facility(facility_id)
+        return [self._format_referral(r) for r in referrals]
+
     def get_referral_by_id(self, referral_id: int, patient_id: int) -> Dict[str, Any]:
         """Retrieve a specific referral by ID, strictly enforcing patient ownership."""
         referral = self.referral_repo.get_by_id_with_relations(referral_id)
@@ -164,11 +182,23 @@ class ReferralService:
 
         return self._format_referral(referral)
 
-    def cancel_referral(self, referral_id: int, patient_id: int) -> Dict[str, Any]:
-        """Cancel a pending referral for the authenticated patient."""
+    def cancel_referral(
+        self,
+        referral_id: int,
+        patient_id: Optional[int] = None,
+        facility_id: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Cancel a pending referral."""
         referral = self.referral_repo.get_by_id_with_relations(referral_id)
-        if not referral or referral.patient_id != patient_id:
+        if not referral:
             raise NotFoundError(f"Referral with ID {referral_id} not found.")
+
+        if patient_id is not None and referral.patient_id != patient_id:
+            raise NotFoundError(f"Referral with ID {referral_id} not found.")
+
+        if facility_id is not None:
+            if referral.from_facility_id != facility_id and referral.to_facility_id != facility_id:
+                raise AuthorizationError(f"Worker not authorized to cancel referral {referral_id} outside assigned facility.")
 
         if referral.status in ("CANCELLED", "COMPLETED"):
             raise ValidationAppError(f"Cannot cancel referral in '{referral.status}' status.")

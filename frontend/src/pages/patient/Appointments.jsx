@@ -4,6 +4,7 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getAppointments, cancelAppointment } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 function formatTime(timeStr) {
   if (!timeStr) return ''
@@ -18,6 +19,7 @@ function formatTime(timeStr) {
 }
 
 export default function Appointments({ onNavigate }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('journey')
   const [appointments, setAppointments] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -126,7 +128,7 @@ export default function Appointments({ onNavigate }) {
     <div className="appointments-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -135,7 +137,7 @@ export default function Appointments({ onNavigate }) {
       <main className="appointments-scrollable-content">
         {/* Page Title */}
         <section className="appointments-title-section">
-          <h1 className="appointments-main-title">My Appointments</h1>
+          <h1 className="appointments-main-title">{t('appointments.title')}</h1>
         </section>
 
         {/* Feedback Messages */}
@@ -175,13 +177,13 @@ export default function Appointments({ onNavigate }) {
 
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
-            <p>Loading your appointments...</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : (
           <>
             {/* Section 1: UPCOMING */}
             <section className="appointments-group-section">
-              <h2 className="appointments-section-label">UPCOMING</h2>
+              <h2 className="appointments-section-label">{t('appointments.upcoming').toUpperCase()}</h2>
 
               {upcomingAppointments.length === 0 ? (
                 <div
@@ -195,7 +197,7 @@ export default function Appointments({ onNavigate }) {
                   }}
                 >
                   <p style={{ color: '#64748b', fontSize: '13px', margin: '0 0 12px' }}>
-                    No upcoming appointments scheduled.
+                    {t('appointments.noAppointments')}
                   </p>
                   <button
                     type="button"
@@ -211,7 +213,7 @@ export default function Appointments({ onNavigate }) {
                       cursor: 'pointer',
                     }}
                   >
-                    Find Facilities & Book
+                    {t('healthcare.title')}
                   </button>
                 </div>
               ) : (
@@ -295,7 +297,7 @@ export default function Appointments({ onNavigate }) {
                           onClick={handleViewDetails}
                           style={{ flex: 1 }}
                         >
-                          View Journey
+                          {t('healthJourney.title')}
                         </button>
                         <button
                           type="button"
@@ -314,7 +316,7 @@ export default function Appointments({ onNavigate }) {
                             opacity: isCancelling ? 0.6 : 1,
                           }}
                         >
-                          {isCancelling ? 'Cancelling...' : 'Cancel'}
+                          {isCancelling ? t('common.loading') : t('appointments.cancelAppointment')}
                         </button>
                       </div>
                     </article>
@@ -326,7 +328,7 @@ export default function Appointments({ onNavigate }) {
             {/* Section 2: PAST / CANCELLED APPOINTMENTS */}
             {pastAppointments.length > 0 && (
               <section className="appointments-group-section">
-                <h2 className="appointments-section-label">PAST / CANCELLED</h2>
+                <h2 className="appointments-section-label">{t('appointments.past').toUpperCase()}</h2>
 
                 {pastAppointments.map((past) => {
                   const isCancelled = past.status === 'CANCELLED'

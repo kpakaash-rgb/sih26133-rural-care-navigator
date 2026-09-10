@@ -22,7 +22,7 @@ class SmsProviderAdapter(BaseSMSAdapter):
     """
     Standard HTTP SMS Gateway integration boundary.
 
-    Supports configurable Indian DLT/SMS REST Gateways (e.g. Fast2SMS, MSG91, Twilio).
+    Supports configurable Indian DLT/SMS REST Gateways (e.g. MSG91, Fast2SMS, Twilio).
     Uses standard library urllib (no additional heavy runtime dependencies required).
     """
 
@@ -34,30 +34,27 @@ class SmsProviderAdapter(BaseSMSAdapter):
         template_id: Optional[str] = None,
         gateway_url: Optional[str] = None,
     ):
-        self.api_key = api_key or settings.SMS_API_KEY
+        self.api_key = api_key or settings.MSG91_AUTH_KEY or settings.SMS_API_KEY
         self.api_secret = api_secret or settings.SMS_API_SECRET
-        self.sender_id = sender_id or settings.SMS_SENDER_ID or "RURLCR"
-        self.template_id = template_id or settings.SMS_TEMPLATE_ID
+        self.sender_id = sender_id or settings.MSG91_SENDER_ID or settings.SMS_SENDER_ID or "RURLCR"
+        self.template_id = template_id or settings.MSG91_TEMPLATE_ID or settings.SMS_TEMPLATE_ID
         self.gateway_url = gateway_url
 
-    def send_otp(self, mobile: str, otp: str) -> SMSDeliveryResult:
+    def send_sms(self, mobile: str, message: str) -> SMSDeliveryResult:
         """
-        Dispatch real SMS OTP to mobile device via external SMS gateway.
+        Dispatch real SMS text to mobile device via external SMS gateway.
 
         Ensures:
-          - No sensitive API credentials or raw OTPs appear in log files.
+          - No sensitive API credentials or raw text appear in insecure log files.
           - Proper network failure containment and safe error representation.
         """
         if not self.api_key:
             masked_mobile = f"{mobile[:2]}XXXX{mobile[-4:]}" if len(mobile) >= 6 else "XXXXXX"
-            logger.warning("[SMS Provider] SMS_API_KEY is not configured; cannot deliver SMS to %s", masked_mobile)
+            logger.warning("[SMS Provider] SMS_API_KEY / MSG91_AUTH_KEY is not configured; cannot deliver SMS to %s", masked_mobile)
             return SMSDeliveryResult(
                 success=False,
                 error="SMS provider API key is not configured",
             )
-
-        # Standard Indian SMS message template compliant with DLT registration
-        message_text = f"Your Rural Care Navigator verification code is {otp}. Valid for {settings.OTP_EXPIRY_MINUTES} minutes. Please do not share this OTP."
 
         try:
             # When a real HTTP gateway URL is configured:
@@ -66,13 +63,14 @@ class SmsProviderAdapter(BaseSMSAdapter):
                     "sender": self.sender_id,
                     "template_id": self.template_id,
                     "recipients": [mobile],
-                    "message": message_text,
+                    "message": message,
                 }).encode("utf-8")
 
                 req = urllib.request.Request(
                     self.gateway_url,
                     data=payload,
                     headers={
+                        "authkey": self.api_key,
                         "Authorization": f"Bearer {self.api_key}",
                         "Content-Type": "application/json",
                         "User-Agent": "RuralCareNavigator/1.0",
@@ -90,9 +88,12 @@ class SmsProviderAdapter(BaseSMSAdapter):
             return SMSDeliveryResult(success=True, message_id="gw-dispatch-ok")
 
         except Exception as exc:
-            # Safely log diagnostic without leaking credentials or raw OTP
             logger.error("[SMS Provider] Network failure during SMS delivery: %s", type(exc).__name__)
             return SMSDeliveryResult(
                 success=False,
                 error="SMS gateway network communication failed",
             )
+
+    def send_otp(self, mobile: str, otp: str) -> SMSDeliveryResult:
+        message_text = f"Your Rural Care Navigator verification code is {otp}. Valid for {settings.OTP_EXPIRY_MINUTES} minutes. Please do not share this OTP."
+        return self.send_sms(mobile=mobile, message=message_text)

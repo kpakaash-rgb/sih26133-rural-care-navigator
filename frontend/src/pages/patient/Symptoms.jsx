@@ -3,6 +3,7 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { triageSymptoms } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 const COMMON_SYMPTOMS_LIST = [
   'Fever',
@@ -14,6 +15,7 @@ const COMMON_SYMPTOMS_LIST = [
 ]
 
 export default function Symptoms({ onNavigate }) {
+  const { t } = useTranslation()
   const [problemDescription, setProblemDescription] = useState('')
   const [selectedSymptoms, setSelectedSymptoms] = useState([])
 
@@ -34,7 +36,7 @@ export default function Symptoms({ onNavigate }) {
       selectedSymptoms.length === 0 &&
       problemDescription.trim().length === 0
     ) {
-      setErrorMessage('Please describe your problem or select at least one symptom.')
+      setErrorMessage(t('symptoms.selectAtLeastOne'))
       return
     }
 
@@ -76,7 +78,7 @@ export default function Symptoms({ onNavigate }) {
 
       {/* Brand Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={
           <SOSButton
@@ -93,11 +95,11 @@ export default function Symptoms({ onNavigate }) {
         {/* Screen Title & Subtitle */}
         <section className="symptoms-header-section">
           <h1 className="symptoms-main-title">
-            How are you feeling?
+            {t('symptoms.title')}
           </h1>
 
           <p className="symptoms-subtitle">
-            Tell us what is wrong.
+            {t('symptoms.subtitle')}
           </p>
         </section>
 
@@ -107,7 +109,7 @@ export default function Symptoms({ onNavigate }) {
             htmlFor="problemInput"
             className="symptoms-section-label"
           >
-            Describe your problem
+            {t('symptoms.describeProblem')}
           </label>
 
           <textarea
@@ -116,7 +118,7 @@ export default function Symptoms({ onNavigate }) {
             rows={4}
             value={problemDescription}
             onChange={(e) => setProblemDescription(e.target.value)}
-            placeholder="Describe your symptoms in detail..."
+            placeholder={t('symptoms.describePlaceholder')}
             disabled={isLoading}
           />
         </section>
@@ -124,12 +126,13 @@ export default function Symptoms({ onNavigate }) {
         {/* Common Symptoms Selection */}
         <section className="symptoms-form-group">
           <h2 className="symptoms-section-label">
-            Common Symptoms
+            {t('symptoms.selectSymptoms')}
           </h2>
 
           <div className="symptoms-chips-container">
             {COMMON_SYMPTOMS_LIST.map((symptom) => {
               const isSelected = selectedSymptoms.includes(symptom)
+              const localizedLabel = t(`symptoms.symptomItems.${symptom}`) || symptom
 
               return (
                 <button
@@ -143,7 +146,7 @@ export default function Symptoms({ onNavigate }) {
                   disabled={isLoading}
                 >
                   <span className="chip-btn-text">
-                    {symptom}
+                    {localizedLabel}
                   </span>
                 </button>
               )
@@ -173,20 +176,19 @@ export default function Symptoms({ onNavigate }) {
             </span>
 
             <h2 className="emergency-box-title">
-              ARE YOU HAVING A SERIOUS EMERGENCY?
+              {t('symptoms.emergencyHeading')}
             </h2>
           </div>
 
           <p className="emergency-box-message">
-            If you are experiencing a life-threatening emergency,
-            get emergency medical help immediately.
+            {t('symptoms.emergencyNotice')}
           </p>
 
           <button
             type="button"
             className="emergency-call-action-btn"
             onClick={handleEmergencyCall}
-            aria-label="Call Emergency Help 108"
+            aria-label={t('common.call108')}
           >
             <span
               className="emergency-phone-glyph"
@@ -196,7 +198,7 @@ export default function Symptoms({ onNavigate }) {
             </span>
 
             <span>
-              Call Emergency Help
+              {t('common.call108')}
             </span>
           </button>
         </article>
@@ -219,8 +221,7 @@ export default function Symptoms({ onNavigate }) {
           </div>
 
           <p className="disclaimer-text">
-            AI guidance is for triage support only and does{' '}
-            <strong>NOT</strong> replace a doctor.
+            {t('symptoms.disclaimer')}
           </p>
 
         </div>
@@ -237,7 +238,7 @@ export default function Symptoms({ onNavigate }) {
           disabled={isLoading}
         >
           <span>
-            {isLoading ? 'Checking...' : 'Continue'}
+            {isLoading ? t('symptoms.checking') : t('symptoms.continueBtn')}
           </span>
 
           {!isLoading && (
@@ -254,4 +255,4 @@ export default function Symptoms({ onNavigate }) {
 
     </div>
   )
-}
+}

@@ -40,6 +40,26 @@ class FollowUpRepository(BaseRepository[FollowUp]):
             select(FollowUp)
             .where(FollowUp.patient_id == patient_id)
             .options(
+                selectinload(FollowUp.patient),
+                selectinload(FollowUp.appointment),
+                selectinload(FollowUp.referral),
+            )
+            .order_by(FollowUp.follow_up_date.desc(), FollowUp.created_at.desc())
+        )
+        return list(self.db.scalars(stmt).all())
+
+    def get_follow_ups_by_facility(self, facility_id: int) -> List[FollowUp]:
+        """Fetch all follow-ups for patients assigned to or linked to a facility."""
+        stmt = (
+            select(FollowUp)
+            .where(
+                (FollowUp.patient.has(facility_id=facility_id))
+                | (FollowUp.appointment.has(facility_id=facility_id))
+                | (FollowUp.referral.has(from_facility_id=facility_id))
+                | (FollowUp.referral.has(to_facility_id=facility_id))
+            )
+            .options(
+                selectinload(FollowUp.patient),
                 selectinload(FollowUp.appointment),
                 selectinload(FollowUp.referral),
             )

@@ -53,6 +53,42 @@ class SMSService:
                 logger.info("[SMS Service] SMS successfully dispatched to %s (msg_id: %s)", masked_mobile, result.message_id)
             return result
         except Exception as exc:
+            logger.error("[SMS Service] Unexpected exception during SMS OTP dispatch: %s", type(exc).__name__)
+            return SMSDeliveryResult(
+                success=False,
+                error="Internal SMS dispatch error",
+            )
+
+    def send_sms(self, mobile: str, message: str) -> SMSDeliveryResult:
+        """
+        Send a general SMS text message to an Indian mobile number.
+
+        - If OTP_DEMO_MODE=True or settings.SMS_PROVIDER == "console": simulated success (demo mode).
+        - If SMS_ENABLED=False: simulated success.
+        - If SMS_ENABLED=True: dispatches through SMS adapter.
+        """
+        masked_mobile = f"{mobile[:2]}XXXX{mobile[-4:]}" if len(mobile) >= 6 else "XXXXXX"
+
+        if settings.OTP_DEMO_MODE or settings.SMS_PROVIDER == "console":
+            logger.info("[SMS Service] Demo / Console mode active; recording simulated SMS dispatch for %s", masked_mobile)
+            # Also dispatch to console adapter if active so it tracks in sent_messages
+            try:
+                return self.adapter.send_sms(mobile=mobile, message=message)
+            except Exception:
+                return SMSDeliveryResult(success=True, message_id="demo-sms-preview")
+
+        if not settings.SMS_ENABLED:
+            logger.info("[SMS Service] SMS disabled; simulated delivery for %s", masked_mobile)
+            return SMSDeliveryResult(success=True, message_id="sms-disabled-bypass")
+
+        try:
+            result = self.adapter.send_sms(mobile=mobile, message=message)
+            if not result.success:
+                logger.warning("[SMS Service] SMS delivery failed for %s: %s", masked_mobile, result.error)
+            else:
+                logger.info("[SMS Service] SMS successfully dispatched to %s (msg_id: %s)", masked_mobile, result.message_id)
+            return result
+        except Exception as exc:
             logger.error("[SMS Service] Unexpected exception during SMS dispatch: %s", type(exc).__name__)
             return SMSDeliveryResult(
                 success=False,

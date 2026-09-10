@@ -1,29 +1,31 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
-import { getFacilityDetails, getFacilityServices, getFacilityQueue } from '../../services/api'
+import { getFacilityDetails, getFacilityServices, getFacilityQueue, sendCareSummarySMS } from '../../services/api'
 import { formatQueueLastUpdated } from '../../utils'
+import { useTranslation } from '../../i18n'
 
-function formatFacilityType(type) {
+function formatFacilityType(type, t) {
   switch (type) {
     case 'PRIMARY_HEALTH_CENTRE':
-      return 'Primary Health Centre'
+      return t ? t('facilityDetails.phc') : 'Primary Health Centre'
     case 'COMMUNITY_HEALTH_CENTRE':
-      return 'Community Health Centre'
+      return t ? t('facilityDetails.chc') : 'Community Health Centre'
     case 'DISTRICT_HOSPITAL':
-      return 'District Hospital'
+      return t ? t('facilityDetails.dh') : 'District Hospital'
     case 'SUB_CENTRE':
-      return 'Sub-Centre'
+      return t ? t('facilityDetails.subCentre') : 'Sub-Centre'
     case 'MOBILE_CLINIC':
-      return 'Mobile Medical Unit'
+      return t ? t('facilityDetails.mmu') : 'Mobile Medical Unit'
     default:
-      return type || 'Healthcare Facility'
+      return type || (t ? t('booking.facility') : 'Healthcare Facility')
   }
 }
 
 export default function FacilityDetails({ onNavigate, facility: passedFacility, facilityId }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
   const [facility, setFacility] = useState(() => ({
     id: facilityId || passedFacility?.id || 1,
@@ -38,6 +40,47 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
     { id: 3, name: 'Medicines', available: true },
   ])
   const [queue, setQueue] = useState(null)
+  const [isRefreshingQueue, setIsRefreshingQueue] = useState(false)
+  const [isSendingSms, setIsSendingSms] = useState(false)
+  const [smsStatus, setSmsStatus] = useState(null)
+
+  const handleSendSms = async () => {
+    if (isSendingSms) return
+    setIsSendingSms(true)
+    try {
+      const response = await sendCareSummarySMS({
+        facility_id: facility.id,
+      })
+      setSmsStatus({
+        success: response?.success !== false,
+        message: response?.message || 'Facility details sent to your registered mobile number.',
+        preview: response?.sms_preview,
+        demoMode: response?.demo_mode,
+      })
+    } catch (err) {
+      setSmsStatus({
+        success: false,
+        message: err.message || 'Unable to send SMS right now. Facility details are still available here.',
+      })
+    } finally {
+      setIsSendingSms(false)
+    }
+  }
+
+  const refreshQueue = useCallback(async (isManual = false) => {
+    if (isManual) setIsRefreshingQueue(true)
+    const targetId = facilityId || passedFacility?.id || 1
+    try {
+      const queueData = await getFacilityQueue(targetId)
+      if (queueData) {
+        setQueue(queueData)
+      }
+    } catch {
+      // Retain existing queue data on error
+    } finally {
+      if (isManual) setIsRefreshingQueue(false)
+    }
+  }, [facilityId, passedFacility])
 
   useEffect(() => {
     let isMounted = true
@@ -53,7 +96,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
           setFacility({
             id: details.id,
             name: details.name,
-            category: formatFacilityType(details.type),
+            category: formatFacilityType(details.type, t),
             address: details.address,
             raw: details,
           })
@@ -67,10 +110,26 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
       }
     })
 
+    // 30-second live refresh polling for patient queue freshness
+    const intervalId = setInterval(() => {
+      if (document.visibilityState === 'visible' && isMounted) {
+        refreshQueue(false)
+      }
+    }, 30000)
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isMounted) {
+        refreshQueue(false)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
     return () => {
       isMounted = false
+      clearInterval(intervalId)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [facilityId, passedFacility])
+  }, [facilityId, passedFacility, refreshQueue, t])
 
   const handleEmergencyCall = () => {
     window.location.href = 'tel:108'
@@ -122,7 +181,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
     <div className="facility-details-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleEmergencyCall} />}
       />
@@ -138,7 +197,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
             aria-label="Go back to facility list"
           >
             <span className="back-arrow-glyph" aria-hidden="true">←</span>
-            <span className="back-title-label">Facility Details</span>
+            <span className="back-title-label">{t('facilityDetails.title')}</span>
           </button>
         </div>
 
@@ -163,7 +222,46 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
 
         {/* Live Facility Queue Status Section */}
         <section className="facility-services-section" style={{ marginTop: '16px' }}>
-          <h2 className="facility-section-heading">LIVE FACILITY QUEUE</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+            <h2 className="facility-section-heading" style={{ margin: 0 }}>{t('facilityDetails.liveQueueStatus')}</h2>
+            <button
+              type="button"
+              onClick={() => refreshQueue(true)}
+              disabled={isRefreshingQueue}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                background: '#ffffff',
+                border: '1px solid #cbd5e1',
+                borderRadius: '6px',
+                padding: '3px 8px',
+                fontSize: '11.5px',
+                fontWeight: 600,
+                color: '#0284c7',
+                cursor: isRefreshingQueue ? 'not-allowed' : 'pointer',
+              }}
+              aria-label="Refresh queue data"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  animation: isRefreshingQueue ? 'spin 1s linear infinite' : 'none',
+                }}
+                aria-hidden="true"
+              >
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+              </svg>
+              <span>{isRefreshingQueue ? t('common.loading') : t('common.retry')}</span>
+            </button>
+          </div>
 
           <div
             style={{
@@ -178,7 +276,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748b' }}>Queue Status:</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748b' }}>{t('common.status')}:</span>
                     <span
                       style={{
                         padding: '3px 10px',
@@ -195,10 +293,10 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
-                      {queue.waiting_patients} patients waiting
+                      {queue.waiting_patients} {t('common.patientsWaiting')}
                     </span>
                     <span style={{ fontSize: '13px', color: '#0284c7', fontWeight: 600 }}>
-                      ~{queue.estimated_wait_minutes} min wait
+                      ~{queue.estimated_wait_minutes} {t('common.minutes')} {t('common.waiting')}
                     </span>
                   </div>
                 </div>
@@ -217,7 +315,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               </div>
             ) : (
               <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>
-                Queue information unavailable
+                {t('common.noData')}
               </p>
             )}
           </div>
@@ -225,7 +323,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
 
         {/* Available Services Section */}
         <section className="facility-services-section">
-          <h2 className="facility-section-heading">AVAILABLE SERVICES</h2>
+          <h2 className="facility-section-heading">{t('facilityDetails.servicesOffered')}</h2>
 
           <div className="compact-services-card">
             {services.map((srv, idx) => (
@@ -257,6 +355,68 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
           </div>
         </section>
 
+        {/* SMS Status & Demo Preview Section */}
+        {smsStatus && (
+          <section
+            style={{
+              margin: '16px 0',
+              padding: '12px 14px',
+              borderRadius: '10px',
+              backgroundColor: smsStatus.success ? '#f0fdf4' : '#fffbeb',
+              border: smsStatus.success ? '1px solid #bbf7d0' : '1px solid #fde68a',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span aria-hidden="true">{smsStatus.success ? '📱' : '⚠️'}</span>
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: smsStatus.success ? '#166534' : '#92400e',
+                }}
+              >
+                {smsStatus.message}
+              </span>
+            </div>
+
+            {smsStatus.preview && smsStatus.demoMode && (
+              <div
+                style={{
+                  marginTop: '10px',
+                  padding: '10px 12px',
+                  backgroundColor: '#ffffff',
+                  border: '1px dashed #cbd5e1',
+                  borderRadius: '6px',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    color: '#64748b',
+                    textTransform: 'uppercase',
+                    marginBottom: '4px',
+                  }}
+                >
+                  {t('common.demoSmsNotice')}
+                </div>
+                <pre
+                  style={{
+                    margin: 0,
+                    whiteSpace: 'pre-wrap',
+                    fontFamily: 'monospace',
+                    fontSize: '11.5px',
+                    color: '#334155',
+                    lineHeight: '1.4',
+                  }}
+                >
+                  {smsStatus.preview}
+                </pre>
+              </div>
+            )}
+          </section>
+        )}
+
         {/* Action Buttons Section */}
         <section className="facility-actions-group">
           {/* Primary Action: Book Appointment */}
@@ -282,7 +442,40 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            <span>Book Appointment</span>
+            <span>{t('facilityDetails.bookSlot')}</span>
+          </button>
+
+          {/* SMS Action: Send details via SMS */}
+          <button
+            type="button"
+            className="facility-secondary-action-btn"
+            onClick={handleSendSms}
+            disabled={isSendingSms}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              backgroundColor: '#f8fafc',
+              border: '1px solid #cbd5e1',
+              color: '#0369a1',
+              fontWeight: 600,
+            }}
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>{isSendingSms ? t('common.loading') : t('facilityDetails.sendSms')}</span>
           </button>
 
           {/* Secondary Action: Check Available Times */}
@@ -309,7 +502,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               <line x1="3" y1="10" x2="21" y2="10" />
               <path d="m9 16 2 2 4-4" />
             </svg>
-            <span>Check Available Times</span>
+            <span>{t('availability.availableSlots')}</span>
           </button>
 
           {/* Dual Secondary Actions: Get Directions & Call */}
@@ -333,7 +526,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               >
                 <polygon points="3 11 22 2 13 21 11 13 3 11" />
               </svg>
-              <span>Get Directions</span>
+              <span>{t('facilityDetails.directions')}</span>
             </button>
 
             <button
@@ -355,7 +548,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               >
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
               </svg>
-              <span>Call</span>
+              <span>{t('facilityDetails.phone')}</span>
             </button>
           </div>
         </section>
@@ -368,7 +561,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
             </svg>
           </span>
           <p className="notice-info-text">
-            <strong>Prototype Data Notice:</strong> Information may not reflect real-time status.
+            <strong>{t('common.disclaimer')}</strong>
           </p>
         </div>
       </main>

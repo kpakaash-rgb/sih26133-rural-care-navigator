@@ -1,8 +1,12 @@
+import { useTranslation } from '../i18n'
+
 export default function BottomNav({ activeScreen = 'home', onNavigate }) {
+  const { t } = useTranslation()
+
   const navItems = [
     {
       id: 'home',
-      label: 'Home',
+      label: t('nav.home'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -12,7 +16,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'services',
-      label: 'Services',
+      label: t('nav.services'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="4" />
@@ -23,7 +27,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'journey',
-      label: 'Journey',
+      label: t('nav.journey'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="6" cy="19" r="2.5" />
@@ -34,7 +38,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'profile',
-      label: 'Profile',
+      label: t('nav.profile'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -64,4 +68,5 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     </nav>
   )
 }
+
 

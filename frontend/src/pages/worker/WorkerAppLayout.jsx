@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Home, Users, CheckSquare, User, Bell } from 'lucide-react'
-import { getStaffSession, clearStaffSession } from '../../services/api'
+import { getStaffSession, clearWorkerSession } from '../../services/api'
 
 /**
  * Persistent layout shell for all authenticated Worker screens.
@@ -19,10 +19,10 @@ export default function WorkerAppLayout() {
     if (!current || !current.token || current.role !== 'WORKER') {
       navigate('/staff/login', { replace: true })
     }
-  }, [navigate])
+  }, [navigate, location.pathname])
 
   const handleLogout = () => {
-    clearStaffSession()
+    clearWorkerSession()
     navigate('/staff/login', { replace: true })
   }
 

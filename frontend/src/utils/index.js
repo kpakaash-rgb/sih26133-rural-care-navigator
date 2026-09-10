@@ -1,4 +1,5 @@
 export * from './constants'
+export * from './location'
 
 export const formatDistance = (km) => {
   if (km === undefined || km === null) return ''

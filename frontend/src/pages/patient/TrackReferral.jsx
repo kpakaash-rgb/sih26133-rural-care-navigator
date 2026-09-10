@@ -4,8 +4,10 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getPatientReferrals, cancelReferral } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 export default function TrackReferral({ onNavigate, referral: propReferral }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('journey')
   const [referrals, setReferrals] = useState(propReferral ? [propReferral] : [])
   const [selectedReferral, setSelectedReferral] = useState(propReferral || null)
@@ -164,7 +166,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
     <div className="track-referral-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -173,11 +175,11 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
       <main className="track-referral-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="track-referral-header-section">
-          <h1 className="track-referral-main-title">Track Your Referral</h1>
+          <h1 className="track-referral-main-title">{t('referral.trackTitle')}</h1>
           <p className="track-referral-subtitle">
             {isCancelled
               ? 'This referral has been cancelled.'
-              : 'Monitor the status of your specialized care transfer.'}
+              : t('referral.notes')}
           </p>
         </section>
 
@@ -217,7 +219,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
         {/* Loading State */}
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '24px 16px', color: '#64748b' }}>
-            <p>Loading referral details...</p>
+            <p>{t('common.loading')}</p>
           </div>
         )}
 
@@ -234,17 +236,17 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
             }}
           >
             <p style={{ fontWeight: 600, fontSize: '15px', color: '#0f172a', marginBottom: '6px' }}>
-              No Referrals to Track
+              {t('common.noData')}
             </p>
             <p style={{ fontSize: '13px', lineHeight: 1.4, margin: '0 0 16px' }}>
-              You do not have any pending or active referrals at this time.
+              {t('home.trackReferralDesc')}
             </p>
             <button
               type="button"
               className="track-book-btn"
               onClick={() => onNavigate && onNavigate(SCREENS.HEALTHCARE)}
             >
-              Explore Healthcare Facilities
+              {t('home.findCare')}
             </button>
           </div>
         )}
@@ -290,7 +292,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
                     </svg>
                   </span>
                   <div className="track-node-info">
-                    <span className="track-node-label">From</span>
+                    <span className="track-node-label">{t('referral.fromFacility')}</span>
                     <h2 className="track-facility-title">{fromFacilityName}</h2>
                   </div>
                 </div>
@@ -308,7 +310,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
                     </svg>
                   </span>
                   <div className="track-node-info">
-                    <span className="track-node-label">To</span>
+                    <span className="track-node-label">{t('referral.toFacility')}</span>
                     <h2 className="track-facility-title">{toFacilityName}</h2>
                   </div>
                 </div>
@@ -318,7 +320,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
 
               {/* Type Badge Section */}
               <div className="track-type-section">
-                <span className="track-type-label">Reason & Priority</span>
+                <span className="track-type-label">{t('referral.priority')}</span>
                 <div className="track-type-pill">
                   <span className="track-type-stethoscope-icon" aria-hidden="true">
                     <svg
@@ -343,7 +345,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
 
             {/* Referral Status Timeline Section */}
             <section className="track-timeline-section">
-              <h2 className="track-timeline-heading">Timeline</h2>
+              <h2 className="track-timeline-heading">{t('healthJourney.timeline')}</h2>
 
               <div className="track-timeline-container">
                 {referralSteps.map((step, index) => {
@@ -404,7 +406,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
                     <line x1="16" y1="6" x2="16" y2="22" />
                   </svg>
                 </span>
-                <span>View Facility</span>
+                <span>{t('healthcare.viewDetails')}</span>
               </button>
 
               {/* Primary Action: Book Appointment */}
@@ -423,7 +425,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
                       <polyline points="9 16 11 18 15 14" />
                     </svg>
                   </span>
-                  <span>Book Appointment</span>
+                  <span>{t('booking.confirmBooking')}</span>
                 </button>
               )}
 
@@ -446,7 +448,7 @@ export default function TrackReferral({ onNavigate, referral: propReferral }) {
                     transition: 'all 0.15s ease',
                   }}
                 >
-                  {isCancelling ? 'Cancelling...' : 'Cancel Referral Request'}
+                  {isCancelling ? t('common.loading') : t('common.cancel')}
                 </button>
               )}
             </section>

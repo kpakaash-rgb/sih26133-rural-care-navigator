@@ -2,8 +2,10 @@ import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { useLanguage } from '../../i18n'
 
 export default function Registration({ onNavigate }) {
+  const { t } = useLanguage()
   const [mobileNumber, setMobileNumber] = useState('')
   const [district, setDistrict] = useState('')
   const [abhaNumber, setAbhaNumber] = useState('')
@@ -17,16 +19,16 @@ export default function Registration({ onNavigate }) {
   return (
     <div className="registration-screen-wrapper">
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" />}
       />
 
       <div className="registration-content-container">
         <div className="registration-header-text">
-          <h1 className="registration-title">Patient Registration</h1>
+          <h1 className="registration-title">{t('auth.regTitle')}</h1>
           <p className="registration-subtitle">
-            Please provide your details below to create your health profile and access services.
+            {t('auth.regSubtitle')}
           </p>
         </div>
 
@@ -39,13 +41,13 @@ export default function Registration({ onNavigate }) {
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
               </span>
-              <span>Mobile Number</span>
+              <span>{t('auth.enterMobile')}</span>
             </label>
             <input
               id="regMobile"
               type="tel"
               className="reg-text-input"
-              placeholder="10-digit mobile number"
+              placeholder={t('auth.enterMobilePlaceholder')}
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               maxLength={10}
@@ -61,13 +63,13 @@ export default function Registration({ onNavigate }) {
                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                 </svg>
               </span>
-              <span>District</span>
+              <span>{t('auth.district')}</span>
             </label>
             <input
               id="regDistrict"
               type="text"
               className="reg-text-input"
-              placeholder="Enter district name"
+              placeholder={t('auth.districtPlaceholder')}
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
             />
@@ -86,13 +88,13 @@ export default function Registration({ onNavigate }) {
                   <line x1="13" y1="12" x2="18" y2="12" />
                 </svg>
               </span>
-              <span className="abha-title">ABHA Number (Optional)</span>
+              <span className="abha-title">{t('auth.abhaOptional')}</span>
             </div>
-            <p className="abha-subtext">Optional, but recommended for unified records.</p>
+            <p className="abha-subtext">{t('auth.abhaSubtext')}</p>
             <input
               type="text"
               className="reg-text-input abha-input"
-              placeholder="14-digit ABHA ID"
+              placeholder={t('auth.abhaPlaceholder')}
               value={abhaNumber}
               onChange={(e) => setAbhaNumber(e.target.value)}
               maxLength={17}
@@ -109,13 +111,13 @@ export default function Registration({ onNavigate }) {
               onChange={(e) => setHasConsented(e.target.checked)}
             />
             <label htmlFor="consentBox" className="consent-label">
-              I consent to the collection and processing of my healthcare data for medical purposes.
+              {t('auth.consentText')}
             </label>
           </div>
 
           {/* Complete Registration Button */}
           <button type="submit" className="registration-submit-btn">
-            <span>Complete Registration</span>
+            <span>{t('auth.completeReg')}</span>
             <span className="btn-arrow-glyph" aria-hidden="true">→</span>
           </button>
         </form>

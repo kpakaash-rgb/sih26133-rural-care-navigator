@@ -4,6 +4,7 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getFacilityAvailability, getFacilityServices } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 function formatTime(timeStr) {
   if (!timeStr) return ''
@@ -17,8 +18,8 @@ function formatTime(timeStr) {
   return `${hour}:${minute} ${ampm}`
 }
 
-function formatDateDisplay(dateStr, index) {
-  if (!dateStr) return { id: 'default', title: 'Today', date: 'Available', fullDate: 'Available Date' }
+function formatDateDisplay(dateStr, index, t) {
+  if (!dateStr) return { id: 'default', title: t ? t('common.today') : 'Today', date: 'Available', fullDate: 'Available Date' }
   try {
     const d = new Date(dateStr + 'T00:00:00')
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -28,7 +29,7 @@ function formatDateDisplay(dateStr, index) {
     const dayNum = d.getDate()
     return {
       id: dateStr,
-      title: index === 0 ? 'Earliest' : weekday,
+      title: index === 0 ? (t ? t('availability.selectDate') : 'Earliest') : weekday,
       date: `${month} ${dayNum}`,
       fullDate: `${weekday}, ${month} ${dayNum}`,
     }
@@ -38,6 +39,7 @@ function formatDateDisplay(dateStr, index) {
 }
 
 export default function Availability({ onNavigate, bookingData, onUpdateBooking }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
 
   const facilityId = bookingData?.facilityId || 1
@@ -115,7 +117,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
             // Extract unique dates
             const uniqueDates = Array.from(new Set(data.map((s) => s.date))).sort()
-            const dateOpts = uniqueDates.map((dStr, idx) => formatDateDisplay(dStr, idx))
+            const dateOpts = uniqueDates.map((dStr, idx) => formatDateDisplay(dStr, idx, t))
             setDateOptions(dateOpts)
 
             const initialDate = uniqueDates[0]
@@ -153,7 +155,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
     return () => {
       isMounted = false
     }
-  }, [facilityId, selectedService])
+  }, [facilityId, selectedService, t])
 
   // When selectedDate changes, ensure selectedSlotId belongs to the selected date
   const filteredSlots = slots.filter((s) => s.date === selectedDate)
@@ -220,7 +222,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
     <div className="availability-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -229,7 +231,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
       <main className="availability-scrollable-content">
         {/* Page Title */}
         <section className="availability-title-section">
-          <h1 className="availability-main-title">When can you visit?</h1>
+          <h1 className="availability-main-title">{t('availability.title')}</h1>
         </section>
 
         {/* Facility and Service Info Card */}
@@ -317,7 +319,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
         {/* 1. Appointment Type Section */}
         <section className="availability-section-group">
-          <h2 className="availability-section-label">Appointment Type</h2>
+          <h2 className="availability-section-label">{t('booking.service')}</h2>
           <div className="appointment-type-toggle-row">
             {/* In-person button */}
             <button
@@ -355,17 +357,17 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '36px 16px', color: '#64748b' }}>
-            <p>Checking live consultation slots...</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : dateOptions.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '36px 16px', color: '#64748b' }}>
-            <p>No available appointment slots found for this facility.</p>
+            <p>{t('availability.noSlots')}</p>
           </div>
         ) : (
           <>
             {/* 2. Select Date Section */}
             <section className="availability-section-group">
-              <h2 className="availability-section-label">Select Date</h2>
+              <h2 className="availability-section-label">{t('availability.selectDate')}</h2>
               <div className="date-selection-cards-row">
                 {dateOptions.map((opt) => {
                   const isSelected = selectedDate === opt.id
@@ -387,10 +389,10 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
             {/* 3. Available Times Section */}
             <section className="availability-section-group">
-              <h2 className="availability-section-label">Available Times</h2>
+              <h2 className="availability-section-label">{t('availability.availableSlots')}</h2>
               {filteredSlots.length === 0 ? (
                 <p style={{ fontSize: '13px', color: '#64748b', padding: '8px 4px' }}>
-                  No slots available on this date.
+                  {t('availability.noSlots')}
                 </p>
               ) : (
                 <div className="available-times-grid">
@@ -415,7 +417,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
                           )}
                         </div>
                         <span className="time-slot-status-label">
-                          {isSelected ? 'Selected' : 'Available'}
+                          {isSelected ? t('common.confirm') : 'Available'}
                         </span>
                       </button>
                     )
@@ -435,7 +437,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
             onClick={handleContinueBooking}
             style={{ opacity: isLoading || !selectedSlotId ? 0.6 : 1 }}
           >
-            Review Booking
+            {t('availability.proceedToBook')}
           </button>
         </div>
       </main>

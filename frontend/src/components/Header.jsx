@@ -1,10 +1,17 @@
+import LanguageSelector from './LanguageSelector'
+import { useTranslation } from '../i18n'
+
 export default function Header({
-  title = 'Rural Care Navigator',
+  title,
   showLogo = true,
   showBack = false,
   onBack,
   rightAction,
+  showLanguageSelector = true,
 }) {
+  const { t } = useTranslation()
+  const displayTitle = title || t('common.appName')
+
   return (
     <header className="app-header">
       <div className="header-left">
@@ -13,7 +20,7 @@ export default function Header({
             type="button"
             className="header-back-btn"
             onClick={onBack}
-            aria-label="Go back"
+            aria-label={t('common.back')}
           >
             ←
           </button>
@@ -40,10 +47,14 @@ export default function Header({
               <path d="M9 13.5H15" stroke="white" strokeWidth="1.75" strokeLinecap="round" />
             </svg>
           )}
-          <span className="header-brand-title">{title}</span>
+          <span className="header-brand-title">{displayTitle}</span>
         </div>
       </div>
-      {rightAction && <div className="header-right">{rightAction}</div>}
+      <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {showLanguageSelector && <LanguageSelector />}
+        {rightAction}
+      </div>
     </header>
   )
 }
+

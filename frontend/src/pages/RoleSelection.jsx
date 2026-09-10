@@ -2,10 +2,13 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { HeartPulse, Stethoscope, ArrowRight, ShieldCheck, Activity } from 'lucide-react'
 import { getStaffSession } from '../services/api'
+import { useLanguage } from '../i18n'
+import LanguageSelector from '../components/LanguageSelector'
 import './RoleSelection.css'
 
 export default function RoleSelection() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
   // If a valid session already exists, route directly to the respective portal
   useEffect(() => {
@@ -31,20 +34,25 @@ export default function RoleSelection() {
     <div className="role-selection-wrapper">
       <div className="role-selection-container">
         
+        {/* Language selector bar */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+          <LanguageSelector />
+        </div>
+
         {/* Brand & Platform Header */}
         <header className="role-brand-header">
           <div className="role-badge-pill">
             <ShieldCheck size={14} />
-            <span>National Rural Health Network</span>
+            <span>{t('roleSelection.network')}</span>
           </div>
 
           <div className="role-brand-logo-wrap">
             <Activity size={30} strokeWidth={2.4} />
           </div>
 
-          <h1 className="role-brand-title">Rural Care Navigator</h1>
+          <h1 className="role-brand-title">{t('common.appName')}</h1>
           <p className="role-brand-subtitle">
-            One unified healthcare platform connecting rural patients, doctors, and frontline workers.
+            {t('roleSelection.platformSubtitle')}
           </p>
         </header>
 
@@ -63,11 +71,11 @@ export default function RoleSelection() {
             </div>
             <div className="role-card-content">
               <div className="role-card-title-row">
-                <h2 className="role-card-title">Patient</h2>
-                <span className="role-tag role-tag-live">Public Access</span>
+                <h2 className="role-card-title">{t('roleSelection.patient')}</h2>
+                <span className="role-tag role-tag-live">{t('roleSelection.publicAccess')}</span>
               </div>
               <p className="role-card-desc">
-                For patients seeking healthcare
+                {t('roleSelection.patientDesc')}
               </p>
             </div>
             <ArrowRight className="role-arrow-icon" size={20} />
@@ -85,11 +93,11 @@ export default function RoleSelection() {
             </div>
             <div className="role-card-content">
               <div className="role-card-title-row">
-                <h2 className="role-card-title">Healthcare Staff</h2>
-                <span className="role-tag role-tag-verified">Authorized Staff</span>
+                <h2 className="role-card-title">{t('roleSelection.staff')}</h2>
+                <span className="role-tag role-tag-verified">{t('roleSelection.authorizedStaff')}</span>
               </div>
               <p className="role-card-desc">
-                For doctors and frontline healthcare workers
+                {t('roleSelection.staffDesc')}
               </p>
             </div>
             <ArrowRight className="role-arrow-icon" size={20} />
@@ -100,9 +108,9 @@ export default function RoleSelection() {
         {/* Platform Footer */}
         <footer className="role-footer">
           <div className="role-footer-indicators">
-            <span><span className="role-dot"></span>FastAPI Connected</span>
-            <span><span className="role-dot"></span>Role Security Active</span>
-            <span><span className="role-dot"></span>Offline PWA</span>
+            <span><span className="role-dot"></span>{t('roleSelection.connected')}</span>
+            <span><span className="role-dot"></span>{t('roleSelection.securityActive')}</span>
+            <span><span className="role-dot"></span>{t('roleSelection.offlinePwa')}</span>
           </div>
           <p className="role-footer-copy">
             Smart India Hackathon • SIH 26133

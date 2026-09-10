@@ -4,6 +4,7 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getPatientFollowUps, completeFollowUp, cancelFollowUp } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 function formatFollowUpDate(dateStr) {
   if (!dateStr) return 'Scheduled Date'
@@ -22,6 +23,7 @@ function formatFollowUpDate(dateStr) {
 }
 
 export default function FollowUp({ onNavigate }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
   const [followUps, setFollowUps] = useState([])
   const [selectedFollowUp, setSelectedFollowUp] = useState(null)
@@ -155,7 +157,7 @@ export default function FollowUp({ onNavigate }) {
     <div className="follow-up-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -164,9 +166,9 @@ export default function FollowUp({ onNavigate }) {
       <main className="follow-up-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="follow-up-header-section">
-          <h1 className="follow-up-main-title">Care Follow-up</h1>
+          <h1 className="follow-up-main-title">{t('followUp.title')}</h1>
           <p className="follow-up-subtitle">
-            Track and complete scheduled health checkups with your care provider.
+            {t('followUp.subtitle')}
           </p>
         </section>
 
@@ -206,7 +208,7 @@ export default function FollowUp({ onNavigate }) {
         {/* Loading State */}
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '24px 16px', color: '#64748b' }}>
-            <p>Loading follow-up details...</p>
+            <p>{t('common.loading')}</p>
           </div>
         )}
 
@@ -223,17 +225,17 @@ export default function FollowUp({ onNavigate }) {
             }}
           >
             <p style={{ fontWeight: 600, fontSize: '15px', color: '#0f172a', marginBottom: '6px' }}>
-              No Scheduled Follow-ups
+              {t('followUp.noFollowUps')}
             </p>
             <p style={{ fontSize: '13px', lineHeight: 1.4, margin: '0 0 16px' }}>
-              You do not have any pending follow-up consultations. Check your appointments or explore healthcare options.
+              {t('followUp.subtitle')}
             </p>
             <button
               type="button"
               className="follow-up-primary-btn"
               onClick={() => onNavigate && onNavigate(SCREENS.APPOINTMENTS)}
             >
-              View My Appointments
+              {t('home.myAppointments')}
             </button>
           </div>
         )}
@@ -340,7 +342,7 @@ export default function FollowUp({ onNavigate }) {
                     disabled={isMutating}
                     style={{ backgroundColor: '#059669' }}
                   >
-                    {isMutating ? 'Updating...' : '✓ Mark Checkup as Completed'}
+                    {isMutating ? t('common.loading') : '✓ Mark Checkup as Completed'}
                   </button>
                 )}
 
@@ -349,7 +351,7 @@ export default function FollowUp({ onNavigate }) {
                   className="follow-up-primary-btn"
                   onClick={handleViewAppointment}
                 >
-                  View My Appointments
+                  {t('home.myAppointments')}
                 </button>
 
                 <button
@@ -362,7 +364,7 @@ export default function FollowUp({ onNavigate }) {
                       <polygon points="3 11 22 2 13 21 11 13 3 11" />
                     </svg>
                   </span>
-                  <span>Get Directions</span>
+                  <span>{t('facilityDetails.directions')}</span>
                 </button>
 
                 {isPending && (
@@ -384,7 +386,7 @@ export default function FollowUp({ onNavigate }) {
                       marginTop: '4px',
                     }}
                   >
-                    {isMutating ? 'Cancelling...' : 'Cancel Follow-up'}
+                    {isMutating ? t('common.loading') : t('common.cancel')}
                   </button>
                 )}
               </div>

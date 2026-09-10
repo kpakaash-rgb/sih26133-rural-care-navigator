@@ -4,8 +4,10 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getAppointments } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 export default function Home({ onNavigate, patient }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('home')
   const [appointmentsCount, setAppointmentsCount] = useState(0)
 
@@ -53,7 +55,7 @@ export default function Home({ onNavigate, patient }) {
     <div className="home-screen-wrapper">
       {/* Top Brand Header */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -62,21 +64,33 @@ export default function Home({ onNavigate, patient }) {
       <main className="home-scrollable-content">
         {/* Patient Greeting */}
         <section className="home-greeting-section">
-          <h1 className="home-greeting-name">Good morning, {displayName}</h1>
-          <p className="home-greeting-question">What do you need help with today?</p>
+          <h1 className="home-greeting-name">{t('home.goodMorning')}, {displayName}</h1>
+          <p className="home-greeting-question">{t('home.greetingQuestion')}</p>
         </section>
 
         {/* 1. Mobile Clinic Card */}
-        <article className="home-card mobile-clinic-card">
+        <article
+          className="home-card mobile-clinic-card"
+          role="button"
+          tabIndex={0}
+          onClick={() => onNavigate && onNavigate(SCREENS.MOBILE_CLINIC)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              if (onNavigate) onNavigate(SCREENS.MOBILE_CLINIC)
+            }
+          }}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="info-circle-icon" aria-hidden="true">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#0284c7">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
             </svg>
           </div>
           <div className="mobile-clinic-text">
-            <h2 className="mobile-clinic-title">Mobile Clinic</h2>
+            <h2 className="mobile-clinic-title">{t('home.mobileClinicTitle')}</h2>
             <p className="mobile-clinic-desc">
-              The mobile clinic will visit your area on Thursday, 14th.
+              {t('home.mobileClinicDesc')}
             </p>
           </div>
         </article>
@@ -85,9 +99,9 @@ export default function Home({ onNavigate, patient }) {
         <article className="home-card emergency-banner-card" onClick={handleSosClick} role="button" tabIndex={0}>
           <div className="emergency-card-title-row">
             <span className="emergency-asterisk" aria-hidden="true">✱</span>
-            <h2 className="emergency-card-title">Emergency / SOS</h2>
+            <h2 className="emergency-card-title">{t('home.emergencyTitle')}</h2>
           </div>
-          <p className="emergency-card-sub">Call Emergency Help</p>
+          <p className="emergency-card-sub">{t('common.call108')}</p>
         </article>
 
         {/* 3. Find the Right Place for Care Card */}
@@ -102,8 +116,8 @@ export default function Home({ onNavigate, patient }) {
               <line x1="14" y1="14" x2="16" y2="14" />
             </svg>
           </div>
-          <h2 className="care-finder-title">Find the Right Place for Care</h2>
-          <p className="care-finder-sub">Find a Doctor or a PHC</p>
+          <h2 className="care-finder-title">{t('home.findCare')}</h2>
+          <p className="care-finder-sub">{t('home.findCareDesc')}</p>
         </article>
 
         {/* 4. My Appointments Card */}
@@ -127,7 +141,7 @@ export default function Home({ onNavigate, patient }) {
               <rect x="15" y="14" width="2" height="2" fill="#004b87" />
             </svg>
           </div>
-          <h2 className="tile-title">My Appointments</h2>
+          <h2 className="tile-title">{t('home.myAppointments')}</h2>
         </article>
 
         {/* 5. My Health Journey Card */}
@@ -146,7 +160,7 @@ export default function Home({ onNavigate, patient }) {
               <polyline points="10 9 9 9 8 9" />
             </svg>
           </div>
-          <h2 className="tile-title">My Health Journey</h2>
+          <h2 className="tile-title">{t('home.healthJourneyTitle')}</h2>
         </article>
 
         {/* 6. My Referrals Card */}
@@ -163,7 +177,7 @@ export default function Home({ onNavigate, patient }) {
               <polyline points="16 11 18 13 22 9" />
             </svg>
           </div>
-          <h2 className="tile-title">My Referrals</h2>
+          <h2 className="tile-title">{t('home.trackReferralTitle')}</h2>
         </article>
 
         {/* 7. Govt. Schemes Card */}
@@ -180,7 +194,7 @@ export default function Home({ onNavigate, patient }) {
               <line x1="9" y1="15" x2="15" y2="15" />
             </svg>
           </div>
-          <h2 className="tile-title">Govt. Schemes</h2>
+          <h2 className="tile-title">{t('home.schemesTitle')}</h2>
         </article>
       </main>
 
@@ -189,4 +203,5 @@ export default function Home({ onNavigate, patient }) {
     </div>
   )
 }
+
 

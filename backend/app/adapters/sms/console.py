@@ -26,15 +26,18 @@ class ConsoleSMSAdapter(BaseSMSAdapter):
     def __init__(self):
         self.sent_messages: List[Tuple[str, str]] = []
 
-    def send_otp(self, mobile: str, otp: str) -> SMSDeliveryResult:
+    def send_sms(self, mobile: str, message: str) -> SMSDeliveryResult:
         # Mask mobile number: e.g. 9876543210 -> 98XXXX3210
         masked_mobile = f"{mobile[:2]}XXXX{mobile[-4:]}" if len(mobile) >= 6 else "XXXXXX"
         msg_id = f"sim-{uuid.uuid4().hex[:8]}"
 
-        self.sent_messages.append((mobile, otp))
-        logger.info("[SMS Console] Dispatched OTP message [%s] to recipient %s", msg_id, masked_mobile)
+        self.sent_messages.append((mobile, message))
+        logger.info("[SMS Console] Dispatched SMS message [%s] to recipient %s", msg_id, masked_mobile)
 
         return SMSDeliveryResult(
             success=True,
             message_id=msg_id,
         )
+
+    def send_otp(self, mobile: str, otp: str) -> SMSDeliveryResult:
+        return self.send_sms(mobile=mobile, message=otp)

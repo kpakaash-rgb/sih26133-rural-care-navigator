@@ -58,10 +58,21 @@
 }
 
 .header-brand-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #004b87;
   letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+@media (max-width: 360px) {
+  .header-brand-title {
+    max-width: 95px;
+    font-size: 13.5px;
+  }
 }
 
 .header-right {
@@ -75,8 +86,8 @@
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 13px;
+  padding: 5px 10px;
+  font-size: 12.5px;
   font-weight: 800;
   letter-spacing: 0.3px;
   display: flex;
@@ -85,6 +96,7 @@
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(185, 28, 28, 0.25);
   transition: background-color 0.15s ease;
+  flex-shrink: 0;
 }
 
 .header-sos-pill:hover {
@@ -108,7 +120,7 @@
   left: 0;
   right: 0;
   z-index: 50;
-  padding: 0 10px;
+  padding: 0 6px;
 }
 
 .bottom-nav-item {
@@ -119,11 +131,14 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 6px 14px;
+  padding: 6px 10px;
   color: #475569;
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.15s ease;
+  min-width: 0;
+  flex: 1;
+  max-width: 90px;
 }
 
 .bottom-nav-item.active {
@@ -138,8 +153,12 @@
 }
 
 .bottom-nav-label {
-  font-size: 11px;
+  font-size: 10.5px;
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* Buttons */
@@ -4585,6 +4604,62 @@
   color: #1e40af;
   line-height: 1.4;
 }
+
+/* Language Selector Styles */
+.language-selector-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  padding: 2px 6px;
+  color: #ffffff;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.language-selector-select {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  padding: 2px 0;
+}
+
+.language-selector-select option {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.language-selector-pills {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.lang-pill-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.lang-pill-btn.active {
+  background: #004b87;
+  color: #ffffff;
+  border-color: #004b87;
+}
+
 
 
 

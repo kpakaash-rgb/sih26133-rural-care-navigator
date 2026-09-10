@@ -1,63 +1,30 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Users, CalendarCheck, GitMerge, HeartPulse,
   AlertOctagon, ChevronRight, UserPlus,
   Clock, MapPin, Navigation,
-  Cloud, ArrowUpRight, CheckCircle2, RefreshCw
+  Cloud, ArrowUpRight, CheckCircle2, RefreshCw,
+  AlertCircle, Loader2
 } from 'lucide-react'
 import {
   getFacilityQueue,
   updateFacilityQueue,
   getWorkerSession,
   getWorkerMe,
-  getWorkerPatients
+  getWorkerDashboardStats
 } from '../../../services/api'
 import { formatQueueLastUpdated } from '../../../utils'
 import './HomePage.css'
 
-/* ── Fallback / Demo Data ── */
+/* ── Fallback / Initial State ── */
 const defaultWorker = {
-  name: 'Meena',
-  fullName: 'Meena Devi',
-  sector: 'Field Sector A-4',
-  zone: 'Zone 3',
-  initials: 'MD',
+  name: 'Worker',
+  fullName: 'Frontline Worker',
+  sector: 'Field Health Network',
+  zone: 'Active Sector',
+  initials: 'FW',
 }
-
-const defaultCaseloadStats = [
-  { id: 1, icon: Users,         value: 8,  label: 'Patients to Visit',    color: '#2563EB' },
-  { id: 2, icon: CalendarCheck, value: 5,  label: 'Follow-ups Due',        color: '#7C3AED' },
-  { id: 3, icon: GitMerge,      value: 2,  label: 'Pending Referrals',     color: '#DC2626' },
-  { id: 4, icon: HeartPulse,    value: 6,  label: "Today's Screenings",    color: '#16A34A' },
-]
-
-const tasks = [
-  {
-    id: 1,
-    icon: Users,
-    title: 'Patient follow-up',
-    desc: 'Post-partum vitals & neonatal check',
-    time: '10:00 AM',
-    village: 'Example Village',
-    status: 'Pending',
-    statusColor: '#D97706',
-    statusBg: '#FFFBEB',
-  },
-  {
-    id: 2,
-    icon: HeartPulse,
-    title: 'Blood pressure screening',
-    desc: 'NCD monthly monitoring cohort (Age 50+)',
-    time: '11:30 AM',
-    village: 'Kovilur',
-    status: 'Upcoming',
-    statusColor: '#2563EB',
-    statusBg: '#EFF6FF',
-  },
-]
-
-const routeProgress = { completed: 4, total: 9, kmRemaining: 3.4 }
 
 /* ── Component ── */
 export default function HomePage() {
@@ -74,18 +41,41 @@ export default function HomePage() {
 
   const queueFacilityId = workerData?.facility_id || 1
   const [queueData, setQueueData] = useState(null)
-  const [waitingPatients, setWaitingPatients] = useState(8)
-  const [estimatedWait, setEstimatedWait] = useState(35)
+  const [waitingPatients, setWaitingPatients] = useState(0)
+  const [estimatedWait, setEstimatedWait] = useState(0)
   const [queueStatus, setQueueStatus] = useState('NORMAL')
   const [isUpdatingQueue, setIsUpdatingQueue] = useState(false)
   const [queueSuccessMsg, setQueueSuccessMsg] = useState('')
   const [queueErrorMsg, setQueueErrorMsg] = useState('')
-  const [patientCount, setPatientCount] = useState(null)
+
+  /* ── Live Operational Dashboard Stats ── */
+  const [dashboardStats, setDashboardStats] = useState(null)
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [statsError, setStatsError] = useState(null)
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const data = await getWorkerDashboardStats()
+      return { data, error: null }
+    } catch (err) {
+      return { data: null, error: err?.message || 'Failed to load live facility statistics.' }
+    }
+  }, [])
+
+  const handleManualRefresh = useCallback(() => {
+    setStatsLoading(true)
+    setStatsError(null)
+    fetchStats().then((res) => {
+      if (res.data) setDashboardStats(res.data)
+      if (res.error) setStatsError(res.error)
+      setStatsLoading(false)
+    })
+  }, [fetchStats])
 
   useEffect(() => {
     let isMounted = true
 
-    // Fetch worker details if token exists
+    // Fetch authenticated worker details if token exists
     getWorkerMe()
       .then((res) => {
         if (isMounted && res) {
@@ -94,20 +84,32 @@ export default function HomePage() {
       })
       .catch(() => {})
 
-    // Fetch worker's assigned patients count
-    getWorkerPatients()
-      .then((patients) => {
-        if (isMounted && Array.isArray(patients)) {
-          setPatientCount(patients.length)
-        }
-      })
-      .catch(() => {})
+    fetchStats().then((res) => {
+      if (isMounted) {
+        if (res.data) setDashboardStats(res.data)
+        if (res.error) setStatsError(res.error)
+        setStatsLoading(false)
+      }
+    })
 
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [fetchStats])
 
+  // Re-fetch stats on window focus to ensure freshly completed tasks are synced
+  useEffect(() => {
+    function handleFocus() {
+      fetchStats().then((res) => {
+        if (res.data) setDashboardStats(res.data)
+        if (res.error) setStatsError(res.error)
+      })
+    }
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [fetchStats])
+
+  // Load facility queue details
   useEffect(() => {
     let isMounted = true
     getFacilityQueue(queueFacilityId)
@@ -149,13 +151,52 @@ export default function HomePage() {
   const displayName = workerData?.name || workerData?.fullName || 'Meena Devi'
   const initials = displayName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
   const sectorName = workerData?.sector || (workerData?.facility_id ? `PHC Facility #${workerData.facility_id}` : 'Field Sector A-4')
+  const facilityTitle = workerData?.facility_name ? `${workerData.facility_name} Queue` : 'Facility Queue Management'
 
-  const caseloadStats = defaultCaseloadStats.map((s) => {
-    if (s.id === 1 && patientCount !== null) {
-      return { ...s, value: patientCount }
-    }
-    return s
-  })
+  /* ── Derived Live Statistics ── */
+  const caseloadStats = [
+    {
+      id: 1,
+      icon: Users,
+      value: statsLoading ? '...' : (dashboardStats?.total_patients ?? 0),
+      label: 'Patients to Visit',
+      color: '#2563EB',
+      path: '/worker/patients',
+    },
+    {
+      id: 2,
+      icon: CalendarCheck,
+      value: statsLoading ? '...' : (dashboardStats?.follow_ups_due ?? 0),
+      label: 'Follow-ups Due',
+      color: '#7C3AED',
+      path: '/worker/tasks',
+    },
+    {
+      id: 3,
+      icon: GitMerge,
+      value: statsLoading ? '...' : (dashboardStats?.pending_referrals ?? 0),
+      label: 'Pending Referrals',
+      color: '#DC2626',
+      path: '/worker/tasks',
+    },
+    {
+      id: 4,
+      icon: HeartPulse,
+      value: statsLoading ? '...' : (dashboardStats?.today_screenings ?? 0),
+      label: "Today's Screenings",
+      color: '#16A34A',
+      path: '/worker/patients',
+    },
+  ]
+
+  const completedVisits = dashboardStats?.completed_today ?? 0
+  const pendingVisits = dashboardStats?.pending_tasks ?? 0
+  const totalVisits = completedVisits + pendingVisits
+  const routePercent = totalVisits > 0 ? Math.min(100, Math.round((completedVisits / totalVisits) * 100)) : 100
+  const kmRemaining = pendingVisits > 0 ? (pendingVisits * 0.8).toFixed(1) : '0.0'
+
+  const urgentAlert = dashboardStats?.urgent_alert
+  const recentTasks = dashboardStats?.recent_tasks || []
 
   return (
     <div className="hd-root animate-fade-in">
@@ -164,10 +205,16 @@ export default function HomePage() {
       <div className="hd-greeting-area">
         <div className="hd-badges-row">
           <span className="hd-sector-badge">{sectorName}</span>
-          <span className="hd-live-badge">
+          <button
+            type="button"
+            onClick={handleManualRefresh}
+            title="Click to refresh live facility data"
+            className="hd-live-badge"
+            style={{ cursor: 'pointer', border: 'none', background: 'inherit' }}
+          >
             <span className="hd-live-dot" />
-            Live Sync
-          </span>
+            {statsLoading ? 'Syncing...' : 'Live Sync'}
+          </button>
         </div>
         <div className="hd-greeting-row">
           <div>
@@ -177,6 +224,49 @@ export default function HomePage() {
           <div className="avatar avatar-lg hd-worker-avatar">{initials}</div>
         </div>
       </div>
+
+      {/* ── Error Banner & Retry ── */}
+      {statsError && (
+        <div
+          style={{
+            backgroundColor: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            color: '#991b1b',
+            fontSize: '13px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            marginBottom: '16px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={18} style={{ flexShrink: 0 }} />
+            <span>{statsError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleManualRefresh}
+            style={{
+              padding: '6px 12px',
+              backgroundColor: '#ffffff',
+              border: '1px solid #f87171',
+              borderRadius: '6px',
+              color: '#991b1b',
+              fontSize: '12px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <RefreshCw size={12} /> Retry
+          </button>
+        </div>
+      )}
 
       {/* ── Facility Queue Management Section (Worker Update) ── */}
       <section
@@ -195,7 +285,7 @@ export default function HomePage() {
               Facility Management
             </span>
             <h3 style={{ margin: '2px 0 0', fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>
-              PHC Malshiras Queue
+              {facilityTitle}
             </h3>
           </div>
           <span
@@ -335,41 +425,108 @@ export default function HomePage() {
         </form>
       </section>
 
-      {/* ── Emergency Alert ── */}
-      <div className="hd-alert-card">
-        <div className="hd-alert-top-row">
-          <span className="hd-triage-label">TRIAGE LEVEL 1</span>
-          <span className="hd-high-risk-badge">High Risk</span>
-        </div>
-        <div className="hd-alert-body">
-          <div className="hd-alert-icon-wrap">
-            <AlertOctagon size={26} />
+      {/* ── Emergency / Priority Alert ── */}
+      {urgentAlert?.has_urgent ? (
+        <div className="hd-alert-card">
+          <div className="hd-alert-top-row">
+            <span className="hd-triage-label">{urgentAlert.triage_level || 'TRIAGE LEVEL 1'}</span>
+            <span className="hd-high-risk-badge">{urgentAlert.priority || 'High Risk'}</span>
           </div>
-          <div className="hd-alert-text">
-            <h3 className="hd-alert-title">Urgent Attention Required</h3>
-            <p className="hd-alert-desc">
-              A patient has an urgent referral pending for severe antenatal
-              hypertension at Kovilur Sub-center.
-            </p>
+          <div className="hd-alert-body">
+            <div className="hd-alert-icon-wrap">
+              <AlertOctagon size={26} />
+            </div>
+            <div className="hd-alert-text">
+              <h3 className="hd-alert-title">Urgent Attention Required</h3>
+              <p className="hd-alert-desc">
+                {urgentAlert.patient_name
+                  ? `${urgentAlert.patient_name}${urgentAlert.village ? ` (${urgentAlert.village})` : ''}: ${urgentAlert.reason}`
+                  : urgentAlert.reason}
+              </p>
+            </div>
+          </div>
+          <div className="hd-alert-footer">
+            <span className="hd-alert-time">
+              <Clock size={13} />
+              Active Priority Case
+            </span>
+            <button
+              type="button"
+              className="hd-review-btn"
+              id="btn-review-patient"
+              onClick={() => {
+                if (urgentAlert.source_type === 'REFERRAL') {
+                  navigate('/worker/tasks')
+                } else if (urgentAlert.patient_id) {
+                  navigate(`/worker/patient-summary?id=${urgentAlert.patient_id}`)
+                } else {
+                  navigate('/worker/tasks')
+                }
+              }}
+            >
+              Review Patient <ChevronRight size={16} />
+            </button>
           </div>
         </div>
-        <div className="hd-alert-footer">
-          <span className="hd-alert-time">
-            <Clock size={13} />
-            Escalated 24m ago
-          </span>
-          <button
-            className="hd-review-btn"
-            id="btn-review-patient"
-            onClick={() => navigate('/worker/patient-summary')}
-          >
-            Review Patient <ChevronRight size={16} />
-          </button>
+      ) : (
+        <div
+          className="hd-alert-card"
+          style={{
+            borderColor: '#bbf7d0',
+            borderLeftColor: '#16a34a',
+            boxShadow: '0 2px 10px rgba(22, 163, 74, 0.08)',
+          }}
+        >
+          <div className="hd-alert-top-row">
+            <span className="hd-triage-label" style={{ color: '#16a34a' }}>
+              COMMUNITY HEALTH STATUS
+            </span>
+            <span
+              className="hd-high-risk-badge"
+              style={{
+                color: '#166534',
+                backgroundColor: '#dcfce7',
+                borderColor: '#86efac',
+              }}
+            >
+              Caseload Stable
+            </span>
+          </div>
+          <div className="hd-alert-body">
+            <div
+              className="hd-alert-icon-wrap"
+              style={{ backgroundColor: '#dcfce7', color: '#16a34a' }}
+            >
+              <CheckCircle2 size={24} />
+            </div>
+            <div className="hd-alert-text">
+              <h3 className="hd-alert-title">No Urgent Emergencies Pending</h3>
+              <p className="hd-alert-desc">
+                {urgentAlert?.reason || 'All registered patients in your community sector are currently stable.'}
+              </p>
+            </div>
+          </div>
+          <div className="hd-alert-footer">
+            <span className="hd-alert-time" style={{ color: '#64748b' }}>
+              <Clock size={13} />
+              Live sector sync active
+            </span>
+            <button
+              type="button"
+              className="hd-review-btn"
+              id="btn-review-patient"
+              style={{ backgroundColor: '#f0fdf4', color: '#166534', borderColor: '#bbf7d0' }}
+              onClick={() => navigate('/worker/patients')}
+            >
+              View Patients <ChevronRight size={16} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Register Patient ── */}
       <button
+        type="button"
         id="btn-register-patient"
         className="hd-register-btn"
         onClick={() => navigate('/worker/register-patient')}
@@ -390,7 +547,7 @@ export default function HomePage() {
               key={s.id}
               className="hd-stat-card"
               style={{ cursor: 'pointer' }}
-              onClick={() => navigate(s.id === 1 ? '/worker/patients' : s.id === 4 ? '/worker/tasks' : '/worker/patients')}
+              onClick={() => navigate(s.path)}
             >
               <div className="hd-stat-top">
                 <div className="hd-stat-icon" style={{ background: s.color + '1A', color: s.color }}>
@@ -400,7 +557,13 @@ export default function HomePage() {
                   <ArrowUpRight size={14} />
                 </span>
               </div>
-              <p className="hd-stat-value" style={{ color: s.color }}>{s.value}</p>
+              <p className="hd-stat-value" style={{ color: s.color }}>
+                {statsLoading ? (
+                  <Loader2 size={18} className="animate-spin" style={{ display: 'inline-block' }} />
+                ) : (
+                  s.value
+                )}
+              </p>
               <p className="hd-stat-label">{s.label}</p>
             </div>
           ))}
@@ -412,19 +575,19 @@ export default function HomePage() {
         <div className="hd-route-header">
           <div className="flex items-center gap-2">
             <Navigation size={16} style={{ color: 'var(--color-primary)' }} />
-            <span className="hd-route-title">Optimal Field Route Active</span>
+            <span className="hd-route-title">Field Care Route Active</span>
           </div>
-          <span className="hd-route-km">{routeProgress.kmRemaining} km remaining</span>
+          <span className="hd-route-km">{kmRemaining} km remaining</span>
         </div>
         <div className="hd-route-bar-wrap">
           <div
             className="hd-route-bar"
-            style={{ width: `${(routeProgress.completed / routeProgress.total) * 100}%` }}
+            style={{ width: `${routePercent}%` }}
           />
         </div>
         <div className="hd-route-meta">
-          <span>Completed: {routeProgress.completed} households</span>
-          <span>Remaining: {routeProgress.total - routeProgress.completed} households</span>
+          <span>Completed: {completedVisits} tasks</span>
+          <span>Remaining: {pendingVisits} tasks</span>
         </div>
       </div>
 
@@ -433,60 +596,116 @@ export default function HomePage() {
         <div className="hd-section-row">
           <div className="flex items-center gap-2">
             <h2 className="section-title">Today's Tasks</h2>
-            <span className="hd-task-count">{tasks.length}</span>
+            <span className="hd-task-count">{recentTasks.length}</span>
           </div>
           <button
+            type="button"
             className="hd-view-tasks-link"
             onClick={() => navigate('/worker/tasks')}
           >
-            View Tasks <ChevronRight size={15} />
+            View All Tasks <ChevronRight size={15} />
           </button>
         </div>
 
         <div className="hd-tasks-list">
-          {tasks.map((task) => (
-            <div key={task.id} className="hd-task-card">
-              <div className="hd-task-header">
-                <div className="hd-task-icon-wrap">
-                  <task.icon size={20} style={{ color: 'var(--color-primary)' }} />
-                </div>
-                <div className="flex-1">
-                  <div className="hd-task-title-row">
-                    <h4 className="hd-task-title">{task.title}</h4>
-                    <span
-                      className="hd-task-status"
-                      style={{ color: task.statusColor, background: task.statusBg }}
-                    >
-                      <span className="hd-status-dot" style={{ background: task.statusColor }} />
-                      {task.status}
-                    </span>
-                  </div>
-                  <p className="hd-task-desc">{task.desc}</p>
-                </div>
-              </div>
-              <div className="hd-task-footer">
-                <span className="hd-task-meta">
-                  <Clock size={13} />
-                  {task.time}
-                </span>
-                <span className="hd-task-meta">
-                  <MapPin size={13} />
-                  Village: {task.village}
-                </span>
-                <ChevronRight size={16} className="hd-task-arrow ml-auto" />
-              </div>
+          {statsLoading && recentTasks.length === 0 ? (
+            <div style={{ padding: '24px 16px', textAlign: 'center', color: '#64748b' }}>
+              <Loader2 size={20} className="animate-spin" style={{ margin: '0 auto 8px' }} />
+              <p style={{ margin: 0, fontSize: '13px' }}>Loading frontline tasks...</p>
             </div>
-          ))}
+          ) : recentTasks.length > 0 ? (
+            recentTasks.map((task) => {
+              const TaskIcon = task.task_type === 'FOLLOW_UP' ? Users : GitMerge
+              return (
+                <div
+                  key={`${task.task_type}-${task.id}`}
+                  className="hd-task-card"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate('/worker/tasks')}
+                >
+                  <div className="hd-task-header">
+                    <div className="hd-task-icon-wrap">
+                      <TaskIcon size={20} style={{ color: 'var(--color-primary)' }} />
+                    </div>
+                    <div className="flex-1">
+                      <div className="hd-task-title-row">
+                        <h4 className="hd-task-title">{task.title}: {task.patient_name}</h4>
+                        <span
+                          className="hd-task-status"
+                          style={{ color: task.status_color, background: task.status_bg }}
+                        >
+                          <span className="hd-status-dot" style={{ background: task.status_color }} />
+                          {task.status}
+                        </span>
+                      </div>
+                      <p className="hd-task-desc">{task.desc}</p>
+                    </div>
+                  </div>
+                  <div className="hd-task-footer">
+                    <span className="hd-task-meta">
+                      <Clock size={13} />
+                      {task.time}
+                    </span>
+                    <span className="hd-task-meta">
+                      <MapPin size={13} />
+                      Village: {task.village}
+                    </span>
+                    <ChevronRight size={16} className="hd-task-arrow ml-auto" />
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            <div
+              style={{
+                padding: '24px 16px',
+                textAlign: 'center',
+                backgroundColor: '#f8fafc',
+                borderRadius: '12px',
+                border: '1px dashed #cbd5e1',
+              }}
+            >
+              <CheckCircle2 size={32} style={{ color: '#16a34a', margin: '0 auto 8px' }} />
+              <h4 style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 700, color: '#1e293b' }}>
+                All Tasks Completed!
+              </h4>
+              <p style={{ margin: '0 0 12px', fontSize: '13px', color: '#64748b' }}>
+                No pending follow-ups or referrals in your facility queue today.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/worker/tasks')}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '8px',
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#2563eb',
+                  cursor: 'pointer',
+                }}
+              >
+                View Full Task Queue
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ΓöÇΓöÇ Offline / Sync Footer ΓöÇΓöÇ */}
+      {/* ── Offline / Sync Footer ── */}
       <div className="hd-offline-bar">
         <Cloud size={16} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
         <span className="hd-offline-text">
-          Offline kit ready ΓÇó 18 records queued securely
+          Offline kit ready • Facility #{queueFacilityId} synced
         </span>
-        <button className="hd-offline-detail">Details</button>
+        <button
+          type="button"
+          className="hd-offline-detail"
+          onClick={handleManualRefresh}
+        >
+          Sync Now
+        </button>
       </div>
 
     </div>

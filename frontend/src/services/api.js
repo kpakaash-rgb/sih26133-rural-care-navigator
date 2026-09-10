@@ -123,6 +123,26 @@ export async function getRelevantSchemes() {
 }
 
 /**
+ * Retrieve government healthcare schemes (public directory).
+ * @param {{ state?: string, search?: string }} [params={}]
+ */
+export async function getSchemes(params = {}) {
+  const query = new URLSearchParams();
+  if (params.state) query.set('state', params.state);
+  if (params.search) query.set('search', params.search);
+  const queryString = query.toString();
+  return apiRequest(queryString ? `/schemes?${queryString}` : '/schemes');
+}
+
+/**
+ * Retrieve specific government healthcare scheme details by ID.
+ * @param {number|string} schemeId
+ */
+export async function getSchemeDetails(schemeId) {
+  return apiRequest(`/schemes/${schemeId}`);
+}
+
+/**
  * Log out patient and clear stored tokens and profile state.
  */
 export function clearPatientSession() {
@@ -225,6 +245,36 @@ export async function getFacilityAvailability(facilityId, params = {}) {
     ? `/facilities/${facilityId}/availability?${queryString}`
     : `/facilities/${facilityId}/availability`;
   return apiRequest(endpoint);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Mobile Medical Units (MMU) & Clinics Helpers
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Retrieve active Mobile Medical Units (MMU) with optional district and proximity filters.
+ * @param {{ district?: string, lat?: number, lon?: number }} [params={}]
+ */
+export async function getMobileClinics(params = {}) {
+  const query = new URLSearchParams();
+  if (params.district) query.set('district', params.district);
+  if (params.lat != null) query.set('lat', params.lat.toString());
+  if (params.lon != null) query.set('lon', params.lon.toString());
+  const queryString = query.toString();
+  return apiRequest(queryString ? `/mobile-clinics?${queryString}` : '/mobile-clinics');
+}
+
+/**
+ * Retrieve details for a specific Mobile Medical Unit by ID.
+ * @param {number|string} clinicId
+ * @param {{ lat?: number, lon?: number }} [params={}]
+ */
+export async function getMobileClinicDetails(clinicId, params = {}) {
+  const query = new URLSearchParams();
+  if (params.lat != null) query.set('lat', params.lat.toString());
+  if (params.lon != null) query.set('lon', params.lon.toString());
+  const queryString = query.toString();
+  return apiRequest(queryString ? `/mobile-clinics/${clinicId}?${queryString}` : `/mobile-clinics/${clinicId}`);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -425,6 +475,13 @@ export async function getWorkerMe() {
 }
 
 /**
+ * Retrieve frontline worker dashboard metrics and facility-isolated stats.
+ */
+export async function getWorkerDashboardStats() {
+  return apiRequest('/worker/dashboard/stats');
+}
+
+/**
  * Retrieve authenticated doctor profile.
  */
 export async function getDoctorMe() {
@@ -519,9 +576,19 @@ export function getWorkerSession() {
 
 /**
  * Clear stored worker session.
+ * Removes worker token and worker identity.
+ * Clears staff session credentials if the active staff session belongs to the worker.
+ * Preserves patient authentication session and access_token.
  */
 export function clearWorkerSession() {
-  clearStaffSession();
+  localStorage.removeItem('worker_token');
+  localStorage.removeItem('worker');
+  const staffRole = localStorage.getItem('staff_role');
+  if (!staffRole || staffRole === 'WORKER') {
+    localStorage.removeItem('staff_token');
+    localStorage.removeItem('staff_role');
+    localStorage.removeItem('staff_user');
+  }
 }
 
 /**
@@ -685,5 +752,22 @@ export async function getDoctorAppointments() {
   return apiRequest('/doctor/appointments');
 }
 
+// ─────────────────────────────────────────────────────────────
+// Patient SMS Care Summary Helpers
+// ─────────────────────────────────────────────────────────────
 
-
+/**
+ * Request care summary SMS to the authenticated patient's registered mobile number.
+ * @param {{ facility_id?: number|string, appointment_id?: number|string, referral_id?: number|string, emergency_guidance?: boolean }} payload
+ */
+export async function sendCareSummarySMS(payload = {}) {
+  return apiRequest('/sms/care-summary', {
+    method: 'POST',
+    body: JSON.stringify({
+      facility_id: payload.facility_id ? Number(payload.facility_id) : null,
+      appointment_id: payload.appointment_id ? Number(payload.appointment_id) : null,
+      referral_id: payload.referral_id ? Number(payload.referral_id) : null,
+      emergency_guidance: Boolean(payload.emergency_guidance),
+    }),
+  });
+}

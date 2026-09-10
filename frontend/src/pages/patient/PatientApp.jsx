@@ -64,9 +64,30 @@ export default function PatientApp() {
     }
   }, [])
 
+  const initialTriageState = {
+    urgency: null,
+    recommended_care: null,
+    reason: null,
+    emergency: false,
+    reportedSymptoms: [],
+    problemDescription: '',
+  }
+
+  const initialBookingState = {
+    facility: '',
+    service: 'General Medicine',
+    date: '',
+    dateKey: '',
+    time: '',
+    type: 'In-person',
+    typeKey: 'in_person',
+  }
+
   const handleLogout = () => {
     clearPatientSession()
     setPatient(null)
+    setTriageData(initialTriageState)
+    setBookingData(initialBookingState)
     setCurrentScreen(SCREENS.WELCOME)
   }
 
@@ -74,30 +95,41 @@ export default function PatientApp() {
   const [selectedFacility, setSelectedFacility] = useState(null)
   const [selectedReferral, setSelectedReferral] = useState(null)
 
-  const [triageData, setTriageData] = useState({
-    urgency: null,
-    recommended_care: null,
-    reason: null,
-    emergency: false,
-    reportedSymptoms: [],
-    problemDescription: '',
-  })
-
-  const [bookingData, setBookingData] = useState({
-    facility: 'PHC Malshiras',
-    service: 'General Medicine',
-    date: 'Tuesday, Oct 24',
-    dateKey: 'today',
-    time: '10:30 AM',
-    type: 'In-person',
-    typeKey: 'in_person',
-  })
+  const [triageData, setTriageData] = useState(initialTriageState)
+  const [bookingData, setBookingData] = useState(initialBookingState)
 
   // ---------------------------------------------------------
   // Navigation handler
   // ---------------------------------------------------------
 
   const handleNavigate = (screenId, data) => {
+    // Reset stale emergency state when starting a fresh symptom intake or navigating to independent flows
+    if (screenId === SCREENS.SYMPTOMS) {
+      setTriageData(initialTriageState)
+    } else if (
+      screenId === SCREENS.HOME ||
+      screenId === SCREENS.WELCOME ||
+      screenId === SCREENS.LOGIN ||
+      screenId === SCREENS.REGISTRATION ||
+      screenId === SCREENS.AVAILABILITY ||
+      screenId === SCREENS.BOOKING ||
+      screenId === SCREENS.APPOINTMENT_CONFIRMED ||
+      screenId === SCREENS.APPOINTMENTS ||
+      screenId === SCREENS.FOLLOW_UP ||
+      screenId === SCREENS.TRACK_REFERRAL ||
+      screenId === SCREENS.REFERRAL_CREATED ||
+      screenId === SCREENS.HEALTH_JOURNEY ||
+      screenId === SCREENS.SCHEMES ||
+      screenId === SCREENS.SCHEME_DETAILS ||
+      screenId === SCREENS.MOBILE_CLINIC ||
+      screenId === SCREENS.ABHA
+    ) {
+      setTriageData(initialTriageState)
+    } else if (screenId === SCREENS.HEALTHCARE && !data?.triageData) {
+      // Independent entry to healthcare without triage payload resets emergency state
+      setTriageData(initialTriageState)
+    }
+
     if (data) {
       if (data.patient) {
         setPatient(data.patient)
@@ -113,7 +145,6 @@ export default function PatientApp() {
         setSelectedScheme(data)
       }
 
-
       // AI Triage → Care Guidance
       else if (screenId === SCREENS.CARE_GUIDANCE) {
         setTriageData({
@@ -123,6 +154,18 @@ export default function PatientApp() {
           emergency: Boolean(data.emergency),
           reportedSymptoms: data.reportedSymptoms ?? [],
           problemDescription: data.problemDescription ?? '',
+        })
+      }
+
+      // Care Guidance → Healthcare with active triage payload
+      else if (screenId === SCREENS.HEALTHCARE && data.triageData) {
+        setTriageData({
+          urgency: data.triageData.urgency ?? data.urgency ?? null,
+          recommended_care: data.triageData.recommended_care ?? data.recommendedCare ?? null,
+          reason: data.triageData.reason ?? null,
+          emergency: Boolean(data.triageData.emergency),
+          reportedSymptoms: data.triageData.reportedSymptoms ?? [],
+          problemDescription: data.triageData.problemDescription ?? '',
         })
       }
 

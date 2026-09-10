@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from backend.app.core.exceptions import NotFoundError, ValidationAppError
+from backend.app.core.exceptions import AuthorizationError, NotFoundError, ValidationAppError
 from backend.app.models.follow_up import FollowUp
 from backend.app.repositories.appointment_repository import AppointmentRepository
 from backend.app.repositories.follow_up_repository import FollowUpRepository
@@ -37,9 +37,22 @@ class FollowUpService:
 
     def _format_follow_up(self, fu: FollowUp) -> Dict[str, Any]:
         """Format a FollowUp ORM instance into an API response dictionary."""
+        patient_data = None
+        if fu.patient:
+            patient_data = {
+                "id": fu.patient.id,
+                "full_name": fu.patient.full_name or f"Patient #{fu.patient.id}",
+                "mobile": fu.patient.mobile,
+                "age": fu.patient.age,
+                "gender": fu.patient.gender,
+                "village": fu.patient.village,
+                "district": fu.patient.district,
+            }
+
         return {
             "id": fu.id,
             "patient_id": fu.patient_id,
+            "patient": patient_data,
             "appointment_id": fu.appointment_id,
             "referral_id": fu.referral_id,
             "follow_up_date": fu.follow_up_date,
@@ -121,11 +134,38 @@ class FollowUpService:
         follow_ups = self.follow_up_repo.get_follow_ups_by_patient(patient_id)
         return [self._format_follow_up(f) for f in follow_ups]
 
-    def complete_follow_up(self, follow_up_id: int, patient_id: int) -> Dict[str, Any]:
+    def get_facility_follow_ups(self, facility_id: int) -> List[Dict[str, Any]]:
+        """Retrieve all follow-ups linked to or assigned to a facility."""
+        follow_ups = self.follow_up_repo.get_follow_ups_by_facility(facility_id)
+        return [self._format_follow_up(f) for f in follow_ups]
+
+    def complete_follow_up(
+        self,
+        follow_up_id: int,
+        patient_id: Optional[int] = None,
+        facility_id: Optional[int] = None,
+    ) -> Dict[str, Any]:
         """Mark a follow-up as COMPLETED and log CARE_COMPLETED in Health Journey."""
         follow_up = self.follow_up_repo.get_by_id_with_relations(follow_up_id)
-        if not follow_up or follow_up.patient_id != patient_id:
+        if not follow_up:
             raise NotFoundError(f"Follow-up with ID {follow_up_id} not found.")
+
+        if patient_id is not None and follow_up.patient_id != patient_id:
+            raise NotFoundError(f"Follow-up with ID {follow_up_id} not found.")
+
+        if facility_id is not None:
+            has_access = False
+            if follow_up.patient and follow_up.patient.facility_id == facility_id:
+                has_access = True
+            elif follow_up.appointment and follow_up.appointment.facility_id == facility_id:
+                has_access = True
+            elif follow_up.referral and (
+                follow_up.referral.from_facility_id == facility_id or follow_up.referral.to_facility_id == facility_id
+            ):
+                has_access = True
+
+            if not has_access:
+                raise AuthorizationError(f"Worker not authorized to complete follow-up {follow_up_id} outside assigned facility.")
 
         if follow_up.status in ("COMPLETED", "CANCELLED"):
             raise ValidationAppError(f"Cannot complete follow-up in '{follow_up.status}' status.")
@@ -137,7 +177,7 @@ class FollowUpService:
         if self.health_journey_repo:
             today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
             self.health_journey_repo.create_event(
-                patient_id=patient_id,
+                patient_id=follow_up.patient_id,
                 event_type="CARE_COMPLETED",
                 title="Care Completed",
                 description=f"Follow-up checkup completed successfully: {follow_up.notes or 'No additional notes'}",
@@ -148,11 +188,33 @@ class FollowUpService:
 
         return self._format_follow_up(follow_up)
 
-    def cancel_follow_up(self, follow_up_id: int, patient_id: int) -> Dict[str, Any]:
-        """Cancel an existing follow-up for the authenticated patient."""
+    def cancel_follow_up(
+        self,
+        follow_up_id: int,
+        patient_id: Optional[int] = None,
+        facility_id: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Cancel an existing follow-up."""
         follow_up = self.follow_up_repo.get_by_id_with_relations(follow_up_id)
-        if not follow_up or follow_up.patient_id != patient_id:
+        if not follow_up:
             raise NotFoundError(f"Follow-up with ID {follow_up_id} not found.")
+
+        if patient_id is not None and follow_up.patient_id != patient_id:
+            raise NotFoundError(f"Follow-up with ID {follow_up_id} not found.")
+
+        if facility_id is not None:
+            has_access = False
+            if follow_up.patient and follow_up.patient.facility_id == facility_id:
+                has_access = True
+            elif follow_up.appointment and follow_up.appointment.facility_id == facility_id:
+                has_access = True
+            elif follow_up.referral and (
+                follow_up.referral.from_facility_id == facility_id or follow_up.referral.to_facility_id == facility_id
+            ):
+                has_access = True
+
+            if not has_access:
+                raise AuthorizationError(f"Worker not authorized to cancel follow-up {follow_up_id} outside assigned facility.")
 
         if follow_up.status in ("COMPLETED", "CANCELLED"):
             raise ValidationAppError(f"Cannot cancel follow-up in '{follow_up.status}' status.")

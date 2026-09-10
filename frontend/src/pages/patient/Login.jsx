@@ -3,8 +3,10 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { requestOtp, verifyOtp } from '../../services/api'
+import { useLanguage } from '../../i18n'
 
 export default function Login({ onNavigate }) {
+  const { t } = useLanguage()
   const [mobileNumber, setMobileNumber] = useState('')
   const [showOtpStep, setShowOtpStep] = useState(false)
   const [otpCode, setOtpCode] = useState('')
@@ -18,7 +20,7 @@ export default function Login({ onNavigate }) {
     const cleanMobile = mobileNumber.replace(/\D/g, '')
 
     if (cleanMobile.length !== 10) {
-      setError('Please enter a valid 10-digit mobile number.')
+      setError(t('auth.invalidMobile'))
       return
     }
 
@@ -31,7 +33,7 @@ export default function Login({ onNavigate }) {
         setOtpCode(data.demo_otp)
       }
     } catch (err) {
-      setError(err.message || 'Failed to send OTP. Please try again.')
+      setError(err.message || t('auth.sendOtpFailed'))
     } finally {
       setLoading(false)
     }
@@ -44,7 +46,7 @@ export default function Login({ onNavigate }) {
     const cleanMobile = mobileNumber.replace(/\D/g, '')
 
     if (!cleanOtp) {
-      setError('Please enter the OTP.')
+      setError(t('auth.enterOtpRequired'))
       return
     }
 
@@ -59,7 +61,7 @@ export default function Login({ onNavigate }) {
       }
       onNavigate(SCREENS.HOME, { patient: data?.patient })
     } catch (err) {
-      setError(err.message || 'Verification failed. Please check the OTP.')
+      setError(err.message || t('auth.verifyFailed'))
     } finally {
       setLoading(false)
     }
@@ -67,13 +69,13 @@ export default function Login({ onNavigate }) {
 
   return (
     <div className="login-screen-wrapper">
-      <Header title="Rural Care Navigator" showLogo />
+      <Header title={t('common.appName')} showLogo />
 
       <div className="login-content-container">
         <div className="login-header-text">
-          <h1 className="login-title">Welcome Back</h1>
+          <h1 className="login-title">{t('auth.welcomeBack')}</h1>
           <p className="login-subtitle">
-            Login to access your healthcare information and services.
+            {t('auth.loginSubtitle')}
           </p>
         </div>
 
@@ -103,7 +105,7 @@ export default function Login({ onNavigate }) {
           {!showOtpStep ? (
             <form onSubmit={handleGetOtp} className="login-form">
               <label htmlFor="mobileInput" className="field-label">
-                Mobile Number
+                {t('auth.enterMobile')}
               </label>
               <div className="input-with-icon">
                 <span className="input-icon-left" aria-hidden="true">
@@ -116,7 +118,7 @@ export default function Login({ onNavigate }) {
                   id="mobileInput"
                   type="tel"
                   className="clean-text-input"
-                  placeholder="Enter 10-digit mobile number"
+                  placeholder={t('auth.enterMobilePlaceholder')}
                   value={mobileNumber}
                   onChange={(e) => {
                     setMobileNumber(e.target.value)
@@ -133,7 +135,7 @@ export default function Login({ onNavigate }) {
                 disabled={loading}
                 style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'wait' : 'pointer' }}
               >
-                <span>{loading ? 'Requesting OTP...' : 'Get OTP'}</span>
+                <span>{loading ? t('auth.requestingOtp') : t('auth.requestOtp')}</span>
                 <span className="btn-arrow-glyph" aria-hidden="true">→</span>
               </button>
             </form>
@@ -154,7 +156,7 @@ export default function Login({ onNavigate }) {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <span>Demo OTP: <strong>{demoOtp}</strong></span>
+                  <span>{t('auth.demoOtp')}: <strong>{demoOtp}</strong></span>
                   <button
                     type="button"
                     onClick={() => {
@@ -172,13 +174,13 @@ export default function Login({ onNavigate }) {
                       cursor: 'pointer',
                     }}
                   >
-                    Auto-fill
+                    {t('auth.autoFill')}
                   </button>
                 </div>
               )}
 
               <label htmlFor="otpInput" className="field-label">
-                Enter OTP (Sent to {mobileNumber || 'your number'})
+                {t('auth.enterOtpToMobile', { mobile: mobileNumber || 'your number' })}
               </label>
               <div className="input-with-icon">
                 <span className="input-icon-left" aria-hidden="true">
@@ -191,7 +193,7 @@ export default function Login({ onNavigate }) {
                   id="otpInput"
                   type="text"
                   className="clean-text-input"
-                  placeholder="Enter 6-digit OTP"
+                  placeholder={t('auth.enterOtp')}
                   value={otpCode}
                   onChange={(e) => {
                     setOtpCode(e.target.value)
@@ -209,7 +211,7 @@ export default function Login({ onNavigate }) {
                 disabled={loading}
                 style={{ opacity: loading ? 0.7 : 1, cursor: loading ? 'wait' : 'pointer' }}
               >
-                <span>{loading ? 'Verifying...' : 'Verify & Login'}</span>
+                <span>{loading ? t('auth.verifying') : t('auth.verifyAndLogin')}</span>
                 <span className="btn-arrow-glyph" aria-hidden="true">→</span>
               </button>
               <button
@@ -222,7 +224,7 @@ export default function Login({ onNavigate }) {
                 }}
                 disabled={loading}
               >
-                Change mobile number
+                {t('auth.changeMobile')}
               </button>
             </form>
           )}
@@ -230,13 +232,13 @@ export default function Login({ onNavigate }) {
 
         {/* Register Option */}
         <div className="login-register-prompt">
-          <p className="register-prompt-text">New to Rural Care Navigator?</p>
+          <p className="register-prompt-text">{t('auth.newPrompt')}</p>
           <button
             type="button"
             className="register-outline-btn"
             onClick={() => onNavigate(SCREENS.REGISTRATION)}
           >
-            Register as New Patient
+            {t('auth.register')}
           </button>
         </div>
 
@@ -244,10 +246,10 @@ export default function Login({ onNavigate }) {
         <div className="login-emergency-box">
           <div className="emergency-box-header">
             <span className="emergency-star" aria-hidden="true">✱</span>
-            <span className="emergency-box-title">Emergency / SOS</span>
+            <span className="emergency-box-title">{t('common.emergencySos')}</span>
           </div>
-          <p className="emergency-box-subtitle">Need urgent medical help?</p>
-          <SOSButton variant="card" label="Call Emergency Help" />
+          <p className="emergency-box-subtitle">{t('auth.emergencyHelp')}</p>
+          <SOSButton variant="card" label={t('auth.callEmergency')} />
         </div>
       </div>
     </div>

@@ -1,6 +1,9 @@
 import { SCREENS } from '../../utils/constants'
+import { useLanguage } from '../../i18n'
 
 export default function Welcome({ onNavigate }) {
+  const { t } = useLanguage()
+
   return (
     <div className="welcome-screen-container">
       <div className="welcome-center-content">
@@ -40,11 +43,11 @@ export default function Welcome({ onNavigate }) {
         </div>
 
         <h1 className="welcome-heading">
-          Welcome to Rural<br />Care Navigator
+          {t('auth.welcomeTitle')}
         </h1>
 
         <p className="welcome-subheading">
-          Your companion for easy access to healthcare in rural communities.
+          {t('auth.welcomeSubtitle')}
         </p>
       </div>
 
@@ -54,7 +57,7 @@ export default function Welcome({ onNavigate }) {
           className="welcome-btn-primary"
           onClick={() => onNavigate(SCREENS.REGISTRATION)}
         >
-          <span>Register as New Patient</span>
+          <span>{t('auth.register')}</span>
           <span className="welcome-btn-arrow" aria-hidden="true">→</span>
         </button>
 
@@ -63,7 +66,7 @@ export default function Welcome({ onNavigate }) {
           className="welcome-btn-secondary"
           onClick={() => onNavigate(SCREENS.LOGIN)}
         >
-          Login
+          {t('auth.login')}
         </button>
       </div>
     </div>

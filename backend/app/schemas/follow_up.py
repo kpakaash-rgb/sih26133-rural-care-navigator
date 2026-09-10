@@ -7,7 +7,7 @@ Pydantic schemas for Patient Follow-Up scheduling and updates.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class FollowUpCreate(BaseModel):
     """Payload for POST /api/v1/follow-ups."""
 
+    patient_id: Optional[int] = Field(None, description="Target patient ID when scheduled by staff/worker", examples=[1])
     appointment_id: Optional[int] = Field(None, description="Optional linked appointment ID", examples=[1])
     referral_id: Optional[int] = Field(None, description="Optional linked referral ID", examples=[1])
     follow_up_date: str = Field(..., description="Scheduled follow-up date in YYYY-MM-DD format", examples=["2026-09-10"])
@@ -28,6 +29,7 @@ class FollowUpResponse(BaseModel):
 
     id: int
     patient_id: int
+    patient: Optional[Dict[str, Any]] = None
     appointment_id: Optional[int] = None
     referral_id: Optional[int] = None
     follow_up_date: str

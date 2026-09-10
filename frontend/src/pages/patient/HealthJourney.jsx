@@ -4,6 +4,7 @@ import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getHealthJourney } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 function formatEventDate(dateStr) {
   if (!dateStr) return 'Recent'
@@ -16,24 +17,25 @@ function formatEventDate(dateStr) {
   }
 }
 
-function getEventBadge(eventType) {
+function getEventBadge(eventType, t) {
   switch (eventType) {
     case 'CARE_COMPLETED':
-      return 'Completed'
+      return t ? t('appointmentConfirmed.status') : 'Completed'
     case 'APPOINTMENT':
-      return 'Appointment'
+      return t ? t('nav.appointments') : 'Appointment'
     case 'REFERRAL':
-      return 'Referral'
+      return t ? t('referral.title') : 'Referral'
     case 'FOLLOW_UP':
-      return 'Follow-up'
+      return t ? t('followUp.title') : 'Follow-up'
     case 'REGISTRATION':
-      return 'Registration'
+      return t ? t('auth.register') : 'Registration'
     default:
       return null
   }
 }
 
 export default function HealthJourney({ onNavigate }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('journey')
   const [events, setEvents] = useState([])
   const [selectedFilter, setSelectedFilter] = useState('ALL')
@@ -89,38 +91,38 @@ export default function HealthJourney({ onNavigate }) {
 
   let nextStepTitle = 'General Care & Consultation'
   let nextStepDesc = 'Keep track of your health checkups and consult doctors regularly at nearby facilities.'
-  let nextStepActionLabel = 'Find Healthcare Facility'
+  let nextStepActionLabel = t('home.findCare')
   let nextStepAction = () => onNavigate && onNavigate(SCREENS.HEALTHCARE)
 
   if (latestReferral) {
     nextStepTitle = 'Specialist Consultation'
     nextStepDesc = latestReferral.description || 'Your doctor referred you to a specialist. Please schedule this visit to continue care.'
-    nextStepActionLabel = 'Book Specialist Visit'
+    nextStepActionLabel = t('referral.title')
     nextStepAction = () => onNavigate && onNavigate(SCREENS.AVAILABILITY)
   } else if (latestFollowUp) {
-    nextStepTitle = 'Follow-up Checkup'
+    nextStepTitle = t('followUp.title')
     nextStepDesc = latestFollowUp.description || 'You have an upcoming follow-up checkup scheduled.'
-    nextStepActionLabel = 'View Follow-up'
+    nextStepActionLabel = t('followUp.title')
     nextStepAction = () => onNavigate && onNavigate(SCREENS.FOLLOW_UP)
   } else if (latestAppointment) {
-    nextStepTitle = 'Consultation Checkup'
+    nextStepTitle = t('appointments.title')
     nextStepDesc = latestAppointment.description || 'Review your booked appointment details.'
-    nextStepActionLabel = 'My Appointments'
+    nextStepActionLabel = t('home.myAppointments')
     nextStepAction = () => onNavigate && onNavigate(SCREENS.APPOINTMENTS)
   }
 
   const filterOptions = [
-    { key: 'ALL', label: 'All Events' },
-    { key: 'APPOINTMENT', label: 'Appointments' },
-    { key: 'REFERRAL', label: 'Referrals' },
-    { key: 'FOLLOW_UP', label: 'Follow-ups' },
+    { key: 'ALL', label: t('common.viewAll') },
+    { key: 'APPOINTMENT', label: t('nav.appointments') },
+    { key: 'REFERRAL', label: t('referral.title') },
+    { key: 'FOLLOW_UP', label: t('followUp.title') },
   ]
 
   return (
     <div className="journey-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -129,9 +131,9 @@ export default function HealthJourney({ onNavigate }) {
       <main className="journey-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="journey-header-section">
-          <h1 className="journey-main-title">Your Health Journey</h1>
+          <h1 className="journey-main-title">{t('healthJourney.title')}</h1>
           <p className="journey-subtitle">
-            Track your verified care events and see recommended next steps.
+            {t('healthJourney.subtitle')}
           </p>
         </section>
 
@@ -145,7 +147,7 @@ export default function HealthJourney({ onNavigate }) {
               </svg>
             </div>
             <div className="next-step-title-group">
-              <span className="next-step-label">Next Step:</span>
+              <span className="next-step-label">{t('careGuidance.recommendedAction')}:</span>
               <h2 className="next-step-heading">{nextStepTitle}</h2>
             </div>
           </div>
@@ -208,7 +210,7 @@ export default function HealthJourney({ onNavigate }) {
         {/* Loading State */}
         {isLoading && (
           <div style={{ textAlign: 'center', padding: '24px 16px', color: '#64748b' }}>
-            <p>Loading care journey...</p>
+            <p>{t('common.loading')}</p>
           </div>
         )}
 
@@ -225,17 +227,17 @@ export default function HealthJourney({ onNavigate }) {
             }}
           >
             <p style={{ fontWeight: 600, fontSize: '15px', color: '#0f172a', marginBottom: '6px' }}>
-              No health journey events found
+              {t('common.noData')}
             </p>
             <p style={{ fontSize: '13px', lineHeight: 1.4, margin: '0 0 16px' }}>
-              Your care history, consultations, referrals, and follow-ups will appear here as you receive care.
+              {t('healthJourney.subtitle')}
             </p>
             <button
               type="button"
               className="next-step-action-btn"
               onClick={() => onNavigate && onNavigate(SCREENS.SYMPTOMS)}
             >
-              Check Symptoms & Find Care
+              {t('symptoms.checkCareOptions')}
             </button>
           </div>
         )}
@@ -243,12 +245,12 @@ export default function HealthJourney({ onNavigate }) {
         {/* Timeline Section */}
         {!isLoading && events.length > 0 && (
           <section className="journey-timeline-section">
-            <h2 className="journey-timeline-heading">Timeline</h2>
+            <h2 className="journey-timeline-heading">{t('healthJourney.timeline')}</h2>
 
             <div className="journey-timeline-container">
               {events.map((item, index) => {
                 const isLast = index === events.length - 1
-                const badge = getEventBadge(item.event_type)
+                const badge = getEventBadge(item.event_type, t)
                 const formattedDate = formatEventDate(item.event_date || item.created_at)
 
                 return (

@@ -101,20 +101,34 @@ async def create_referral(
     )
 
 
-@router.get("", summary="List authenticated patient's referrals")
+@router.get("", summary="List referrals")
 async def get_patient_referrals(
-    patient: Patient = Depends(get_current_patient),
+    current_user: TokenData = Depends(get_current_user),
     referral_service: ReferralService = Depends(get_referral_service),
 ):
     """
-    Retrieve all referrals belonging to the authenticated patient.
-
-    Cross-patient referral access is prohibited.
+    Retrieve referrals.
+    - If PATIENT: returns authenticated patient's referrals.
+    - If WORKER/DOCTOR: returns facility-scoped referrals.
     """
-    referrals = referral_service.get_patient_referrals(patient_id=patient.id)
+    if current_user.role == "PATIENT":
+        try:
+            patient_id = int(current_user.user_id)
+        except (ValueError, TypeError):
+            raise AuthenticationError("Invalid patient user in token")
+        referrals = referral_service.get_patient_referrals(patient_id=patient_id)
+    elif current_user.role in ("WORKER", "DOCTOR"):
+        facility_id = current_user.facility_id
+        if not facility_id:
+            referrals = []
+        else:
+            referrals = referral_service.get_facility_referrals(facility_id=facility_id)
+    else:
+        raise AuthorizationError("Unauthorized to view referrals")
+
     return success_response(
         data=referrals,
-        message="Patient referrals retrieved successfully",
+        message="Referrals retrieved successfully",
     )
 
 
@@ -142,16 +156,30 @@ async def get_referral(
 @router.post("/{referral_id}/cancel", summary="Cancel a referral")
 async def cancel_referral(
     referral_id: int,
-    patient: Patient = Depends(get_current_patient),
+    current_user: TokenData = Depends(get_current_user),
     referral_service: ReferralService = Depends(get_referral_service),
 ):
     """
-    Cancel a pending referral for the authenticated patient.
+    Cancel a pending referral.
     """
-    referral = referral_service.cancel_referral(
-        referral_id=referral_id,
-        patient_id=patient.id,
-    )
+    if current_user.role == "PATIENT":
+        try:
+            patient_id = int(current_user.user_id)
+        except (ValueError, TypeError):
+            raise AuthenticationError("Invalid patient user in token")
+        referral = referral_service.cancel_referral(
+            referral_id=referral_id,
+            patient_id=patient_id,
+        )
+    elif current_user.role in ("WORKER", "DOCTOR"):
+        facility_id = current_user.facility_id
+        referral = referral_service.cancel_referral(
+            referral_id=referral_id,
+            facility_id=facility_id,
+        )
+    else:
+        raise AuthorizationError("Unauthorized to cancel referrals")
+
     return success_response(
         data=referral,
         message="Referral cancelled successfully",

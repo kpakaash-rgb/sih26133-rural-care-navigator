@@ -10,13 +10,13 @@ import { getWorkerSession, getWorkerMe, clearWorkerSession, getWorkerPatients } 
 import './ProfilePage.css'
 
 const DEFAULT_WORKER = {
-  name: 'Meena Devi',
-  initials: 'MD',
-  id: 'FHW-20841',
-  role: 'ASHA • Senior Care Facilitator',
-  phc: 'PHC Malshiras (Facility #1)',
-  cluster: 'Solapur District • Sector A-4',
-  phone: '+91 98421 82000',
+  name: 'Frontline Worker',
+  initials: 'FW',
+  id: '—',
+  role: 'ASHA • Frontline Health Worker',
+  phc: 'Primary Health Centre',
+  cluster: 'Primary Health Network • Active Zone',
+  phone: '—',
 }
 
 export default function ProfilePage() {
@@ -28,18 +28,18 @@ export default function ProfilePage() {
     if (session?.worker) {
       const w = session.worker
       return {
-        name: w.name || w.fullName || 'Meena Devi',
-        initials: (w.name || 'MD').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
-        id: w.worker_id || 'FHW-20841',
-        role: w.role === 'WORKER' ? 'ASHA • Senior Care Facilitator' : w.role,
-        phc: w.facility_id ? `PHC Facility #${w.facility_id}` : 'PHC Malshiras (Facility #1)',
+        name: w.name || w.fullName || 'Frontline Worker',
+        initials: (w.name || 'FW').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+        id: w.worker_id || '—',
+        role: w.role === 'WORKER' ? 'ASHA • Senior Care Facilitator' : (w.role || 'Frontline Worker'),
+        phc: w.facility_id ? `PHC Facility #${w.facility_id}` : (w.facility_name || 'Primary Health Centre'),
         cluster: 'Primary Health Network • Active Zone',
-        phone: w.mobile ? `+91 ${w.mobile}` : '+91 98421 82000',
+        phone: w.mobile ? `+91 ${w.mobile}` : '—',
       }
     }
     return DEFAULT_WORKER
   })
-  const [cohortCount, setCohortCount] = useState(42)
+  const [cohortCount, setCohortCount] = useState(0)
 
   useEffect(() => {
     let isMounted = true
@@ -85,6 +85,8 @@ export default function ProfilePage() {
 
   function handleSignOut() {
     clearWorkerSession()
+    setWorker(DEFAULT_WORKER)
+    setCohortCount(0)
     navigate('/staff/login', { replace: true })
   }
 

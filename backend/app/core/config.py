@@ -73,7 +73,7 @@ class Settings(BaseSettings):
     DEMO_WORKER_PASSWORD: str = "password123"
 
     # ──────────────────────────────────────────────
-    # SMS Provider Configuration
+    # SMS Provider Configuration (MSG91 / Fast2SMS / Console)
     # ──────────────────────────────────────────────
     SMS_PROVIDER: str = "console"
     SMS_API_KEY: Optional[str] = None
@@ -81,6 +81,10 @@ class Settings(BaseSettings):
     SMS_SENDER_ID: Optional[str] = "RURLCR"
     SMS_TEMPLATE_ID: Optional[str] = None
     SMS_ENABLED: bool = False
+    MSG91_AUTH_KEY: Optional[str] = None
+    MSG91_SENDER_ID: Optional[str] = None
+    MSG91_TEMPLATE_ID: Optional[str] = None
+    MSG91_FLOW_ID: Optional[str] = None
 
     # ──────────────────────────────────────────────
     # Sarvam AI STT Configuration (Telephone Audio: 8 kHz, PCM mono)

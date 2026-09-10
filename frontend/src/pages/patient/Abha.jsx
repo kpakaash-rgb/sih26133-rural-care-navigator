@@ -3,8 +3,10 @@ import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { useTranslation } from '../../i18n'
 
 export default function Abha({ onNavigate, patient, onLogout }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('profile')
   const [healthInfoModal, setHealthInfoModal] = useState(false)
   const [manageModal, setManageModal] = useState(false)
@@ -53,7 +55,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
     <div className="abha-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -62,9 +64,9 @@ export default function Abha({ onNavigate, patient, onLogout }) {
       <main className="abha-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="abha-header-section">
-          <h1 className="abha-main-title">ABHA / Health Account</h1>
+          <h1 className="abha-main-title">{t('abha.title')}</h1>
           <p className="abha-subtitle">
-            Use your ABHA to connect your digital health information when available.
+            {t('abha.subtitle')}
           </p>
         </section>
 
@@ -87,7 +89,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
 
             <div className="abha-status-pill">
               <span className="status-dot" aria-hidden="true" />
-              <span>Connected</span>
+              <span>{t('abha.consent')}</span>
             </div>
           </div>
 
@@ -104,11 +106,11 @@ export default function Abha({ onNavigate, patient, onLogout }) {
             gap: '6px',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>District:</span>
+              <span>{t('auth.district')}:</span>
               <strong style={{ color: '#0f172a' }}>{patientDistrict}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>Registered Mobile:</span>
+              <span>{t('auth.enterMobile')}:</span>
               <strong style={{ color: '#0f172a' }}>{patientMobile}</strong>
             </div>
           </div>
@@ -125,7 +127,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
                   <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                 </svg>
               </span>
-              <span>View Health Information</span>
+              <span>{t('abha.linkedRecords')}</span>
             </button>
 
             <button
@@ -139,7 +141,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
                 </svg>
               </span>
-              <span>Manage Connection</span>
+              <span>{t('abha.downloadCard')}</span>
             </button>
           </div>
 
@@ -171,7 +173,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
                   <polyline points="16 17 21 12 16 7" />
                   <line x1="21" y1="12" x2="9" y2="12" />
                 </svg>
-                <span>Log Out</span>
+                <span>{t('abha.logout')}</span>
               </button>
             </div>
           )}

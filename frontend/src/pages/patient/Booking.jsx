@@ -3,8 +3,10 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { bookAppointment } from '../../services/api'
+import { useTranslation } from '../../i18n'
 
 export default function Booking({ onNavigate, bookingData }) {
+  const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [isConflict, setIsConflict] = useState(false)
@@ -75,26 +77,46 @@ export default function Booking({ onNavigate, bookingData }) {
     }
   }
 
-  // Fallback defaults matching Stitch reference
+  // Derive real appointment details from selected availability slot and booking context
   const appointmentDetails = {
-    facility: bookingData?.facility || 'PHC Malshiras',
+    facility: bookingData?.facility || 'Healthcare Facility',
     service: bookingData?.service || 'General Medicine',
-    date: bookingData?.date || 'Tuesday, Oct 24',
-    time: bookingData?.time || '10:30 AM',
+    date: bookingData?.date || (bookingData?.selectedSlot?.date ? bookingData.selectedSlot.date : ''),
+    time: bookingData?.time || (bookingData?.selectedSlot?.start_time ? bookingData.selectedSlot.start_time : ''),
     type: bookingData?.type || 'In-person',
     typeKey: bookingData?.typeKey || 'in_person',
   }
 
-  // Format date display (split into day and date if comma present)
-  const dateParts = appointmentDetails.date.includes(',')
-    ? appointmentDetails.date.split(',').map((s) => s.trim())
-    : [appointmentDetails.date, '']
+  // Format date display cleanly without duplicating date strings or trailing commas
+  const formatDateDisplay = (dateValue) => {
+    if (!dateValue) return { day: '', dateText: '—' }
+    if (dateValue.includes(',')) {
+      const parts = dateValue.split(',').map((s) => s.trim())
+      return { day: parts[0], dateText: parts.slice(1).join(', ') }
+    }
+    try {
+      const d = new Date(dateValue + 'T00:00:00')
+      if (!isNaN(d.getTime())) {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        return {
+          day: days[d.getDay()],
+          dateText: `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`,
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return { day: '', dateText: dateValue }
+  }
+
+  const { day: dateDay, dateText } = formatDateDisplay(appointmentDetails.date)
 
   return (
     <div className="booking-screen-wrapper">
       {/* Top Header with Back Arrow and SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         showBack
         onBack={handleBack}
@@ -105,9 +127,9 @@ export default function Booking({ onNavigate, bookingData }) {
       <main className="booking-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="booking-intro-section">
-          <h1 className="booking-main-title">Book Your Visit</h1>
+          <h1 className="booking-main-title">{t('booking.title')}</h1>
           <p className="booking-subtitle">
-            Review your appointment details before confirming.
+            {t('booking.subtitle')}
           </p>
         </section>
 
@@ -127,7 +149,7 @@ export default function Booking({ onNavigate, bookingData }) {
             }}
           >
             <p style={{ fontWeight: 600, margin: '0 0 6px' }}>
-              {isConflict ? 'Slot Unavailable' : 'Booking Error'}
+              {isConflict ? 'Slot Unavailable' : t('common.error')}
             </p>
             <p style={{ margin: 0 }}>{errorMessage}</p>
             {isConflict && (
@@ -154,7 +176,7 @@ export default function Booking({ onNavigate, bookingData }) {
 
         {/* Form Guide Label */}
         <div className="booking-check-label-row">
-          <span className="booking-check-label">Please check your details.</span>
+          <span className="booking-check-label">{t('booking.subtitle')}</span>
         </div>
 
         {/* Appointment Details Summary Card */}
@@ -181,7 +203,7 @@ export default function Booking({ onNavigate, bookingData }) {
             </div>
 
             <div className="summary-place-info">
-              <span className="summary-field-label">Place</span>
+              <span className="summary-field-label">{t('booking.facility')}</span>
               <h2 className="summary-place-name">{appointmentDetails.facility}</h2>
             </div>
           </div>
@@ -190,7 +212,7 @@ export default function Booking({ onNavigate, bookingData }) {
 
           {/* Card Section 2: Doctor / Service */}
           <div className="summary-service-section">
-            <span className="summary-field-label">Doctor / Service</span>
+            <span className="summary-field-label">{t('booking.service')}</span>
             <div className="summary-service-row">
               <span className="summary-stethoscope-glyph" aria-hidden="true">
                 <svg
@@ -218,17 +240,17 @@ export default function Booking({ onNavigate, bookingData }) {
           <div className="summary-datetime-grid">
             {/* Date Column */}
             <div className="summary-date-col">
-              <span className="summary-field-label">Date</span>
+              <span className="summary-field-label">{t('booking.date')}</span>
               <div className="summary-date-value">
-                {dateParts[0] && <span>{dateParts[0]},</span>}
-                {dateParts[1] ? <span>{dateParts[1]}</span> : <span>{appointmentDetails.date}</span>}
+                {dateDay && <span>{dateDay}, </span>}
+                <span>{dateText}</span>
               </div>
             </div>
 
             {/* Time Column */}
             <div className="summary-time-col">
-              <span className="summary-field-label">Time</span>
-              <span className="summary-time-value">{appointmentDetails.time}</span>
+              <span className="summary-field-label">{t('booking.time')}</span>
+              <span className="summary-time-value">{appointmentDetails.time || '—'}</span>
             </div>
           </div>
 
@@ -236,7 +258,7 @@ export default function Booking({ onNavigate, bookingData }) {
 
           {/* Card Section 4: Appointment Type */}
           <div className="summary-type-section">
-            <span className="summary-field-label">Type</span>
+            <span className="summary-field-label">{t('common.status')}</span>
             <div className="summary-type-pill">
               <span className="type-pill-icon" aria-hidden="true">
                 {appointmentDetails.typeKey === 'teleconsultation' ? (
@@ -275,7 +297,7 @@ export default function Booking({ onNavigate, bookingData }) {
                 <polyline points="16 10 11 15 8 12" />
               </svg>
             </span>
-            <span>{isSubmitting ? 'Confirming Visit...' : 'Confirm Appointment'}</span>
+            <span>{isSubmitting ? t('booking.bookingInProgress') : t('booking.confirmBooking')}</span>
           </button>
 
           {/* Secondary Action: Change Time */}
@@ -297,7 +319,7 @@ export default function Booking({ onNavigate, bookingData }) {
                 <path d="M12 18h.01" />
               </svg>
             </span>
-            <span>Change Time</span>
+            <span>{t('availability.selectDate')}</span>
           </button>
         </section>
       </main>

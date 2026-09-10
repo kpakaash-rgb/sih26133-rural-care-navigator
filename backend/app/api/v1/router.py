@@ -41,6 +41,8 @@ from backend.app.api.v1.routes.hospital_recommendation import (
     router as hospital_recommendation_router,
 )
 from backend.app.api.v1.routes.ivr import router as ivr_router
+from backend.app.api.v1.routes.sms import router as sms_router
+from backend.app.api.v1.routes.worker import router as worker_router
 
 api_v1_router = APIRouter(prefix="/api/v1")
 
@@ -49,6 +51,7 @@ api_v1_router = APIRouter(prefix="/api/v1")
 # ──────────────────────────────────────────────────────────────────────────────
 api_v1_router.include_router(health_router)
 api_v1_router.include_router(auth_router)
+api_v1_router.include_router(worker_router)
 api_v1_router.include_router(doctor_router)
 api_v1_router.include_router(patients_router)
 api_v1_router.include_router(screening_router)
@@ -62,6 +65,7 @@ api_v1_router.include_router(schemes_router)
 api_v1_router.include_router(mobile_clinics_router)
 api_v1_router.include_router(triage_router)
 api_v1_router.include_router(hospital_recommendation_router)
+api_v1_router.include_router(sms_router)
 api_v1_router.include_router(ivr_router)
 
 

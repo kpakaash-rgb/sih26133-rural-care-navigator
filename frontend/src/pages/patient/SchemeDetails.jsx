@@ -3,8 +3,10 @@ import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { useTranslation } from '../../i18n'
 
 export default function SchemeDetails({ onNavigate, schemeData }) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
   const [eligibilityNotice, setEligibilityNotice] = useState(false)
 
@@ -106,7 +108,7 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
     <div className="scheme-details-screen-wrapper">
       {/* Top Header with SOS */}
       <Header
-        title="Rural Care Navigator"
+        title={t('common.appName')}
         showLogo
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
@@ -117,7 +119,7 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
         <div className="scheme-details-back-row">
           <button type="button" className="scheme-back-btn" onClick={handleBack}>
             <span className="back-arrow-icon" aria-hidden="true">←</span>
-            <span>Back</span>
+            <span>{t('common.back')}</span>
           </button>
         </div>
 
@@ -164,7 +166,7 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
             className="scheme-check-eligibility-btn"
             onClick={handleCheckEligibility}
           >
-            Check Eligibility
+            {t('schemes.eligibility')}
           </button>
 
           <button
@@ -178,7 +180,7 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
                 <circle cx="12" cy="10" r="3" />
               </svg>
             </span>
-            <span>Find Help Nearby</span>
+            <span>{t('home.findCare')}</span>
           </button>
         </section>
       </main>

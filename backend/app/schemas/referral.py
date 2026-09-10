@@ -7,7 +7,7 @@ Pydantic schemas for Patient Referral requests and responses.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -42,6 +42,7 @@ class ReferralResponse(BaseModel):
 
     id: int
     patient_id: int
+    patient: Optional[Dict[str, Any]] = None
     from_facility_id: Optional[int] = None
     from_facility: Optional[ReferralFacilityInfo] = None
     to_facility_id: int

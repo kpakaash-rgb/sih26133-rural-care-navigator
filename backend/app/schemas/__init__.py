@@ -45,6 +45,10 @@ from backend.app.schemas.consultation import (
     ConsultationCreate,
     ConsultationResponse,
 )
+from backend.app.schemas.sms import (
+    CareSummarySMSRequest,
+    CareSummarySMSResponse,
+)
 
 __all__ = [
     "AppointmentCreate",
@@ -54,6 +58,8 @@ __all__ = [
     "AuthenticatedPatient",
     "AuthTokenResponse",
     "AvailabilitySlotResponse",
+    "CareSummarySMSRequest",
+    "CareSummarySMSResponse",
     "ConsultationCreate",
     "ConsultationResponse",
     "FacilityResponse",
