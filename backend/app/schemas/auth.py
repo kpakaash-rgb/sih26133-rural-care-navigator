@@ -95,6 +95,8 @@ class AuthenticatedPatient(BaseModel):
     gender: Optional[str] = None
     village: Optional[str] = None
     district: Optional[str] = None
+    preferred_language: Optional[str] = None
+    emergency_contact: Optional[str] = None
     abha_number: Optional[str] = None
     role: str = "PATIENT"
 
@@ -136,7 +138,7 @@ class PatientSelfRegisterRequest(BaseModel):
     )
     gender: str = Field(
         ...,
-        description="Patient gender (MALE, FEMALE, or OTHER)",
+        description="Patient gender (MALE, FEMALE, OTHER, or PREFER_NOT_TO_SAY)",
         examples=["MALE"],
     )
     village: str = Field(
@@ -152,6 +154,16 @@ class PatientSelfRegisterRequest(BaseModel):
         max_length=100,
         description="District name",
         examples=["Solapur"],
+    )
+    preferred_language: Optional[str] = Field(
+        "en",
+        description="Preferred language code ('en', 'hi', or 'mr')",
+        examples=["en"],
+    )
+    emergency_contact: Optional[str] = Field(
+        None,
+        description="Optional 10-digit Indian emergency contact mobile number",
+        examples=["9876543211"],
     )
     abha_number: Optional[str] = Field(
         None,
@@ -190,9 +202,9 @@ class PatientSelfRegisterRequest(BaseModel):
     @field_validator("gender")
     @classmethod
     def validate_gender(cls, v: str) -> str:
-        norm = v.strip().upper()
-        if norm not in ("MALE", "FEMALE", "OTHER"):
-            raise ValueError("Gender must be MALE, FEMALE, or OTHER")
+        norm = v.strip().upper().replace(" ", "_")
+        if norm not in ("MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"):
+            raise ValueError("Gender must be MALE, FEMALE, OTHER, or PREFER_NOT_TO_SAY")
         return norm
 
     @field_validator("village", "district")
@@ -202,3 +214,30 @@ class PatientSelfRegisterRequest(BaseModel):
         if not trimmed:
             raise ValueError("Location fields cannot be blank")
         return trimmed
+
+    @field_validator("preferred_language")
+    @classmethod
+    def validate_language(cls, v: Optional[str]) -> str:
+        if not v:
+            return "en"
+        norm = v.strip().lower()
+        if norm in ("en", "english"):
+            return "en"
+        elif norm in ("hi", "hindi"):
+            return "hi"
+        elif norm in ("mr", "marathi"):
+            return "mr"
+        return norm
+
+    @field_validator("emergency_contact")
+    @classmethod
+    def validate_emergency_contact(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return None
+        trimmed = v.strip()
+        if not trimmed:
+            return None
+        clean = clean_mobile_number(trimmed)
+        if not re.match(r"^[6-9]\d{9}$", clean):
+            raise ValueError("Emergency contact number must be a valid 10-digit Indian mobile starting with 6-9")
+        return clean

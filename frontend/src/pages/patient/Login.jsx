@@ -54,8 +54,8 @@ export default function Login({ onNavigate }) {
     try {
       const data = await verifyOtp(cleanMobile, cleanOtp)
       if (data?.is_registered === false || (data?.registration_token && !data?.access_token)) {
-        // OTP verified successfully for new patient -> navigate to Registration screen
-        onNavigate(SCREENS.REGISTRATION, {
+        // OTP verified successfully for first-time patient -> navigate to dedicated Onboarding screen
+        onNavigate(SCREENS.ONBOARDING, {
           mobile: cleanMobile,
           registration_token: data.registration_token,
         })

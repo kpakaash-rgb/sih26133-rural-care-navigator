@@ -38,6 +38,8 @@ class Patient(Base, TimestampMixin):
     gender: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     village: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     district: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    preferred_language: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    emergency_contact: Mapped[Optional[str]] = mapped_column(String(15), nullable=True)
     facility_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     abha_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     consent: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

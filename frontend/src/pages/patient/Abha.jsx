@@ -96,23 +96,58 @@ export default function Abha({ onNavigate, patient, onLogout }) {
           {/* Profile Details List */}
           <div style={{
             margin: '14px 0',
-            padding: '10px 12px',
+            padding: '12px 14px',
             background: '#f8fafc',
-            borderRadius: '6px',
+            borderRadius: '8px',
             fontSize: '12.5px',
             color: '#475569',
             display: 'flex',
             flexDirection: 'column',
-            gap: '6px',
+            gap: '8px',
+            border: '1px solid #e2e8f0',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>{t('auth.district')}:</span>
-              <strong style={{ color: '#0f172a' }}>{patientDistrict}</strong>
-            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>{t('auth.enterMobile')}:</span>
               <strong style={{ color: '#0f172a' }}>{patientMobile}</strong>
             </div>
+            {patient?.age && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{t('auth.age')}:</span>
+                <strong style={{ color: '#0f172a' }}>{patient.age} yrs</strong>
+              </div>
+            )}
+            {patient?.gender && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{t('auth.gender')}:</span>
+                <strong style={{ color: '#0f172a' }}>
+                  {patient.gender === 'MALE' ? t('auth.male') : patient.gender === 'FEMALE' ? t('auth.female') : patient.gender === 'OTHER' ? t('auth.other') : t('auth.preferNotToSay')}
+                </strong>
+              </div>
+            )}
+            {patient?.village && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{t('auth.village')}:</span>
+                <strong style={{ color: '#0f172a' }}>{patient.village}</strong>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>{t('auth.district')}:</span>
+              <strong style={{ color: '#0f172a' }}>{patientDistrict}</strong>
+            </div>
+            {patient?.preferred_language && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{t('auth.prefLanguage')}:</span>
+                <strong style={{ color: '#0f172a' }}>
+                  {patient.preferred_language === 'mr' ? 'मराठी (mr)' : patient.preferred_language === 'hi' ? 'हिंदी (hi)' : 'English (en)'}
+                </strong>
+              </div>
+            )}
+            {patient?.emergency_contact && (
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{t('auth.emergencyContact')}:</span>
+                <strong style={{ color: '#b91c1c' }}>{patient.emergency_contact}</strong>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons Group */}

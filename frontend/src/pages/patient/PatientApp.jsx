@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   Welcome,
   Login,
-  Registration,
+  Onboarding,
   Home,
   Symptoms,
   CareGuidance,
@@ -113,6 +113,7 @@ export default function PatientApp() {
       screenId === SCREENS.WELCOME ||
       screenId === SCREENS.LOGIN ||
       screenId === SCREENS.REGISTRATION ||
+      screenId === SCREENS.ONBOARDING ||
       screenId === SCREENS.AVAILABILITY ||
       screenId === SCREENS.BOOKING ||
       screenId === SCREENS.APPOINTMENT_CONFIRMED ||
@@ -142,7 +143,7 @@ export default function PatientApp() {
       if (data.referral) {
         setSelectedReferral(data.referral)
       }
-      if (screenId === SCREENS.REGISTRATION) {
+      if (screenId === SCREENS.REGISTRATION || screenId === SCREENS.ONBOARDING) {
         setRegistrationData(data)
       }
       // Government scheme details
@@ -246,8 +247,12 @@ export default function PatientApp() {
         <Login onNavigate={handleNavigate} />
       )}
 
+      {currentScreen === SCREENS.ONBOARDING && (
+        <Onboarding onNavigate={handleNavigate} registrationData={registrationData} />
+      )}
+
       {currentScreen === SCREENS.REGISTRATION && (
-        <Registration onNavigate={handleNavigate} registrationData={registrationData} />
+        <Onboarding onNavigate={handleNavigate} registrationData={registrationData} />
       )}
 
       {/* =====================================================

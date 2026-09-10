@@ -137,6 +137,8 @@ def create_all_tables() -> None:
             conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(20);"))
             conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS village VARCHAR(255);"))
             conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS facility_id INTEGER;"))
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(20);"))
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS emergency_contact VARCHAR(15);"))
     except Exception as exc:
         logger.warning(
             "Database table creation skipped or database unreachable: %s", exc

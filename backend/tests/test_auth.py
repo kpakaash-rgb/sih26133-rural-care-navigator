@@ -408,6 +408,66 @@ class TestPatientSelfRegistration:
         assert res.status_code == 422
         _assert_envelope(res.json(), success=False)
 
+    def test_self_registration_with_language_and_emergency_contact(self, client):
+        custom_mobile = "9222211111"
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": custom_mobile})
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+        ver_res = client.post("/api/v1/auth/verify-otp", json={"mobile": custom_mobile, "otp": otp})
+        token = ver_res.json()["data"]["registration_token"]
+
+        reg_payload = {
+            "full_name": "Anil Deshmukh",
+            "mobile": custom_mobile,
+            "age": 45,
+            "gender": "PREFER_NOT_TO_SAY",
+            "village": "Velapur",
+            "district": "Solapur",
+            "preferred_language": "mr",
+            "emergency_contact": "9876543299",
+            "consent": True,
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 200
+        data = res.json()["data"]
+        assert data["patient"]["preferred_language"] == "mr"
+        assert data["patient"]["emergency_contact"] == "9876543299"
+        assert data["patient"]["gender"] == "PREFER_NOT_TO_SAY"
+
+        # Verify /auth/me returns preferred_language and emergency_contact
+        me_res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {data['access_token']}"})
+        assert me_res.status_code == 200
+        assert me_res.json()["data"]["preferred_language"] == "mr"
+        assert me_res.json()["data"]["emergency_contact"] == "9876543299"
+
+    def test_self_registration_invalid_emergency_contact_fails(self, client):
+        mobile = "9111133333"
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": mobile})
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+        ver_res = client.post("/api/v1/auth/verify-otp", json={"mobile": mobile, "otp": otp})
+        token = ver_res.json()["data"]["registration_token"]
+
+        reg_payload = {
+            "full_name": "Test User",
+            "mobile": mobile,
+            "age": 25,
+            "gender": "MALE",
+            "village": "Village",
+            "district": "District",
+            "emergency_contact": "12345",  # Invalid mobile
+            "consent": True,
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 422
+        _assert_envelope(res.json(), success=False)
+
     def test_self_registration_duplicate_mobile_rejected(self, client, registered_patient):
         # Create token for already registered mobile
         token = create_access_token(

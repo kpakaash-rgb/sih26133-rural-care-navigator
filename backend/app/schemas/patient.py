@@ -34,6 +34,8 @@ class PatientResponse(BaseModel):
     gender: Optional[str] = None
     district: Optional[str] = None
     village: Optional[str] = None
+    preferred_language: Optional[str] = None
+    emergency_contact: Optional[str] = None
     facility_id: Optional[int] = None
     abha_number: Optional[str] = None
     created_at: Optional[datetime] = None
