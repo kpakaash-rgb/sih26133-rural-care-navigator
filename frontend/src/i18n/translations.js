@@ -169,6 +169,7 @@ export const translations = {
       selectService: 'Select Service',
       availableSlots: 'Available Time Slots',
       noSlots: 'No available slots for this date. Please select another date.',
+      noFutureAppointments: 'No future appointments available',
       proceedToBook: 'Proceed to Booking',
     },
     booking: {
@@ -217,6 +218,7 @@ export const translations = {
       benefits: 'Benefits Offered',
       viewDetails: 'View Details',
       apply: 'How to Apply',
+      viewOfficialPortal: 'Visit Official Scheme Portal',
     },
     mobileClinic: {
       title: 'Mobile Medical Units',
@@ -512,6 +514,7 @@ export const translations = {
       selectService: 'सेवा चुनें',
       availableSlots: 'उपलब्ध समय स्लॉट',
       noSlots: 'इस तिथि के लिए कोई स्लॉट उपलब्ध नहीं है। कृपया दूसरी तिथि चुनें।',
+      noFutureAppointments: 'कोई भविष्य का अपॉइंटमेंट उपलब्ध नहीं है',
       proceedToBook: 'बुकिंग के लिए आगे बढ़ें',
     },
     booking: {
@@ -560,6 +563,7 @@ export const translations = {
       benefits: 'प्रदान किए जाने वाले लाभ',
       viewDetails: 'विवरण देखें',
       apply: 'आवेदन कैसे करें',
+      viewOfficialPortal: 'आधिकारिक योजना पोर्टल पर जाएं',
     },
     mobileClinic: {
       title: 'मोबाइल मेडिकल यूनिट',
@@ -855,6 +859,7 @@ export const translations = {
       selectService: 'सेवा निवडा',
       availableSlots: 'उपलब्ध वेळ स्लॉट',
       noSlots: 'या तारखेसाठी कोणताही स्लॉट उपलब्ध नाही. कृपया दुसरी तारीख निवडा.',
+      noFutureAppointments: 'कोणत्याही भावी अपॉइंटमेंट्स उपलब्ध नाहीत',
       proceedToBook: 'बुकिंगसाठी पुढे जा',
     },
     booking: {
@@ -903,6 +908,7 @@ export const translations = {
       benefits: 'मिळणारे फायदे',
       viewDetails: 'तपशील पहा',
       apply: 'अर्ज कसा करावा',
+      viewOfficialPortal: 'अधिकृत योजना पोर्टलला भेट द्या',
     },
     mobileClinic: {
       title: 'मोबाईल मेडिकल युनिट',

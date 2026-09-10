@@ -116,12 +116,21 @@ export default function Appointments({ onNavigate }) {
     }
   }
 
+  const now = new Date()
+  const pad = (n) => String(n).padStart(2, '0')
+  const todayLocalStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+
   const upcomingAppointments = appointments.filter(
-    (a) => a.status === 'SCHEDULED' || a.status === 'BOOKED'
+    (a) =>
+      (a.status === 'SCHEDULED' || a.status === 'BOOKED') &&
+      (!a.appointment_date || a.appointment_date >= todayLocalStr)
   )
 
   const pastAppointments = appointments.filter(
-    (a) => a.status === 'COMPLETED' || a.status === 'CANCELLED'
+    (a) =>
+      a.status === 'COMPLETED' ||
+      a.status === 'CANCELLED' ||
+      (a.appointment_date && a.appointment_date < todayLocalStr)
   )
 
   return (

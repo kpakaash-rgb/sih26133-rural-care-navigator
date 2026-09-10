@@ -113,20 +113,43 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
         const data = await getFacilityAvailability(facilityId, queryParams)
         if (isMounted) {
           if (Array.isArray(data) && data.length > 0) {
-            setSlots(data)
+            // Strictly filter to valid future/today-upcoming slots from backend
+            const now = new Date()
+            const pad = (n) => String(n).padStart(2, '0')
+            const todayLocalStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+            const currentHourMin = `${pad(now.getHours())}:${pad(now.getMinutes())}`
 
-            // Extract unique dates
-            const uniqueDates = Array.from(new Set(data.map((s) => s.date))).sort()
-            const dateOpts = uniqueDates.map((dStr, idx) => formatDateDisplay(dStr, idx, t))
-            setDateOptions(dateOpts)
+            const futureSlots = data.filter((s) => {
+              if (s.status !== 'AVAILABLE') return false
+              if (!s.date) return false
+              if (s.date > todayLocalStr) return true
+              if (s.date === todayLocalStr) {
+                return !s.start_time || s.start_time >= currentHourMin
+              }
+              return false
+            })
 
-            const initialDate = uniqueDates[0]
-            setSelectedDate(initialDate)
+            if (futureSlots.length > 0) {
+              setSlots(futureSlots)
 
-            // Auto-select first slot for initial date
-            const dateSlots = data.filter((s) => s.date === initialDate)
-            if (dateSlots.length > 0) {
-              setSelectedSlotId(dateSlots[0].id)
+              // Extract unique dates from actual future backend slots
+              const uniqueDates = Array.from(new Set(futureSlots.map((s) => s.date))).sort()
+              const dateOpts = uniqueDates.map((dStr, idx) => formatDateDisplay(dStr, idx, t))
+              setDateOptions(dateOpts)
+
+              const initialDate = uniqueDates[0]
+              setSelectedDate(initialDate)
+
+              // Auto-select first slot for initial date
+              const dateSlots = futureSlots.filter((s) => s.date === initialDate)
+              if (dateSlots.length > 0) {
+                setSelectedSlotId(dateSlots[0].id)
+              }
+            } else {
+              setSlots([])
+              setDateOptions([])
+              setSelectedDate('')
+              setSelectedSlotId(null)
             }
           } else {
             setSlots([])
@@ -361,7 +384,9 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
           </div>
         ) : dateOptions.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '36px 16px', color: '#64748b' }}>
-            <p>{t('availability.noSlots')}</p>
+            <p style={{ fontWeight: 500, fontSize: '14px' }}>
+              {t('availability.noFutureAppointments') || 'No future appointments available'}
+            </p>
           </div>
         ) : (
           <>

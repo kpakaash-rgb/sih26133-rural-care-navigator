@@ -50,14 +50,14 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
     }
   }
 
-  const schemeTitle = schemeData?.title || 'Ayushman Bharat PM-JAY'
-  const schemeBadge = schemeData?.category || 'Government Scheme'
+  const schemeTitle = schemeData?.name || schemeData?.title || 'Government Scheme'
+  const schemeBadge = schemeData?.relevance || schemeData?.state || schemeData?.category || 'Government Scheme'
 
   const infoCards = [
     {
       id: 'what-it-is',
-      title: 'What it is',
-      text: 'A government health coverage programme for eligible beneficiaries.',
+      title: t('schemes.description') || 'What it is',
+      text: schemeData?.description || schemeData?.short_description || 'A government health coverage programme for eligible beneficiaries.',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
@@ -68,8 +68,8 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
     },
     {
       id: 'who-eligible',
-      title: 'Who may be eligible',
-      text: 'Eligibility depends on the applicable government criteria.',
+      title: t('schemes.eligibility') || 'Who may be eligible',
+      text: schemeData?.eligibility || 'Eligibility depends on the applicable government criteria.',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -81,8 +81,8 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
     },
     {
       id: 'what-provides',
-      title: 'What it may provide',
-      text: 'Hospitalisation-related health coverage for eligible beneficiaries.',
+      title: t('schemes.benefits') || 'What it may provide',
+      text: schemeData?.benefits || 'Hospitalisation-related health coverage for eligible beneficiaries.',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="3" width="18" height="18" rx="4" stroke="#004b87" strokeWidth="2" />
@@ -93,8 +93,8 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
     },
     {
       id: 'how-get-help',
-      title: 'How to get help',
-      text: 'Visit an authorised healthcare/facilitation point.',
+      title: t('schemes.apply') || 'How to get help',
+      text: schemeData?.application_process || 'Visit an authorised healthcare or CSC facilitation point.',
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#004b87" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
@@ -173,6 +173,20 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
             type="button"
             className="scheme-find-help-btn"
             onClick={handleFindHelp}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              backgroundColor: '#004b87',
+              color: '#ffffff',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: 'pointer',
+            }}
           >
             <span className="btn-glyph-pin" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -182,6 +196,31 @@ export default function SchemeDetails({ onNavigate, schemeData }) {
             </span>
             <span>{t('home.findCare')}</span>
           </button>
+
+          {schemeData?.official_link && (
+            <a
+              href={schemeData.official_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="scheme-official-link-btn"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                padding: '12px 16px',
+                borderRadius: '8px',
+                backgroundColor: '#f1f5f9',
+                color: '#004b87',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '13px',
+                marginTop: '10px',
+              }}
+            >
+              <span>🔗 {t('schemes.viewOfficialPortal') || 'Visit Official Scheme Portal'}</span>
+            </a>
+          )}
         </section>
       </main>
 

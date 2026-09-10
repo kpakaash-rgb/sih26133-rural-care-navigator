@@ -166,7 +166,8 @@ DEMO_MOBILE_CLINICS = [
     },
 ]
 
-DEMO_DATES = ["2026-09-02", "2026-09-03", "2026-09-04"]
+from datetime import date, timedelta
+
 DEMO_TIME_SLOTS = [
     ("09:00", "09:30"),
     ("09:30", "10:00"),
@@ -181,15 +182,75 @@ DEMO_TIME_SLOTS = [
 ]
 
 
+def get_dynamic_upcoming_dates(days: int = 7) -> list[str]:
+    """Generate dynamic upcoming dates for the next N days starting from today."""
+    today = date.today()
+    return [(today + timedelta(days=i)).strftime("%Y-%m-%d") for i in range(0, days)]
+
+
+def ensure_active_availability_slots(db: Session, days_ahead: int = 7) -> None:
+    """
+    Ensure that active healthcare facilities have upcoming availability slots in PostgreSQL.
+    If a facility has no future available slots, dynamically generates slots for its active services.
+    """
+    today_str = date.today().strftime("%Y-%m-%d")
+    facilities = db.execute(select(Facility).where(Facility.status == "ACTIVE")).scalars().all()
+    upcoming_dates = get_dynamic_upcoming_dates(days_ahead)
+
+    for facility in facilities:
+        services = facility.services or []
+        if not services:
+            continue
+
+        future_slots = (
+            db.execute(
+                select(AvailabilitySlot).where(
+                    AvailabilitySlot.facility_id == facility.id,
+                    AvailabilitySlot.date >= today_str,
+                    AvailabilitySlot.status == "AVAILABLE",
+                )
+            )
+            .scalars()
+            .all()
+        )
+
+        if len(future_slots) < 3:
+            for date_str in upcoming_dates:
+                existing_for_date = (
+                    db.execute(
+                        select(AvailabilitySlot).where(
+                            AvailabilitySlot.facility_id == facility.id,
+                            AvailabilitySlot.date == date_str,
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                if len(existing_for_date) == 0:
+                    for idx, (start_time, end_time) in enumerate(DEMO_TIME_SLOTS):
+                        service_id = services[idx % len(services)].id
+                        slot = AvailabilitySlot(
+                            facility_id=facility.id,
+                            service_id=service_id,
+                            date=date_str,
+                            start_time=start_time,
+                            end_time=end_time,
+                            status="AVAILABLE",
+                        )
+                        db.add(slot)
+    db.commit()
+
+
 def seed_demo_data(db: Session) -> None:
     """
     Seed initial prototype facilities, services, schemes, mobile clinics, and availability slots.
 
-    Safe to run repeatedly — only seeds when facilities table has 0 records.
+    Safe to run repeatedly — only seeds when facilities table has 0 records, and maintains active availability slots.
     """
     existing_count = db.execute(select(Facility)).first()
     if existing_count is not None:
-        logger.info("Demo data already seeded.")
+        logger.info("Demo facilities already exist. Ensuring active availability slots...")
+        ensure_active_availability_slots(db)
         return
 
     logger.info("Seeding demonstration healthcare facilities, schemes, and availability slots...")
@@ -220,8 +281,9 @@ def seed_demo_data(db: Session) -> None:
             db.flush()
             created_services.append(service)
 
-        # Create realistic demo availability slots for each date
-        for date_str in DEMO_DATES:
+        # Create realistic dynamic upcoming availability slots for each date
+        upcoming_dates = get_dynamic_upcoming_dates(7)
+        for date_str in upcoming_dates:
             for idx, (start_time, end_time) in enumerate(DEMO_TIME_SLOTS):
                 # Distribute slots across services
                 service_id = created_services[idx % len(created_services)].id
