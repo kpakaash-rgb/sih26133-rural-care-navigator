@@ -733,7 +733,7 @@ def test_o_audio_conversion_utilities():
 def test_p_exotel_resolver_returns_200_and_wss_url(client: TestClient):
     """
     Verify GET /api/v1/ivr/exotel returns 200 with dynamic WebSocket URL
-    and accepts Exotel call query parameters without requiring authentication.
+    and accepts Exotel call query parameters without requiring authentication, preserving them.
     """
     exotel_params = {
         "CallSid": "CA_TEST_CALL_12345",
@@ -747,7 +747,8 @@ def test_p_exotel_resolver_returns_200_and_wss_url(client: TestClient):
     assert "url" in data
     assert data["url"].startswith("wss://")
     assert "delusion-moody-spruce.ngrok-free.dev" in data["url"]
-    assert data["url"].endswith("/api/v1/ivr/exotel")
+    assert "CallSid=CA_TEST_CALL_12345" in data["url"]
+    assert "From=" in data["url"]
 
 
 def test_p2_exotel_resolver_fallback_dynamic(client: TestClient):
@@ -760,7 +761,8 @@ def test_p2_exotel_resolver_fallback_dynamic(client: TestClient):
         response = client.get("/api/v1/ivr/exotel?CallSid=CA999", headers=headers)
         assert response.status_code == 200
         data = response.json()
-        assert data["url"] == "wss://custom-tunnel.ngrok-free.app/api/v1/ivr/exotel"
+        assert "wss://custom-tunnel.ngrok-free.app/api/v1/ivr/exotel" in data["url"]
+        assert "CallSid=CA999" in data["url"]
 
 
 # ──────────────────────────────────────────────────────────────────────────────

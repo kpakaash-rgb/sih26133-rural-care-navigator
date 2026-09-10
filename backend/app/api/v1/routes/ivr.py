@@ -591,13 +591,20 @@ async def exotel_voicebot_resolver(request: Request) -> Dict[str, str]:
     CallSid, From, To, CallStatus) to dynamically resolve the bidirectional WSS URL.
 
     Returns:
-        {"url": "<configured Exotel WSS URL>"}
+        {"url": "<configured Exotel WSS URL with preserved query parameters>"}
 
     Accepts Exotel's call query parameters without requiring authentication.
     Does not weaken security anywhere else in the application.
     """
     call_sid = request.query_params.get("CallSid") or request.query_params.get("call_sid") or ""
-    from_number = request.query_params.get("From") or request.query_params.get("from") or ""
+    from_number = (
+        request.query_params.get("From")
+        or request.query_params.get("from")
+        or request.query_params.get("CallerId")
+        or request.query_params.get("caller_id")
+        or request.query_params.get("CallFrom")
+        or ""
+    )
     logger.info(
         "Exotel dynamic stream resolver requested for CallSid=%s, From=%s",
         call_sid,
@@ -624,7 +631,29 @@ async def exotel_voicebot_resolver(request: Request) -> Dict[str, str]:
         ws_proto = "wss" if is_secure else "ws"
         stream_url = f"{ws_proto}://{host}/api/v1/ivr/exotel"
 
-    return {"url": stream_url}
+    parsed = urllib.parse.urlparse(stream_url)
+    existing_qs = urllib.parse.parse_qs(parsed.query)
+
+    if from_number:
+        existing_qs["From"] = [from_number]
+    if call_sid:
+        existing_qs["CallSid"] = [call_sid]
+
+    for k, v in request.query_params.items():
+        if k not in existing_qs and v:
+            existing_qs[k] = [v]
+
+    new_query = urllib.parse.urlencode(existing_qs, doseq=True)
+    final_stream_url = urllib.parse.urlunparse((
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        parsed.params,
+        new_query,
+        parsed.fragment,
+    ))
+
+    return {"url": final_stream_url}
 
 
 KNOWN_SYMPTOMS_EN = (
@@ -953,8 +982,8 @@ def _persist_voice_encounter(session: ExotelVoiceSession, db: Optional[Any] = No
             pat_age = getattr(session, "age", None)
             pat_gender = getattr(session, "gender", None)
             pat_notes = getattr(session, "additional_notes", None)
-            if hasattr(session, "conversation_memory") and session.conversation_memory:
-                mem = session.conversation_memory
+            mem = getattr(session, "conversation_memory", None)
+            if mem:
                 pat_name = pat_name or getattr(mem, "patient_name", None)
                 pat_age = pat_age if pat_age is not None else getattr(mem, "age", None)
                 pat_gender = pat_gender or getattr(mem, "gender", None)
@@ -971,16 +1000,20 @@ def _persist_voice_encounter(session: ExotelVoiceSession, db: Optional[Any] = No
                             full_name=pat_name,
                             age=pat_age,
                             gender=pat_gender,
-                            village=session.location,
+                            village=session.location or (getattr(mem, "locality", None) if mem else None) or "Rural",
+                            district=(getattr(mem, "district", None) if mem else None) or "Solapur",
                         )
                         if pat_obj:
                             session.patient_id = pat_obj.id
+                            if mem:
+                                mem.patient_id = pat_obj.id
+                                mem.is_existing_patient = True
                     elif not session.patient_id:
                         found_pat = p_repo.get_by_phone(clean_p) or p_repo.get_by_phone(session.phone_number)
                         if found_pat:
                             session.patient_id = found_pat.id
                             if not pat_name:
-                                pat_name = found_pat.name
+                                pat_name = getattr(found_pat, "full_name", None) or getattr(found_pat, "name", None)
                             if pat_age is None:
                                 pat_age = found_pat.age
                             if not pat_gender:
@@ -1094,7 +1127,7 @@ async def exotel_voicebot_stream(
     logger.info("[EXOTEL_WS] WebSocket accepted immediately from client: %s", client_host)
 
     session = ExotelVoiceSession()
-    # Capture caller phone number from query parameters or headers
+    # Capture caller phone number and call SID from query parameters or headers
     query_params = dict(websocket.query_params)
     phone_number = (
         query_params.get("From")
@@ -1105,7 +1138,14 @@ async def exotel_voicebot_stream(
         or websocket.headers.get("x-exotel-from")
         or ""
     )
+    call_sid = (
+        query_params.get("CallSid")
+        or query_params.get("call_sid")
+        or query_params.get("callSid")
+        or ""
+    )
     session.phone_number = str(phone_number).strip()
+    session.call_sid = str(call_sid).strip()
     agent = ConversationAgent()
     memory = ConversationMemory(
         language=session.language_code or "en-IN",
@@ -1114,47 +1154,51 @@ async def exotel_voicebot_stream(
     )
     session.conversation_memory = memory
 
-    if session.phone_number:
-        try:
-            from backend.app.repositories.patient_repository import PatientRepository
-            clean_phone = session.phone_number.replace("+91", "").replace("+", "").strip()[-10:]
-            p_repo = PatientRepository(db)
-            patient = p_repo.get_by_phone(clean_phone) or p_repo.get_by_phone(session.phone_number)
-            if patient:
-                session.patient_id = patient.id
-                session.is_registered_patient = True
-                memory.patient_id = patient.id
-                memory.is_existing_patient = True
-                if getattr(patient, "name", None):
-                    memory.patient_name = patient.name
-                    session.patient_name = patient.name
-                if getattr(patient, "age", None):
-                    memory.age = patient.age
-                    session.age = patient.age
-                if getattr(patient, "gender", None):
-                    memory.gender = patient.gender
-                    session.gender = patient.gender
-                if getattr(patient, "village", None):
-                    memory.locality = patient.village
-                    session.location = patient.village
-                if getattr(patient, "district", None):
-                    memory.district = patient.district
-                if getattr(patient, "preferred_language", None):
-                    lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
-                    pref = lang_map.get(patient.preferred_language, patient.preferred_language)
-                    if pref in ("en-IN", "hi-IN", "mr-IN"):
-                        memory.preferred_language = pref
-                logger.info(
-                    "[EXOTEL_WS] Resolved caller phone %s to existing patient ID %d (%s, %s, %s, %s)",
-                    session.phone_number,
-                    patient.id,
-                    memory.patient_name,
-                    memory.age,
-                    memory.gender,
-                    memory.locality,
-                )
-        except Exception as p_err:
-            logger.debug("[EXOTEL_WS] Patient lookup note: %s", p_err)
+    def resolve_existing_patient_if_found() -> None:
+        if session.phone_number and not session.patient_id:
+            try:
+                from backend.app.repositories.patient_repository import PatientRepository
+                clean_phone = session.phone_number.replace("+91", "").replace("+", "").strip()[-10:]
+                p_repo = PatientRepository(db)
+                patient = p_repo.get_by_phone(clean_phone) or p_repo.get_by_phone(session.phone_number)
+                if patient:
+                    session.patient_id = patient.id
+                    session.is_registered_patient = True
+                    memory.patient_id = patient.id
+                    memory.is_existing_patient = True
+                    p_name = getattr(patient, "full_name", None) or getattr(patient, "name", None)
+                    if p_name:
+                        memory.patient_name = p_name
+                        session.patient_name = p_name
+                    if getattr(patient, "age", None) is not None:
+                        memory.age = patient.age
+                        session.age = patient.age
+                    if getattr(patient, "gender", None):
+                        memory.gender = patient.gender
+                        session.gender = patient.gender
+                    if getattr(patient, "village", None):
+                        memory.locality = patient.village
+                        session.location = patient.village
+                    if getattr(patient, "district", None):
+                        memory.district = patient.district
+                    if getattr(patient, "preferred_language", None):
+                        lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
+                        pref = lang_map.get(patient.preferred_language, patient.preferred_language)
+                        if pref in ("en-IN", "hi-IN", "mr-IN"):
+                            memory.preferred_language = pref
+                    logger.info(
+                        "[EXOTEL_WS] Resolved caller phone %s to existing patient ID %d (%s, %s, %s, %s)",
+                        session.phone_number,
+                        patient.id,
+                        memory.patient_name,
+                        memory.age,
+                        memory.gender,
+                        memory.locality,
+                    )
+            except Exception as p_err:
+                logger.debug("[EXOTEL_WS] Patient lookup note: %s", p_err)
+
+    resolve_existing_patient_if_found()
 
     def persist_current_encounter() -> Optional[int]:
         return _persist_voice_encounter(session, db=db)
@@ -1630,7 +1674,37 @@ async def exotel_voicebot_stream(
                     session.has_started = True
                     start_data = payload.get("start") or {}
                     session.stream_sid = str(payload.get("streamSid") or payload.get("stream_sid") or start_data.get("streamSid") or start_data.get("stream_sid") or "").strip()
-                    session.call_sid = str(payload.get("callSid") or payload.get("call_sid") or start_data.get("callSid") or start_data.get("call_sid") or "").strip()
+
+                    extracted_call_sid = str(
+                        payload.get("callSid")
+                        or payload.get("call_sid")
+                        or start_data.get("callSid")
+                        or start_data.get("call_sid")
+                        or ""
+                    ).strip()
+                    if extracted_call_sid and not session.call_sid:
+                        session.call_sid = extracted_call_sid
+
+                    extracted_phone = str(
+                        start_data.get("from")
+                        or start_data.get("From")
+                        or start_data.get("callerId")
+                        or start_data.get("caller_id")
+                        or start_data.get("CallFrom")
+                        or payload.get("from")
+                        or payload.get("From")
+                        or payload.get("callerId")
+                        or payload.get("caller_id")
+                        or ""
+                    ).strip()
+                    if extracted_phone and not session.phone_number:
+                        session.phone_number = extracted_phone
+                        if not memory.caller_phone:
+                            memory.caller_phone = extracted_phone
+                            memory.phone_number = extracted_phone
+
+                    resolve_existing_patient_if_found()
+
                     media_format = start_data.get("mediaFormat") or start_data.get("media_format") or payload.get("mediaFormat") or payload.get("media_format") or {}
                     session.sample_rate = int(media_format.get("sampleRate") or media_format.get("sample_rate") or settings.EXOTEL_SAMPLE_RATE)
                     session.channels = int(media_format.get("channels") or 1)

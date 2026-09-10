@@ -44,6 +44,9 @@ class PatientRepository(BaseRepository[Patient]):
         age: Optional[int] = None,
         gender: Optional[str] = None,
         village: Optional[str] = None,
+        district: Optional[str] = None,
+        preferred_language: Optional[str] = None,
+        facility_id: Optional[int] = None,
     ) -> Patient:
         """
         Idempotently find an existing patient by mobile or create a new patient record.
@@ -64,6 +67,15 @@ class PatientRepository(BaseRepository[Patient]):
             if village and not existing.village:
                 existing.village = village
                 updated = True
+            if district and not existing.district:
+                existing.district = district
+                updated = True
+            if preferred_language and not existing.preferred_language:
+                existing.preferred_language = preferred_language
+                updated = True
+            if facility_id is not None and existing.facility_id is None:
+                existing.facility_id = facility_id
+                updated = True
             if updated:
                 self.db.add(existing)
                 self.db.commit()
@@ -77,6 +89,9 @@ class PatientRepository(BaseRepository[Patient]):
             age=age,
             gender=gender,
             village=village,
+            district=district,
+            preferred_language=preferred_language,
+            facility_id=facility_id,
         )
 
     def create_patient(

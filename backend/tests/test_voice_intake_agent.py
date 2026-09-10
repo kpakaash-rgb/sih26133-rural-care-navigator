@@ -420,3 +420,208 @@ def test_dtmf_fallback_still_works(client: TestClient):
 
             # Disconnect cleanly
             ws.send_json({"event": "stop"})
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 17: Exotel Resolver Preserves From and CallSid Query Parameters
+# ──────────────────────────────────────────────────────────────────────────────
+def test_exotel_resolver_preserves_caller_parameters(client: TestClient):
+    resp = client.get("/api/v1/ivr/exotel?From=09876543210&CallSid=CA_EXOTEL_TEST_99")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "url" in data
+    stream_url = data["url"]
+    assert "From=09876543210" in stream_url or "From=9876543210" in stream_url
+    assert "CallSid=CA_EXOTEL_TEST_99" in stream_url
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 18: Exotel WebSocket Start Event Extracts Caller Phone and Resolves Existing Patient
+# ──────────────────────────────────────────────────────────────────────────────
+def test_exotel_start_event_extracts_phone_and_resolves_existing_patient(client: TestClient, db_session):
+    p_repo = PatientRepository(db_session)
+    caller_phone = "9823001122"
+    pat = p_repo.get_or_create_patient(
+        mobile=caller_phone,
+        full_name="Deepak Joshi",
+        age=39,
+        gender="male",
+        village="Malshiras",
+    )
+    db_session.commit()
+
+    dummy_wav = _create_synthetic_wav(duration_ms=50)
+    mock_tts = TTSAudioResult(audio_base64=base64.b64encode(dummy_wav).decode("ascii"), audio_bytes=dummy_wav)
+
+    with patch("backend.app.services.sarvam_tts_service.SarvamTTSService.synthesize", new=AsyncMock(return_value=mock_tts)):
+        with client.websocket_connect(f"/api/v1/ivr/exotel?From={caller_phone}&CallSid=CA_START_TEST") as ws:
+            ws.send_json({
+                "event": "start",
+                "stream_sid": "MZ_PHONE_EXTRACT_TEST",
+                "start": {
+                    "stream_sid": "MZ_PHONE_EXTRACT_TEST",
+                    "call_sid": "CA_START_TEST",
+                    "from": caller_phone,
+                }
+            })
+            _ = ws.receive_json()
+
+            from backend.app.api.v1.routes.ivr import ACTIVE_VOICE_SESSIONS
+            session = ACTIVE_VOICE_SESSIONS.get("MZ_PHONE_EXTRACT_TEST")
+            assert session is not None
+            assert session.phone_number == caller_phone
+            assert session.call_sid == "CA_START_TEST"
+            assert session.patient_id == pat.id
+            assert session.patient_name == "Deepak Joshi"
+
+            ws.send_json({"event": "stop"})
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 19: Unknown Caller Creates Patient and Links VoiceEncounter & HealthJourney
+# ──────────────────────────────────────────────────────────────────────────────
+def test_unknown_caller_creates_patient_and_links_encounter(db_session):
+    from backend.app.services.exotel_voice_service import ExotelVoiceSession
+    from backend.app.api.v1.routes.ivr import _persist_voice_encounter
+    from backend.app.repositories.health_journey_repository import HealthJourneyRepository
+
+    caller_phone = "919876543210"
+    session = ExotelVoiceSession()
+    session.stream_sid = "MZ_UNK_CALLER_TEST"
+    session.call_sid = "CA_UNK_CALLER_TEST"
+    session.phone_number = caller_phone
+    session.patient_name = "Vikas Patil"
+    session.age = 45
+    session.location = "Akluj"
+    session.symptoms = ["fever", "body pain"]
+    session.symptom_duration = "3 days"
+    session.last_triage = {
+        "urgency": "needs_attention",
+        "reason": "Moderate fever",
+        "emergency": False,
+        "recommended_care_level": "Primary Health Centre",
+    }
+
+    mem = ConversationMemory(
+        caller_phone=caller_phone,
+        patient_name="Vikas Patil",
+        age=45,
+        locality="Akluj",
+        district="Solapur",
+    )
+    session.conversation_memory = mem
+
+    enc_id = _persist_voice_encounter(session, db=db_session)
+    db_session.commit()
+
+    assert enc_id is not None
+    assert session.patient_id is not None
+
+    p_repo = PatientRepository(db_session)
+    pat = p_repo.get_by_id(session.patient_id)
+    assert pat is not None
+    assert pat.full_name == "Vikas Patil"
+    assert pat.age == 45
+    assert pat.village == "Akluj"
+    assert pat.gender is None  # Gender is not inferred or fabricated
+
+    v_repo = VoiceEncounterRepository(db_session)
+    enc = v_repo.get_by_id(enc_id)
+    assert enc is not None
+    assert enc.patient_id == pat.id
+    assert enc.patient_name == "Vikas Patil"
+
+    hj_repo = HealthJourneyRepository(db_session)
+    events = hj_repo.get_events_by_patient(pat.id)
+    assert len(events) >= 1
+    assert any(e.event_type == "TRIAGE" for e in events)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 20: Booking Appointment Links to Same Patient
+# ──────────────────────────────────────────────────────────────────────────────
+def test_ivr_booking_links_to_same_patient(db_session):
+    from backend.app.services.exotel_voice_service import ExotelVoiceSession
+    from backend.app.api.v1.routes.ivr import _book_appointment_for_session, _persist_voice_encounter
+    from backend.app.repositories.appointment_repository import AppointmentRepository
+
+    caller_phone = "9876599887"
+    session = ExotelVoiceSession()
+    session.phone_number = caller_phone
+    session.patient_name = "Pooja Deshmukh"
+    session.age = 28
+    session.location = "Malshiras"
+    session.symptoms = ["cough"]
+    session.symptom_duration = "2 days"
+    session.booking_intent = True
+
+    # Persist encounter (creates/links patient)
+    _persist_voice_encounter(session, db=db_session)
+    db_session.commit()
+    assert session.patient_id is not None
+    pat_id = session.patient_id
+
+    # Book appointment
+    appt_id = _book_appointment_for_session(session, db=db_session)
+    db_session.commit()
+    assert appt_id is not None
+    session.appointment_id = appt_id
+
+    ap_repo = AppointmentRepository(db_session)
+    appt = ap_repo.get_by_id(appt_id)
+    assert appt is not None
+    assert appt.patient_id == pat_id
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 21: Doctor Clinical Summary Returns VoiceEncounter for IVR Patient
+# ──────────────────────────────────────────────────────────────────────────────
+def test_doctor_clinical_summary_retrieves_ivr_voice_encounter(client: TestClient, db_session):
+    from backend.app.services.exotel_voice_service import ExotelVoiceSession
+    from backend.app.api.v1.routes.ivr import _persist_voice_encounter
+    from backend.app.core.security import create_access_token
+
+    caller_phone = "9822998877"
+    session = ExotelVoiceSession()
+    session.phone_number = caller_phone
+    session.patient_name = "Ramesh Gaikwad"
+    session.age = 50
+    session.location = "Malshiras"
+    session.symptoms = ["fever", "headache"]
+    session.symptom_duration = "2 days"
+    session.last_triage = {
+        "urgency": "needs_attention",
+        "reason": "Persistent fever with headache",
+        "emergency": False,
+        "recommended_care_level": "Primary Health Centre",
+    }
+    session.conversation_memory = ConversationMemory(
+        caller_phone=caller_phone,
+        patient_name="Ramesh Gaikwad",
+        age=50,
+        locality="Malshiras",
+        district="Solapur",
+    )
+
+    enc_id = _persist_voice_encounter(session, db=db_session)
+    db_session.commit()
+    pat_id = session.patient_id
+    assert pat_id is not None
+
+    token = create_access_token(subject="DOC-10101", role="DOCTOR")
+    resp = client.get(
+        f"/api/v1/doctor/patients/{pat_id}/clinical-summary",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert resp.status_code == 200
+    res = resp.json()
+    assert "data" in res
+    data = res["data"]
+    assert "patient" in data
+    assert data["patient"]["id"] == pat_id
+    assert data["patient"]["name"] == "Ramesh Gaikwad"
+    assert data["patient"]["gender"] is None  # Gender not inferred
+    assert "voice_encounter" in data
+    assert data["voice_encounter"] is not None
+    assert data["voice_encounter"]["patient_name"] == "Ramesh Gaikwad"
+    assert "fever" in data["voice_encounter"]["symptoms"]
