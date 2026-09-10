@@ -338,8 +338,25 @@ def test_doctor_clinical_summary_includes_all_fields(client: TestClient, db_sess
 # Test 15: Bilingual Hindi Intake Flow
 # ──────────────────────────────────────────────────────────────────────────────
 def test_intake_bilingual_hindi_flow(db_session):
+    from backend.app.repositories.patient_repository import PatientRepository
+    p_repo = PatientRepository(db_session)
+    pat = p_repo.create_patient(
+        mobile="9876500002",
+        full_name="Sunita Devi",
+        age=32,
+        gender="female",
+        village="Malshiras",
+    )
     agent = ConversationAgent()
-    mem = ConversationMemory(language="hi-IN", caller_phone="9876500002")
+    mem = ConversationMemory(
+        language="hi-IN",
+        caller_phone="9876500002",
+        is_existing_patient=True,
+        patient_id=pat.id,
+        patient_name="Sunita Devi",
+        age=32,
+        gender="female",
+    )
 
     # Turn 1: Symptoms in Hindi
     speech1, act1 = agent.handle_turn("Mujhe bukhar aur gale mein dard hai", mem, db=db_session)

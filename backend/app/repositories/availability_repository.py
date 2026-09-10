@@ -56,6 +56,34 @@ class AvailabilityRepository(BaseRepository[AvailabilitySlot]):
         stmt = stmt.order_by(AvailabilitySlot.date.asc(), AvailabilitySlot.start_time.asc())
         return list(self.db.scalars(stmt).all())
 
+    def get_future_available_slots(
+        self,
+        facility_id: int,
+        service_id: Optional[int] = None,
+        min_date: Optional[str] = None,
+    ) -> List[AvailabilitySlot]:
+        """
+        Fetch future available slots starting from min_date (default: today).
+        Guarantees that no past/stale slots are returned.
+        """
+        from datetime import date as dt_date
+        effective_min_date = min_date or dt_date.today().isoformat()
+
+        stmt = (
+            select(AvailabilitySlot)
+            .where(
+                AvailabilitySlot.facility_id == facility_id,
+                AvailabilitySlot.status == "AVAILABLE",
+                AvailabilitySlot.date >= effective_min_date,
+            )
+            .options(selectinload(AvailabilitySlot.service))
+        )
+        if service_id is not None:
+            stmt = stmt.where(AvailabilitySlot.service_id == service_id)
+
+        stmt = stmt.order_by(AvailabilitySlot.date.asc(), AvailabilitySlot.start_time.asc())
+        return list(self.db.scalars(stmt).all())
+
     def create_slot(
         self,
         facility_id: int,

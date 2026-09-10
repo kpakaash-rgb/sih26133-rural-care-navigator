@@ -65,10 +65,10 @@ class IVRState(str, Enum):
     ENDED = "ENDED"
 
 
-# Bilingual Prompts
+# Trilingual Prompts (English, Hindi, Marathi)
 EXOTEL_INITIAL_LANGUAGE_MENU: str = (
     "Namaste. Rural Care Navigator mein aapka swagat hai. "
-    "For English, press 1. Hindi ke liye 2 dabayein."
+    "For English, press 1. Hindi ke liye 2 dabayein. Marathi sathi 3 daba."
 )
 EXOTEL_GREETING_TEXT: str = EXOTEL_INITIAL_LANGUAGE_MENU
 
@@ -84,6 +84,12 @@ EXOTEL_SYMPTOM_PROMPT_HI: str = (
     "pet samasya ke liye 4, chot ke liye 5, aapatkal ke liye 0."
 )
 
+EXOTEL_SYMPTOM_PROMPT_MR: str = (
+    "Krupaya aapli lakshane sanga, kinva keypad var daba: "
+    "tap sathi 1, khokla sathi 2, vedna sathi 3, "
+    "pot dukhi sathi 4, jakhmi sathi 5, aapatkalin sathi 0."
+)
+
 EXOTEL_EMERGENCY_PROMPT_EN: str = (
     "This may be an emergency. Please tell me your current village, town, or location immediately."
 )
@@ -92,14 +98,93 @@ EXOTEL_EMERGENCY_PROMPT_HI: str = (
     "Yeh ek aapatkalin sthiti ho sakti hai. Kripya turant apna gaon ya sthan batayein."
 )
 
+EXOTEL_EMERGENCY_PROMPT_MR: str = (
+    "Hi aapatkalin sthiti asu shakte. Krupaya lagech aple gaon kinva thikan sanga."
+)
+
 EXOTEL_LANG_INVALID_RETRY_EN: str = (
-    "Invalid option. For English, press 1. Hindi ke liye 2 dabayein."
+    "Invalid option. For English, press 1. Hindi ke liye 2 dabayein. Marathi sathi 3 daba."
 )
 
 EXOTEL_LANG_FALLBACK_EN: str = (
     "Setting default language to English. Please describe your symptoms "
     "or press digits on your keypad."
 )
+
+
+def format_slot_for_speech(
+    slot_date: Optional[str],
+    start_time: Optional[str],
+    language_code: Optional[str] = "en-IN",
+) -> str:
+    """
+    Format appointment slot date and time dynamically for natural speech synthesis.
+    Eliminates all static past dates and calculates relative (today, tomorrow) or absolute dates.
+    """
+    from datetime import date as dt_date, datetime as dt_datetime, timedelta as dt_timedelta
+
+    lang = (language_code or "en-IN").strip().lower()
+    is_hi = "hi" in lang
+    is_mr = "mr" in lang
+
+    if not slot_date:
+        if is_hi:
+            return "aane wale uplabdh samay"
+        elif is_mr:
+            return "pudhil uplabdha velevar"
+        return "an upcoming available time"
+
+    today_d = dt_date.today()
+    try:
+        parsed_d = dt_datetime.strptime(slot_date, "%Y-%m-%d").date()
+    except Exception:
+        parsed_d = today_d + dt_timedelta(days=1)
+
+    time_str = str(start_time or "10:00").strip()
+    # Format time to AM/PM or 24-hr clean description
+    formatted_time = time_str
+    try:
+        if ":" in time_str:
+            parts = time_str.split(":")
+            h, m = int(parts[0]), int(parts[1])
+            period = "AM" if h < 12 else "PM"
+            disp_h = h if h <= 12 else h - 12
+            disp_h = 12 if disp_h == 0 else disp_h
+            if is_hi:
+                period_hi = "subah" if h < 12 else ("dopahar" if h < 17 else "shaam")
+                formatted_time = f"{period_hi} {disp_h}:{m:02d} baje" if m else f"{period_hi} {disp_h} baje"
+            elif is_mr:
+                period_mr = "sakali" if h < 12 else ("dupari" if h < 17 else "sandhyakali")
+                formatted_time = f"{period_mr} {disp_h}:{m:02d} vajta" if m else f"{period_mr} {disp_h} vajta"
+            else:
+                formatted_time = f"{disp_h}:{m:02d} {period}" if m else f"{disp_h} {period}"
+    except Exception:
+        formatted_time = time_str
+
+    # Relative date check
+    if parsed_d == today_d:
+        if is_hi:
+            return f"aaj {formatted_time}"
+        elif is_mr:
+            return f"aaj {formatted_time}"
+        return f"today at {formatted_time}"
+    elif parsed_d == today_d + dt_timedelta(days=1):
+        if is_hi:
+            return f"kal {formatted_time}"
+        elif is_mr:
+            return f"udya {formatted_time}"
+        return f"tomorrow at {formatted_time}"
+    else:
+        # Full date string e.g. "12 September"
+        month_names_en = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+        month_name = month_names_en[parsed_d.month - 1]
+        day = parsed_d.day
+        if is_hi:
+            return f"{day} {month_name} ko {formatted_time}"
+        elif is_mr:
+            return f"{day} {month_name} roji {formatted_time}"
+        return f"{month_name} {day} at {formatted_time}"
+
 
 DTMF_SYMPTOM_CODE_MAP: Dict[str, str] = {
     "1": "fever",

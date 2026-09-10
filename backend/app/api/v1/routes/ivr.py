@@ -45,12 +45,14 @@ from backend.app.services.exotel_voice_service import (
     DTMF_SYMPTOM_CODE_MAP,
     EXOTEL_EMERGENCY_PROMPT_EN,
     EXOTEL_EMERGENCY_PROMPT_HI,
+    EXOTEL_EMERGENCY_PROMPT_MR,
     EXOTEL_GREETING_TEXT,
     EXOTEL_INITIAL_LANGUAGE_MENU,
     EXOTEL_LANG_FALLBACK_EN,
     EXOTEL_LANG_INVALID_RETRY_EN,
     EXOTEL_SYMPTOM_PROMPT_EN,
     EXOTEL_SYMPTOM_PROMPT_HI,
+    EXOTEL_SYMPTOM_PROMPT_MR,
     ExotelCallError,
     ExotelCallService,
     ExotelConfigurationError,
@@ -70,6 +72,7 @@ from backend.app.services.exotel_voice_service import (
     extract_location,
     extract_symptoms,
     find_recommended_facility,
+    format_slot_for_speech,
     is_affirmative,
     is_negative,
     normalize_inbound_audio,
@@ -679,8 +682,12 @@ def is_bot_echo(text: str) -> bool:
     return any(phrase in t for phrase in BOT_ECHO_PHRASES)
 
 
-def _get_or_create_slot_for_facility(facility_id: int, db: Optional[Any] = None) -> Dict[str, Any]:
-    """Retrieve an available slot from the database or construct a valid slot descriptor."""
+def _get_or_create_slot_for_facility(
+    facility_id: int,
+    db: Optional[Any] = None,
+    language_code: str = "en-IN",
+) -> Dict[str, Any]:
+    """Retrieve an available future slot from PostgreSQL or construct a dynamic future slot descriptor."""
     from datetime import date, timedelta
     own_session = False
     session = db
@@ -696,6 +703,7 @@ def _get_or_create_slot_for_facility(facility_id: int, db: Optional[Any] = None)
         if session is not None:
             from backend.app.repositories.availability_repository import AvailabilityRepository
             from backend.app.repositories.facility_repository import FacilityRepository
+
             avail_repo = AvailabilityRepository(session)
             fac_repo = FacilityRepository(session)
             fac = fac_repo.get_by_id(facility_id)
@@ -708,19 +716,36 @@ def _get_or_create_slot_for_facility(facility_id: int, db: Optional[Any] = None)
                 )
                 facility_id = fac.id
 
-            slots = avail_repo.get_slots(facility_id=facility_id, status="AVAILABLE")
-            if slots:
-                first_slot = slots[0]
+            today_str = date.today().isoformat()
+            future_slots = avail_repo.get_future_available_slots(
+                facility_id=facility_id,
+                min_date=today_str,
+            )
+            if future_slots:
+                first_slot = future_slots[0]
+                spoken_slot_time = format_slot_for_speech(
+                    slot_date=first_slot.date,
+                    start_time=first_slot.start_time,
+                    language_code=language_code,
+                )
                 return {
                     "id": first_slot.id,
-                    "slot_time": f"{first_slot.date} at {first_slot.start_time}",
+                    "slot_time": spoken_slot_time,
+                    "date": first_slot.date,
+                    "start_time": first_slot.start_time,
                     "service_id": first_slot.service_id,
                 }
+
             fac_services = fac_repo.get_services(facility_id)
             svc_id = fac_services[0].id if fac_services else None
             if not svc_id:
-                svc = fac_repo.add_service(facility_id=facility_id, name="General Medicine", description="Primary Care")
+                svc = fac_repo.add_service(
+                    facility_id=facility_id,
+                    name="General Medicine",
+                    description="Primary Care",
+                )
                 svc_id = svc.id
+
             tomorrow = (date.today() + timedelta(days=1)).isoformat()
             new_slot = avail_repo.create_slot(
                 facility_id=facility_id,
@@ -730,9 +755,16 @@ def _get_or_create_slot_for_facility(facility_id: int, db: Optional[Any] = None)
                 end_time="10:30",
                 status="AVAILABLE",
             )
+            spoken_slot_time = format_slot_for_speech(
+                slot_date=tomorrow,
+                start_time="10:00",
+                language_code=language_code,
+            )
             return {
                 "id": new_slot.id,
-                "slot_time": "tomorrow at 10:00 AM",
+                "slot_time": spoken_slot_time,
+                "date": tomorrow,
+                "start_time": "10:00",
                 "service_id": svc_id,
             }
     except Exception as slot_err:
@@ -744,15 +776,19 @@ def _get_or_create_slot_for_facility(facility_id: int, db: Optional[Any] = None)
             except Exception:
                 pass
 
+    from datetime import date, timedelta
+    tomorrow = (date.today() + timedelta(days=1)).isoformat()
     return {
         "id": 1,
-        "slot_time": "today at 11:00 AM",
+        "slot_time": format_slot_for_speech(tomorrow, "10:00", language_code),
+        "date": tomorrow,
+        "start_time": "10:00",
         "service_id": 1,
     }
 
 
 def _book_appointment_for_session(session: ExotelVoiceSession, db: Optional[Any] = None) -> Optional[int]:
-    """Book an appointment for the current session via AppointmentService."""
+    """Book an appointment for the current session via AppointmentService reusing selected slot if present."""
     own_session = False
     db_sess = db
     if db_sess is None:
@@ -786,8 +822,11 @@ def _book_appointment_for_session(session: ExotelVoiceSession, db: Optional[Any]
                 if not patient:
                     patient = p_repo.create_patient(
                         mobile=clean_phone or "9876543210",
-                        full_name=f"Caller {clean_phone}",
+                        full_name=getattr(session, "patient_name", None) or f"Caller {clean_phone}",
+                        age=getattr(session, "age", None),
+                        gender=getattr(session, "gender", None),
                         village=session.location or "Rural",
+                        district=getattr(getattr(session, "conversation_memory", None), "district", None) or "Solapur",
                     )
             if not patient:
                 all_patients = p_repo.get_all(limit=1)
@@ -798,6 +837,7 @@ def _book_appointment_for_session(session: ExotelVoiceSession, db: Optional[Any]
                         mobile="9876543210",
                         full_name="Caller",
                         village=session.location or "Rural",
+                        district="Solapur",
                     )
 
             fac_id = 1
@@ -834,22 +874,37 @@ def _book_appointment_for_session(session: ExotelVoiceSession, db: Optional[Any]
                     svc = f_repo.add_service(facility_id=fac_id, name="General Medicine", description="Primary Care")
                     svc_id = svc.id
 
-                from datetime import date, timedelta
-                tomorrow = (date.today() + timedelta(days=1)).isoformat()
-                slot = av_repo.create_slot(
-                    facility_id=fac_id,
-                    service_id=svc_id,
-                    date=tomorrow,
-                    start_time="10:00",
-                    end_time="10:30",
-                    status="AVAILABLE",
-                )
+                slot_id = None
+                if session.selected_slot and session.selected_slot.get("id"):
+                    candidate_slot = av_repo.get_by_id(session.selected_slot["id"])
+                    if candidate_slot and candidate_slot.status == "AVAILABLE":
+                        slot_id = candidate_slot.id
+                        svc_id = candidate_slot.service_id or svc_id
+
+                if not slot_id:
+                    from datetime import date, timedelta
+                    today_str = date.today().isoformat()
+                    future_slots = av_repo.get_future_available_slots(facility_id=fac_id, min_date=today_str)
+                    if future_slots:
+                        slot_id = future_slots[0].id
+                        svc_id = future_slots[0].service_id or svc_id
+                    else:
+                        tomorrow = (date.today() + timedelta(days=1)).isoformat()
+                        slot = av_repo.create_slot(
+                            facility_id=fac_id,
+                            service_id=svc_id,
+                            date=tomorrow,
+                            start_time="10:00",
+                            end_time="10:30",
+                            status="AVAILABLE",
+                        )
+                        slot_id = slot.id
 
                 res = appt_svc.book_appointment(
                     patient_id=patient.id,
                     facility_id=fac_id,
                     service_id=svc_id,
-                    availability_slot_id=slot.id,
+                    availability_slot_id=slot_id,
                 )
                 session.patient_id = patient.id
                 if own_session:
@@ -1067,7 +1122,9 @@ async def exotel_voicebot_stream(
             patient = p_repo.get_by_phone(clean_phone) or p_repo.get_by_phone(session.phone_number)
             if patient:
                 session.patient_id = patient.id
+                session.is_registered_patient = True
                 memory.patient_id = patient.id
+                memory.is_existing_patient = True
                 if getattr(patient, "name", None):
                     memory.patient_name = patient.name
                     session.patient_name = patient.name
@@ -1080,8 +1137,15 @@ async def exotel_voicebot_stream(
                 if getattr(patient, "village", None):
                     memory.locality = patient.village
                     session.location = patient.village
+                if getattr(patient, "district", None):
+                    memory.district = patient.district
+                if getattr(patient, "preferred_language", None):
+                    lang_map = {"en": "en-IN", "hi": "hi-IN", "mr": "mr-IN"}
+                    pref = lang_map.get(patient.preferred_language, patient.preferred_language)
+                    if pref in ("en-IN", "hi-IN", "mr-IN"):
+                        memory.preferred_language = pref
                 logger.info(
-                    "[EXOTEL_WS] Resolved caller phone %s to patient ID %d (%s, %s, %s, %s)",
+                    "[EXOTEL_WS] Resolved caller phone %s to existing patient ID %d (%s, %s, %s, %s)",
                     session.phone_number,
                     patient.id,
                     memory.patient_name,
@@ -1295,7 +1359,7 @@ async def exotel_voicebot_stream(
 
             # 1. State: LANGUAGE_SELECTION
             if session.state == IVRState.LANGUAGE_SELECTION:
-                if "english" in t_lower or "one" in t_lower:
+                if "english" in t_lower or "one" in t_lower or "1" in t_lower:
                     session.language_code = "en-IN"
                     memory.language = "en-IN"
                     session.state = IVRState.WAITING_FOR_SYMPTOMS
@@ -1306,7 +1370,7 @@ async def exotel_voicebot_stream(
                         language_code="en-IN",
                     )
                     return
-                elif "hindi" in t_lower or "two" in t_lower or "do" in t_lower or "हिंदी" in clean_transcript:
+                elif "hindi" in t_lower or "two" in t_lower or "do" in t_lower or "2" in t_lower or "हिंदी" in clean_transcript:
                     session.language_code = "hi-IN"
                     memory.language = "hi-IN"
                     session.state = IVRState.WAITING_FOR_SYMPTOMS
@@ -1315,6 +1379,17 @@ async def exotel_voicebot_stream(
                         EXOTEL_SYMPTOM_PROMPT_HI,
                         "symptom_prompt_hi",
                         language_code="hi-IN",
+                    )
+                    return
+                elif "marathi" in t_lower or "three" in t_lower or "teen" in t_lower or "tin" in t_lower or "3" in t_lower or "मराठी" in clean_transcript:
+                    session.language_code = "mr-IN"
+                    memory.language = "mr-IN"
+                    session.state = IVRState.WAITING_FOR_SYMPTOMS
+                    logger.info("[EXOTEL_WS] Spoken language selection: mr-IN")
+                    await send_tts_audio_to_exotel(
+                        EXOTEL_SYMPTOM_PROMPT_MR,
+                        "symptom_prompt_mr",
+                        language_code="mr-IN",
                     )
                     return
                 else:
@@ -1389,10 +1464,13 @@ async def exotel_voicebot_stream(
                         age=memory.age,
                         gender=memory.gender,
                         village=memory.locality or session.location,
+                        district=memory.district or "Solapur",
                     )
                     if pat_rec:
                         session.patient_id = pat_rec.id
+                        session.is_registered_patient = True
                         memory.patient_id = pat_rec.id
+                        memory.is_existing_patient = True
                         logger.info("[EXOTEL_WS] Auto-registered/linked caller to patient ID %d", pat_rec.id)
                 except Exception as pat_reg_err:
                     logger.debug("[EXOTEL_WS] Auto patient linking note: %s", pat_reg_err)
@@ -1629,6 +1707,11 @@ async def exotel_voicebot_stream(
                             memory.language = "hi-IN"
                             session.state = IVRState.WAITING_FOR_SYMPTOMS
                             await send_tts_audio_to_exotel(EXOTEL_SYMPTOM_PROMPT_HI, "symptom_prompt_hi", language_code="hi-IN")
+                        elif digit == "3":
+                            session.language_code = "mr-IN"
+                            memory.language = "mr-IN"
+                            session.state = IVRState.WAITING_FOR_SYMPTOMS
+                            await send_tts_audio_to_exotel(EXOTEL_SYMPTOM_PROMPT_MR, "symptom_prompt_mr", language_code="mr-IN")
                         else:
                             session.invalid_language_attempts += 1
                             if session.invalid_language_attempts < 2:

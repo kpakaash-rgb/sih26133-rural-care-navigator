@@ -98,6 +98,7 @@ class ConversationAction:
     severity: Optional[str] = None
     red_flags: List[str] = field(default_factory=list)
     locality: Optional[str] = None
+    district: Optional[str] = None
     appointment_type: Optional[str] = None  # "phone" or "offline"
     booking_intent: Optional[bool] = None
     confirmation: Optional[bool] = None  # True (yes), False (no)
@@ -114,13 +115,16 @@ class ConversationAction:
 @dataclass
 class ConversationMemory:
     """Multi-turn conversation state maintained across the entire call."""
-    language: str = "en-IN"  # "en-IN" or "hi-IN"
+    language: str = "en-IN"  # "en-IN", "hi-IN", or "mr-IN"
     patient_id: Optional[int] = None
     caller_phone: Optional[str] = None
     phone_number: Optional[str] = None
     patient_name: Optional[str] = None
     age: Optional[int] = None
     gender: Optional[str] = None
+    district: Optional[str] = None
+    preferred_language: Optional[str] = None
+    is_existing_patient: bool = False
     symptoms: List[str] = field(default_factory=list)
     symptom_descriptions: List[str] = field(default_factory=list)
     duration: Optional[str] = None
@@ -144,7 +148,7 @@ class ConversationMemory:
     last_prompt: str = ""
     last_intent: ConversationIntent = ConversationIntent.UNKNOWN
     dialogue_history: List[Dict[str, str]] = field(default_factory=list)
-    call_phase: str = "GREETING"  # GREETING, SYMPTOMS, DURATION, NAME, AGE, LOCALITY, SAFETY_QUESTIONS, TRIAGE_PRESENTED, BOOKING_ASK, BOOKING_TYPE, BOOKING_CONFIRM, ENDED, EMERGENCY
+    call_phase: str = "GREETING"  # GREETING, NAME, AGE, GENDER, LOCALITY, SYMPTOMS, DURATION, SAFETY_QUESTIONS, TRIAGE_PRESENTED, BOOKING_ASK, BOOKING_TYPE, BOOKING_CONFIRM, ENDED, EMERGENCY
 
     def __post_init__(self):
         if self.caller_phone and not self.phone_number:
@@ -441,7 +445,10 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
         memory: ConversationMemory,
         tool_output: Optional[Dict[str, Any]] = None,
     ) -> str:
-        is_hi = (memory.language == "hi-IN" or memory.language == "hi")
+        lang = (memory.language or "en-IN").strip().lower()
+        is_hi = "hi" in lang
+        is_mr = "mr" in lang
+        is_en = not is_hi and not is_mr
 
         # 0. Repeat Request
         if action.intent == ConversationIntent.REQUEST_REPEAT:
@@ -449,20 +456,26 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
                 return memory.last_prompt
             if is_hi:
                 return "Kripya apna sthan ya lakshan phir se batayein."
+            elif is_mr:
+                return "Krupaya aple thikan kinva lakshane punha sanga."
             return "Could you please describe your symptoms or town again?"
 
         # 0.1 Help Request
         if action.intent == ConversationIntent.REQUEST_HELP:
             if is_hi:
                 return "Main aapke lakshano ki jankari lekar doctor consultation book karne mein madad kar sakta hoon. Kripya apne lakshan batayein."
+            elif is_mr:
+                return "Mee aaplya lakshananchi mahiti ghevun doctor consultation book karnyasaathi madat karu shakto. Krupaya aple lakshane sanga."
             return "I can assess your symptoms and help arrange medical care. Please describe what you are experiencing."
 
         # 1. Emergency Flow (Highest acuity clinical safety without demographic delays)
         if action.intent == ConversationIntent.EMERGENCY or action.emergency or memory.call_phase == "EMERGENCY" or (memory.triage_result and memory.triage_result.get("emergency")):
             fac = memory.recommended_facility or {}
-            fac_name = fac.get("name") or ("pass ke hospital" if is_hi else "the nearest hospital")
+            fac_name = fac.get("name") or ("pass ke hospital" if is_hi else ("jawalchya aspatal" if is_mr else "the nearest hospital"))
             if is_hi:
                 return f"Yeh ek aapatkaleen sthiti lag rahi hai. Kripya turant 108 par call karein ya bina kisi deri ke {fac_name} ke emergency vibhag jayein."
+            elif is_mr:
+                return f"Hi aapatkalin sthiti vatat ahe. Krupaya lagech 108 var call kara kinva {fac_name} chya emergency vibhagala bhet dya."
             return f"This sounds like a medical emergency. Please call 108 immediately or proceed to the nearest emergency department at {fac_name} without delay."
 
         # 2. Dynamic Acknowledgement based on what was just learned
@@ -475,11 +488,24 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
                 else:
                     ack = f"Theek hai, maine note kar liya hai — {syms_str}."
             elif action.patient_name and action.patient_name == memory.patient_name:
-                ack = f"Shukriya {memory.patient_name}."
+                ack = f"Shukriya {memory.patient_name} ji."
             elif action.duration and action.duration == memory.duration:
                 ack = f"Dhanyawad, {memory.duration}."
             elif action.locality and action.locality == memory.locality:
                 ack = "Dhanyawad."
+        elif is_mr:
+            if action.symptoms:
+                syms_str = " aani ".join(memory.symptoms)
+                if memory.duration:
+                    ack = f"Theek ahe, {syms_str}, {memory.duration} pasun."
+                else:
+                    ack = f"Theek ahe, mee note kele ahe — {syms_str}."
+            elif action.patient_name and action.patient_name == memory.patient_name:
+                ack = f"Dhanyavaad {memory.patient_name} ji."
+            elif action.duration and action.duration == memory.duration:
+                ack = f"Dhanyavaad, {memory.duration}."
+            elif action.locality and action.locality == memory.locality:
+                ack = "Dhanyavaad."
         else:
             if action.symptoms:
                 syms_str = " and ".join(memory.symptoms)
@@ -495,35 +521,85 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
                 ack = "Thank you."
 
         # 3. Dynamic Question/Prompt based on conversation state
-        prompt = ""
-        if memory.call_phase == "DURATION":
-            syms_str = " aur ".join(memory.symptoms) if is_hi else " and ".join(memory.symptoms)
+        if action.intent == ConversationIntent.ANSWER_YES and not memory.symptoms:
             if is_hi:
-                prompt = f"Aapko {syms_str} kitne din se ho raha hai?"
+                return "Theek hai, kripya batayein aapko kya takleef ho rahi hai ya kya lakshan hain?"
+            elif is_mr:
+                return "Theek ahe, krupaya sanga aaplyala kay tras hot ahe kinva kay lakshane ahet?"
             else:
-                prompt = "How long have you been experiencing them?"
+                return "Understood. Please describe your symptoms or what health issue you are experiencing."
+
+        prompt = ""
+        if memory.call_phase == "GREETING":
+            if memory.is_existing_patient and memory.patient_name:
+                if is_hi:
+                    prompt = f"Namaste {memory.patient_name} ji, Rural Care Navigator mein aapka swagat hai. Kripya batayein aapko kya takleef ho rahi hai?"
+                elif is_mr:
+                    prompt = f"Namaskar {memory.patient_name} ji, Rural Care Navigator madhe aaple swagat ahe. Krupaya sanga aaplyala kay tras hot ahe?"
+                else:
+                    prompt = f"Hello {memory.patient_name}, welcome back to Rural Care Navigator. Please describe what symptoms or health issue you have."
+            else:
+                if is_hi:
+                    prompt = "Rural Care Navigator mein aapka swagat hai. Kripya apna poora naam batayein?"
+                elif is_mr:
+                    prompt = "Rural Care Navigator madhe aaple swagat ahe. Krupaya aple purna naav sanga?"
+                else:
+                    prompt = "Welcome to Rural Care Navigator. May I know your full name?"
 
         elif memory.call_phase == "NAME":
             if is_hi:
-                prompt = "Kripya apna naam batayein?"
+                prompt = "Kripya apna poora naam batayein?"
+            elif is_mr:
+                prompt = "Krupaya aple purna naav sanga?"
             else:
-                prompt = "May I know your name?"
+                prompt = "May I know your full name?"
 
         elif memory.call_phase == "AGE":
             if is_hi:
-                prompt = "Aapki umar kitni hai?"
+                prompt = f"Shukriya {memory.patient_name or ''} ji. Aapki umar kitni hai?"
+            elif is_mr:
+                prompt = f"Dhanyavaad {memory.patient_name or ''} ji. Aple vay kiti ahe?"
             else:
-                prompt = "How old are you?"
+                prompt = f"Thank you {memory.patient_name or ''}. How old are you?"
+
+        elif memory.call_phase == "GENDER":
+            if is_hi:
+                prompt = "Aapka gender kya hai - purush, mahila, ya anya?"
+            elif is_mr:
+                prompt = "Aaple ling kay ahe - purush, stree, kinva itar?"
+            else:
+                prompt = "What is your gender - male, female, or other?"
 
         elif memory.call_phase == "LOCALITY":
             if is_hi:
                 prompt = "Aap kaun se gaon ya shahar se bol rahe hain?"
+            elif is_mr:
+                prompt = "Aaple gaon kinva shahar konte ahe?"
             else:
                 prompt = "Which village or town are you calling from?"
+
+        elif memory.call_phase in ("SYMPTOMS", "REPORT_SYMPTOMS"):
+            if is_hi:
+                prompt = "Aapko kya takleef ho rahi hai? Kripya apne lakshan batayein."
+            elif is_mr:
+                prompt = "Aaplyala kay tras hot ahe? Krupaya aapli lakshane sanga."
+            else:
+                prompt = "Please describe your symptoms or health issue."
+
+        elif memory.call_phase == "DURATION":
+            syms_str = (" aur ".join(memory.symptoms) if is_hi else (" aani ".join(memory.symptoms) if is_mr else " and ".join(memory.symptoms))) or "ye lakshan"
+            if is_hi:
+                prompt = f"Aapko {syms_str} kitne din se ho raha hai?"
+            elif is_mr:
+                prompt = f"Aaplyala {syms_str} kiti divsanpasun hot ahe?"
+            else:
+                prompt = f"How long have you been having {syms_str}?"
 
         elif memory.call_phase == "SAFETY_QUESTIONS":
             if is_hi:
                 prompt = "Kya aapko saans lene mein takleef ya seene mein tej dard hai?"
+            elif is_mr:
+                prompt = "Aaplyala shwas ghenyala tras kinva chatit dukhne ashi kahi takleef ahe ka?"
             else:
                 prompt = "Do you have any difficulty breathing or severe chest pain?"
 
@@ -537,47 +613,62 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
                 care_desc = "home care with primary health monitoring"
 
             fac = memory.recommended_facility or {}
-            fac_name = fac.get("name") or ("the local clinic" if not is_hi else "kendra")
+            fac_name = fac.get("name") or ("the local clinic" if is_en else ("chikitsa kendra" if is_hi else "arogya kendra"))
             loc_str = f" in {memory.locality}" if memory.locality else ""
             loc_hi = f" {memory.locality} mein" if memory.locality else ""
+            loc_mr = f" {memory.locality} madhe" if memory.locality else ""
 
             if is_hi:
                 prompt = f"Aapki jankari ke anusar, aapko primary healthcare facility par dikhana chahiye. Maine{loc_hi} {fac_name} paya hai. Kya aap appointment book karke facility jana chahte hain ya phone par doctor se baat karna chahte hain?"
+            elif is_mr:
+                prompt = f"Aaplya mahitivarun, aaplyala primary healthcare facility madhe dakhvile pahije. Mala{loc_mr} {fac_name} milale ahe. Aaplyala appointment book karun kendravart jaayche ahe ki phone var doctornshi bolayche ahe?"
             else:
                 prompt = f"Based on what you've told me, you should be assessed at {care_desc}. I found a suitable facility for you{loc_str}: {fac_name}. Would you like to book an appointment to visit the facility or speak to a doctor by phone?"
 
         elif memory.call_phase == "BOOKING_TYPE":
             if is_hi:
                 prompt = "Kya aap phone consultation chahte hain ya clinic jaana chahte hain?"
+            elif is_mr:
+                prompt = "Aaplyala phone consultation have ahe ki kendravart bhetayche ahe?"
             else:
                 prompt = "Would you prefer a phone consultation or an in-person clinic visit?"
 
         elif memory.call_phase == "BOOKING_CONFIRM":
+            from backend.app.services.exotel_voice_service import format_slot_for_speech
             slot = memory.selected_slot or {}
-            slot_time = slot.get("slot_time", "an upcoming slot")
-            fac_name = (memory.recommended_facility or {}).get("name", "the clinic")
-            type_desc = "phone consultation" if memory.appointment_type == "phone" else "visit"
-            if is_hi:
-                prompt = f"Maine {fac_name} mein kal {slot_time} {type_desc} slot paya hai. Kya ise confirm karke book kar dein?"
+            slot_time = slot.get("spoken_time") or slot.get("slot_time") or format_slot_for_speech(slot.get("date"), slot.get("start_time"), memory.language)
+            fac_name = (memory.recommended_facility or {}).get("name", "the clinic" if is_en else ("kendra" if is_hi else "kendra"))
+            type_desc = "phone consultation" if memory.appointment_type == "phone" else ("clinic visit" if is_en else ("kendra visit" if is_hi else "kendravart bhet"))
+
+            if slot.get("available") is False:
+                if is_hi:
+                    prompt = f"{fac_name} mein abhi advance slot uplabdh nahi hai. Kripya seedhe kendra par jakar doctor se milein."
+                elif is_mr:
+                    prompt = f"{fac_name} madhe sadhya advance slot uplabdha nahi. Krupaya kendravart jaaun doctorna bheta."
+                else:
+                    prompt = f"Currently no advance appointment slots are open at {fac_name}. Please visit the facility directly for walk-in consultation."
             else:
-                prompt = f"I found an available {type_desc} slot for tomorrow at {slot_time}. Would you like me to confirm and book it?"
+                if is_hi:
+                    prompt = f"Maine {fac_name} mein {slot_time} {type_desc} slot paya hai. Kya ise confirm karke book kar dein?"
+                elif is_mr:
+                    prompt = f"Mala {fac_name} madhe {slot_time} {type_desc} slot milala ahe. He confirm karun book karayche ka?"
+                else:
+                    prompt = f"I found an available {type_desc} slot at {fac_name} for {slot_time}. Would you like me to confirm and book it?"
 
         elif memory.call_phase == "ENDED":
             if memory.appointment_id:
                 type_label = "phone consultation" if memory.appointment_type == "phone" else "appointment"
                 if is_hi:
                     return f"Aapka {type_label} book ho gaya hai. Aapka booking number {memory.appointment_id} hai. Kripya samay par uplabdh rahein. Namaste."
+                elif is_mr:
+                    return f"Aapli {type_label} book jhali ahe. Aapla booking number {memory.appointment_id} ahe. Krupaya velevar uplabdha raha. Namaskar."
                 return f"Your {type_label} has been booked. Your booking number is {memory.appointment_id}. Please be available on time. Take care and goodbye."
             else:
                 if is_hi:
                     return "Theek hai. Kripya nirdeshit chikitsa kendra jayein. Apna khayal rakhein. Namaste."
+                elif is_mr:
+                    return "Theek ahe. Krupaya nirdeshit arogya kendravart ja. Kalghee ghya. Namaskar."
                 return "Understood. Please visit the healthcare facility as advised. Take care and goodbye."
-
-        elif memory.call_phase in ("GREETING", "SYMPTOMS"):
-            if is_hi:
-                prompt = "Kripya apne lakshan vistar se batayein."
-            else:
-                prompt = "Please describe what symptoms or health issue you have."
 
         # Combine acknowledgement and prompt naturally
         if ack and prompt:
@@ -589,6 +680,8 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
         else:
             if is_hi:
                 return "Kripya apne lakshan ya sthan batayein."
+            elif is_mr:
+                return "Krupaya aple lakshane kinva thikan sanga."
             return "Please describe your symptoms or village."
 
 
@@ -1027,6 +1120,8 @@ class ConversationAgent:
                 memory.call_phase = "EMERGENCY"
                 self.run_medical_triage(memory)
                 self.find_facilities(memory, db=db)
+            elif not memory.locality:
+                memory.call_phase = "LOCALITY"
             else:
                 self.run_medical_triage(memory)
                 self.find_facilities(memory, db=db)
@@ -1043,25 +1138,46 @@ class ConversationAgent:
             memory.call_phase = "TRIAGE_PRESENTED"
 
         else:
-            # Standard intake sequence:
-            # SYMPTOMS -> DURATION -> LOCALITY -> NAME -> AGE -> SAFETY_QUESTIONS -> TRIAGE
-            if not memory.symptoms:
-                memory.call_phase = "SYMPTOMS"
-            elif not memory.duration:
-                memory.call_phase = "DURATION"
-            elif not memory.locality:
-                memory.call_phase = "LOCALITY"
-            elif not memory.patient_name:
-                memory.call_phase = "NAME"
-            elif memory.age is None:
-                memory.call_phase = "AGE"
-            elif not memory.safety_questions_asked:
-                memory.call_phase = "SAFETY_QUESTIONS"
-                memory.safety_questions_asked = True
+            # Intake sequencing:
+            # If registered patient (or all demographics known), skip demographic questions and collect symptoms directly
+            is_known_patient = memory.is_existing_patient or (
+                bool(memory.patient_name) and memory.age is not None and bool(memory.locality)
+            )
+
+            if is_known_patient:
+                if not memory.symptoms:
+                    memory.call_phase = "SYMPTOMS"
+                elif not memory.duration:
+                    memory.call_phase = "DURATION"
+                elif not memory.safety_questions_asked:
+                    memory.call_phase = "SAFETY_QUESTIONS"
+                    memory.safety_questions_asked = True
+                else:
+                    self.run_medical_triage(memory)
+                    self.find_facilities(memory, db=db)
+                    memory.call_phase = "TRIAGE_PRESENTED"
             else:
-                self.run_medical_triage(memory)
-                self.find_facilities(memory, db=db)
-                memory.call_phase = "TRIAGE_PRESENTED"
+                # New / unknown caller intake:
+                # NAME -> AGE -> GENDER -> LOCALITY -> SYMPTOMS -> DURATION -> SAFETY_QUESTIONS -> TRIAGE
+                if not memory.patient_name:
+                    memory.call_phase = "NAME"
+                elif memory.age is None:
+                    memory.call_phase = "AGE"
+                elif not memory.gender:
+                    memory.call_phase = "GENDER"
+                elif not memory.locality:
+                    memory.call_phase = "LOCALITY"
+                elif not memory.symptoms:
+                    memory.call_phase = "SYMPTOMS"
+                elif not memory.duration:
+                    memory.call_phase = "DURATION"
+                elif not memory.safety_questions_asked:
+                    memory.call_phase = "SAFETY_QUESTIONS"
+                    memory.safety_questions_asked = True
+                else:
+                    self.run_medical_triage(memory)
+                    self.find_facilities(memory, db=db)
+                    memory.call_phase = "TRIAGE_PRESENTED"
 
         # 4. Generate Spoken Response
         speech = self.provider.generate_response(action, memory)
