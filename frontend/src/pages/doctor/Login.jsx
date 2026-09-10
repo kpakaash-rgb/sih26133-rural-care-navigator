@@ -8,11 +8,11 @@ export default function Login({ onLogin }) {
     <div className="app-container">
       {/* --- BRANDING HEADER --- */}
       <header className="brand-header">
-        <div className="brand-icon" style={{ background: '#FFFFFF', padding: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}>
+        <div className="brand-icon">
           <img
             src="/mythri-icon.png"
             alt="Mythri"
-            style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '10px' }}
+            className="brand-logo-img"
           />
         </div>
         <h1 className="brand-name">Mythri</h1>

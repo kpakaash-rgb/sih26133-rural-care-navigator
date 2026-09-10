@@ -27,14 +27,13 @@ export default function Header({
         )}
         <div className="header-brand">
           {showLogo && (
-            <img
-              src="/mythri-icon.png"
-              alt="Mythri"
-              className="header-logo-icon"
-              width="26"
-              height="26"
-              style={{ objectFit: 'contain', borderRadius: '4px' }}
-            />
+            <div className="header-logo-box">
+              <img
+                src="/mythri-icon.png"
+                alt="Mythri"
+                className="header-logo-icon"
+              />
+            </div>
           )}
           <span className="header-brand-title">{displayTitle}</span>
         </div>

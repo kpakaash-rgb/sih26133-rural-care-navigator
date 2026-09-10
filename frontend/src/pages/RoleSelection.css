@@ -22,8 +22,11 @@
 /* Header & Brand */
 .role-brand-header {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 8px;
   margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .role-badge-pill {
@@ -38,29 +41,39 @@
   text-transform: uppercase;
   padding: 4px 12px;
   border-radius: 9999px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   border: 1px solid rgba(10, 88, 202, 0.15);
 }
 
 .role-brand-logo-wrap {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #0A58CA 0%, #2563EB 100%);
-  border-radius: 16px;
+  width: 72px;
+  height: 72px;
+  background: #FFFFFF;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
-  box-shadow: 0 8px 20px rgba(10, 88, 202, 0.25);
-  color: #FFFFFF;
+  margin: 0 auto 14px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(10, 88, 202, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  border: 1.5px solid rgba(10, 88, 202, 0.12);
+  box-sizing: border-box;
+}
+
+.role-brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .role-brand-title {
-  font-size: 1.5rem;
+  font-size: 1.65rem;
   font-weight: 800;
   color: #0F172A;
   margin: 0 0 6px;
   letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .role-brand-subtitle {

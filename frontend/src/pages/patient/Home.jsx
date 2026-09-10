@@ -26,7 +26,14 @@ export default function Home({ onNavigate, patient }) {
     }
   }, [])
 
-  const displayName = patient?.full_name || 'Patient'
+  const displayName = patient?.full_name || (() => {
+    try {
+      const stored = localStorage.getItem('patient')
+      return stored ? JSON.parse(stored)?.full_name : null
+    } catch {
+      return null
+    }
+  })() || 'Patient'
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -64,7 +71,7 @@ export default function Home({ onNavigate, patient }) {
       <main className="home-scrollable-content">
         {/* Patient Greeting */}
         <section className="home-greeting-section">
-          <h1 className="home-greeting-name">{t('home.goodMorning')}, {displayName}</h1>
+          <h1 className="home-greeting-name">{t('home.hello', { name: displayName })}</h1>
           <p className="home-greeting-question">{t('home.greetingQuestion')}</p>
         </section>
 

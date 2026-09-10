@@ -92,7 +92,7 @@ export default function LoginPage() {
             <img
               src="/mythri-icon.png"
               alt="Mythri"
-              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '12px', background: '#FFFFFF' }}
+              className="login-logo-img"
             />
           </div>
           <h1 className="login-app-name">Mythri</h1>

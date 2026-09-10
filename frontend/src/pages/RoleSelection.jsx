@@ -50,7 +50,7 @@ export default function RoleSelection() {
             <img
               src="/mythri-icon.png"
               alt="Mythri"
-              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '14px', background: '#FFFFFF' }}
+              className="role-brand-logo-img"
             />
           </div>
 
