@@ -120,6 +120,32 @@ export async function verifyOtp(mobile, otp) {
 }
 
 /**
+ * Self-register a new patient profile after OTP verification.
+ * @param {{ full_name: string, mobile: string, age: number|string, gender: string, village: string, district: string, abha_number?: string, consent?: boolean, registration_token: string }} payload
+ */
+export async function registerPatientSelf(payload) {
+  const headers = {};
+  if (payload.registration_token) {
+    headers.Authorization = `Bearer ${payload.registration_token}`;
+  }
+  return apiRequest('/auth/register-patient', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      full_name: payload.full_name,
+      mobile: payload.mobile,
+      age: Number(payload.age),
+      gender: payload.gender,
+      village: payload.village,
+      district: payload.district,
+      abha_number: payload.abha_number || null,
+      consent: payload.consent !== false,
+      registration_token: payload.registration_token || null,
+    }),
+  });
+}
+
+/**
  * Retrieve authenticated patient profile from protected endpoint.
  */
 export async function getMe() {

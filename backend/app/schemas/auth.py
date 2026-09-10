@@ -91,15 +91,114 @@ class AuthenticatedPatient(BaseModel):
     id: int
     mobile: str
     full_name: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    village: Optional[str] = None
     district: Optional[str] = None
     abha_number: Optional[str] = None
     role: str = "PATIENT"
 
 
 class AuthTokenResponse(BaseModel):
-    """Response returned upon successful OTP verification."""
+    """Response returned upon successful OTP verification or self-registration."""
 
-    access_token: str
+    is_registered: bool = True
+    access_token: Optional[str] = None
     token_type: str = "bearer"
     role: str = "PATIENT"
-    patient: AuthenticatedPatient
+    patient: Optional[AuthenticatedPatient] = None
+    registration_token: Optional[str] = None
+    mobile: Optional[str] = None
+    message: Optional[str] = None
+
+
+class PatientSelfRegisterRequest(BaseModel):
+    """Payload for POST /api/v1/auth/register-patient (self-registration after OTP verification)."""
+
+    full_name: str = Field(
+        ...,
+        min_length=2,
+        max_length=100,
+        description="Patient full name (supports English, Hindi, and Marathi)",
+        examples=["Ramesh Kumar", "रमेश कुमार"],
+    )
+    mobile: str = Field(
+        ...,
+        description="10-digit OTP-verified Indian mobile number",
+        examples=["9876543210"],
+    )
+    age: int = Field(
+        ...,
+        ge=1,
+        le=120,
+        description="Patient age in years (1-120)",
+        examples=[35],
+    )
+    gender: str = Field(
+        ...,
+        description="Patient gender (MALE, FEMALE, or OTHER)",
+        examples=["MALE"],
+    )
+    village: str = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="Village or residential locality",
+        examples=["Malshiras"],
+    )
+    district: str = Field(
+        ...,
+        min_length=1,
+        max_length=100,
+        description="District name",
+        examples=["Solapur"],
+    )
+    abha_number: Optional[str] = Field(
+        None,
+        max_length=25,
+        description="Optional 14-digit Ayushman Bharat Health Account ID",
+        examples=["14-1234-5678-9012"],
+    )
+    consent: bool = Field(
+        True,
+        description="Explicit user consent for healthcare data processing",
+    )
+    registration_token: Optional[str] = Field(
+        None,
+        description="Signed OTP verification registration token (can also be passed in Authorization header)",
+    )
+
+    @field_validator("mobile")
+    @classmethod
+    def validate_mobile(cls, v: str) -> str:
+        clean = clean_mobile_number(v)
+        if not re.match(r"^[6-9]\d{9}$", clean):
+            raise ValueError("Mobile number must be a valid 10-digit Indian mobile starting with 6-9")
+        return clean
+
+    @field_validator("full_name")
+    @classmethod
+    def validate_full_name(cls, v: str) -> str:
+        trimmed = v.strip()
+        if len(trimmed) < 2:
+            raise ValueError("Full name must be at least 2 characters")
+        # Allow English letters, Devanagari script (Hindi/Marathi \u0900-\u097F), spaces, dots, hyphens, apostrophes
+        if not re.match(r"^[\w\s\.\'\-\u0900-\u097F]+$", trimmed, re.UNICODE):
+            raise ValueError("Full name contains invalid characters")
+        return trimmed
+
+    @field_validator("gender")
+    @classmethod
+    def validate_gender(cls, v: str) -> str:
+        norm = v.strip().upper()
+        if norm not in ("MALE", "FEMALE", "OTHER"):
+            raise ValueError("Gender must be MALE, FEMALE, or OTHER")
+        return norm
+
+    @field_validator("village", "district")
+    @classmethod
+    def validate_locations(cls, v: str) -> str:
+        trimmed = v.strip()
+        if not trimmed:
+            raise ValueError("Location fields cannot be blank")
+        return trimmed

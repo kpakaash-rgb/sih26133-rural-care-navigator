@@ -241,26 +241,196 @@ class TestOTPReuse:
 
 
 # ──────────────────────────────────────────────────────────────────────────────
-# 7. Unregistered Mobile
+# 7. Unregistered Mobile & Self-Registration Flow
 # ──────────────────────────────────────────────────────────────────────────────
 
 class TestUnregisteredMobile:
-    def test_unregistered_mobile_returns_404_not_found(self, client):
+    def test_unregistered_mobile_returns_registration_token_without_404(self, client):
         unregistered_num = "9111122222"
         req_res = client.post(
             "/api/v1/auth/request-otp",
             json={"mobile": unregistered_num},
         )
+        assert req_res.status_code == 200
         otp = req_res.json()["data"]["demo_otp"] or "123456"
 
         verify_res = client.post(
             "/api/v1/auth/verify-otp",
             json={"mobile": unregistered_num, "otp": otp},
         )
-        assert verify_res.status_code == 404
+        assert verify_res.status_code == 200
         body = verify_res.json()
-        _assert_envelope(body, success=False)
-        assert "not registered" in body["message"].lower()
+        _assert_envelope(body, success=True)
+        assert body["data"]["is_registered"] is False
+        assert body["data"]["mobile"] == unregistered_num
+        assert "registration_token" in body["data"]
+        assert body["data"]["registration_token"] is not None
+
+
+class TestPatientSelfRegistration:
+    def test_self_registration_success_with_valid_token(self, client):
+        new_mobile = "9888877777"
+        # 1. Request and verify OTP
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": new_mobile})
+        assert req_res.status_code == 200
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+
+        verify_res = client.post("/api/v1/auth/verify-otp", json={"mobile": new_mobile, "otp": otp})
+        assert verify_res.status_code == 200
+        reg_token = verify_res.json()["data"]["registration_token"]
+
+        # 2. Submit self-registration
+        reg_payload = {
+            "full_name": "Sunita Patil",
+            "mobile": new_mobile,
+            "age": 28,
+            "gender": "FEMALE",
+            "village": "Akluj",
+            "district": "Solapur",
+            "abha_number": "14-9999-8888-7777",
+            "consent": True,
+        }
+        reg_res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {reg_token}"},
+        )
+        assert reg_res.status_code == 200
+        reg_body = reg_res.json()
+        _assert_envelope(reg_body, success=True)
+        assert reg_body["data"]["is_registered"] is True
+        assert "access_token" in reg_body["data"]
+        patient_data = reg_body["data"]["patient"]
+        assert patient_data["full_name"] == "Sunita Patil"
+        assert patient_data["mobile"] == new_mobile
+        assert patient_data["age"] == 28
+        assert patient_data["gender"] == "FEMALE"
+        assert patient_data["village"] == "Akluj"
+        assert patient_data["district"] == "Solapur"
+
+        # 3. Verify newly registered patient can access /auth/me and log in directly
+        auth_token = reg_body["data"]["access_token"]
+        me_res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {auth_token}"})
+        assert me_res.status_code == 200
+        assert me_res.json()["data"]["full_name"] == "Sunita Patil"
+
+        # 4. Verify existing patient OTP login works immediately
+        req2 = client.post("/api/v1/auth/request-otp", json={"mobile": new_mobile})
+        otp2 = req2.json()["data"]["demo_otp"] or "123456"
+        ver2 = client.post("/api/v1/auth/verify-otp", json={"mobile": new_mobile, "otp": otp2})
+        assert ver2.status_code == 200
+        assert ver2.json()["data"]["is_registered"] is True
+        assert ver2.json()["data"]["patient"]["full_name"] == "Sunita Patil"
+
+    def test_self_registration_with_hindi_name(self, client):
+        hindi_mobile = "9777766666"
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": hindi_mobile})
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+        ver_res = client.post("/api/v1/auth/verify-otp", json={"mobile": hindi_mobile, "otp": otp})
+        token = ver_res.json()["data"]["registration_token"]
+
+        reg_payload = {
+            "full_name": "सुनीता पाटिल",
+            "mobile": hindi_mobile,
+            "age": 32,
+            "gender": "FEMALE",
+            "village": "माळशिरस",
+            "district": "सोलापूर",
+            "consent": True,
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 200
+        assert res.json()["data"]["patient"]["full_name"] == "सुनीता पाटिल"
+
+    def test_self_registration_fails_without_token(self, client):
+        reg_payload = {
+            "full_name": "Unverified User",
+            "mobile": "9666655555",
+            "age": 40,
+            "gender": "MALE",
+            "village": "Malshiras",
+            "district": "Solapur",
+            "consent": True,
+        }
+        res = client.post("/api/v1/auth/register-patient", json=reg_payload)
+        assert res.status_code == 401
+        _assert_envelope(res.json(), success=False)
+
+    def test_self_registration_fails_with_token_mobile_mismatch(self, client):
+        # Obtain token for mobile A
+        mobile_a = "9555544444"
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": mobile_a})
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+        ver_res = client.post("/api/v1/auth/verify-otp", json={"mobile": mobile_a, "otp": otp})
+        token_a = ver_res.json()["data"]["registration_token"]
+
+        # Try registering mobile B with token for mobile A
+        reg_payload = {
+            "full_name": "Attacker",
+            "mobile": "9444433333",
+            "age": 25,
+            "gender": "MALE",
+            "village": "Village",
+            "district": "District",
+            "consent": True,
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {token_a}"},
+        )
+        assert res.status_code == 401
+        _assert_envelope(res.json(), success=False)
+
+    def test_self_registration_fails_missing_mandatory_fields(self, client):
+        mobile = "9333322222"
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": mobile})
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+        ver_res = client.post("/api/v1/auth/verify-otp", json={"mobile": mobile, "otp": otp})
+        token = ver_res.json()["data"]["registration_token"]
+
+        # Missing age & gender
+        invalid_payload = {
+            "full_name": "Valid Name",
+            "mobile": mobile,
+            "village": "Village",
+            "district": "District",
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=invalid_payload,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 422
+        _assert_envelope(res.json(), success=False)
+
+    def test_self_registration_duplicate_mobile_rejected(self, client, registered_patient):
+        # Create token for already registered mobile
+        token = create_access_token(
+            subject=registered_patient.mobile,
+            role="UNREGISTERED_PATIENT",
+            extra_claims={"mobile": registered_patient.mobile},
+        )
+        reg_payload = {
+            "full_name": "Duplicate User",
+            "mobile": registered_patient.mobile,
+            "age": 30,
+            "gender": "MALE",
+            "village": "Village",
+            "district": "District",
+        }
+        res = client.post(
+            "/api/v1/auth/register-patient",
+            json=reg_payload,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert res.status_code == 422
+        _assert_envelope(res.json(), success=False)
+        assert "already registered" in res.json()["message"].lower()
 
 
 # ──────────────────────────────────────────────────────────────────────────────

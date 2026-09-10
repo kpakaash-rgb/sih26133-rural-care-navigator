@@ -53,13 +53,22 @@ export default function Login({ onNavigate }) {
     setLoading(true)
     try {
       const data = await verifyOtp(cleanMobile, cleanOtp)
-      if (data?.access_token) {
-        localStorage.setItem('access_token', data.access_token)
+      if (data?.is_registered === false || (data?.registration_token && !data?.access_token)) {
+        // OTP verified successfully for new patient -> navigate to Registration screen
+        onNavigate(SCREENS.REGISTRATION, {
+          mobile: cleanMobile,
+          registration_token: data.registration_token,
+        })
+      } else {
+        // Existing registered patient -> store session and navigate to Home
+        if (data?.access_token) {
+          localStorage.setItem('access_token', data.access_token)
+        }
+        if (data?.patient) {
+          localStorage.setItem('patient', JSON.stringify(data.patient))
+        }
+        onNavigate(SCREENS.HOME, { patient: data?.patient })
       }
-      if (data?.patient) {
-        localStorage.setItem('patient', JSON.stringify(data.patient))
-      }
-      onNavigate(SCREENS.HOME, { patient: data?.patient })
     } catch (err) {
       setError(err.message || t('auth.verifyFailed'))
     } finally {

@@ -98,6 +98,8 @@ export default function PatientApp() {
   const [triageData, setTriageData] = useState(initialTriageState)
   const [bookingData, setBookingData] = useState(initialBookingState)
 
+  const [registrationData, setRegistrationData] = useState(null)
+
   // ---------------------------------------------------------
   // Navigation handler
   // ---------------------------------------------------------
@@ -139,6 +141,9 @@ export default function PatientApp() {
       }
       if (data.referral) {
         setSelectedReferral(data.referral)
+      }
+      if (screenId === SCREENS.REGISTRATION) {
+        setRegistrationData(data)
       }
       // Government scheme details
       if (screenId === SCREENS.SCHEME_DETAILS) {
@@ -242,7 +247,7 @@ export default function PatientApp() {
       )}
 
       {currentScreen === SCREENS.REGISTRATION && (
-        <Registration onNavigate={handleNavigate} />
+        <Registration onNavigate={handleNavigate} registrationData={registrationData} />
       )}
 
       {/* =====================================================

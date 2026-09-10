@@ -14,6 +14,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from backend.app.core.exceptions import AuthenticationError, AuthorizationError
 from backend.app.core.response import success_response
 from backend.app.core.security import TokenData, get_current_doctor, get_current_user, get_current_worker
@@ -23,6 +25,7 @@ from backend.app.models.patient import Patient
 from backend.app.models.worker import Worker
 from backend.app.repositories.doctor_repository import DoctorRepository
 from backend.app.repositories.facility_repository import FacilityRepository
+from backend.app.repositories.health_journey_repository import HealthJourneyRepository
 from backend.app.repositories.otp_repository import OTPRepository
 from backend.app.repositories.patient_repository import PatientRepository
 from backend.app.repositories.worker_repository import WorkerRepository
@@ -30,6 +33,7 @@ from backend.app.schemas.auth import (
     AuthenticatedPatient,
     OTPRequest,
     OTPVerifyRequest,
+    PatientSelfRegisterRequest,
 )
 from backend.app.schemas.staff import (
     StaffAuthResponse,
@@ -45,6 +49,8 @@ from backend.app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+_bearer_scheme = HTTPBearer(auto_error=False)
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Dependencies
@@ -57,12 +63,14 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     worker_repo = WorkerRepository(db)
     facility_repo = FacilityRepository(db)
     doctor_repo = DoctorRepository(db)
+    journey_repo = HealthJourneyRepository(db)
     return AuthService(
         otp_repo=otp_repo,
         patient_repo=patient_repo,
         worker_repo=worker_repo,
         facility_repo=facility_repo,
         doctor_repo=doctor_repo,
+        journey_repo=journey_repo,
     )
 
 
@@ -106,7 +114,7 @@ async def request_otp(
     )
 
 
-@router.post("/verify-otp", summary="Verify OTP and issue JWT access token")
+@router.post("/verify-otp", summary="Verify OTP and issue JWT access token or registration token")
 async def verify_otp(
     payload: OTPVerifyRequest,
     auth_service: AuthService = Depends(get_auth_service),
@@ -114,13 +122,36 @@ async def verify_otp(
     """
     Verify the submitted OTP for the mobile number.
 
-    Upon successful verification, authenticates the patient and issues a
-    signed JWT access token.
+    Upon successful verification:
+      - Existing registered patients receive their access token and profile.
+      - New patients receive a secure registration token allowing self-registration.
     """
     result = auth_service.verify_otp(mobile=payload.mobile, otp=payload.otp)
     return success_response(
         data=result,
-        message="Authentication successful",
+        message="OTP verified successfully",
+    )
+
+
+@router.post("/register-patient", summary="Self-register a new patient after OTP verification")
+async def register_patient_self(
+    payload: PatientSelfRegisterRequest,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(_bearer_scheme),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Complete patient self-registration with OTP-verified mobile number and mandatory demographics.
+
+    Requires valid registration_token passed in the Authorization header or payload.
+    """
+    token = credentials.credentials if credentials else payload.registration_token
+    if not token:
+        raise AuthenticationError("OTP registration verification token is required")
+
+    result = auth_service.register_patient_self(payload=payload, token=token)
+    return success_response(
+        data=result,
+        message="Patient registered successfully",
     )
 
 

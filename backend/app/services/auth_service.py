@@ -14,15 +14,17 @@ from typing import Any, Dict, Optional
 
 from backend.app.core.config import settings
 from backend.app.core.exceptions import AuthenticationError, ExternalServiceError, NotFoundError, ValidationAppError
-from backend.app.core.security import create_access_token
+from backend.app.core.security import create_access_token, decode_access_token
 from backend.app.models.doctor import Doctor
 from backend.app.models.patient import Patient
 from backend.app.models.worker import Worker
 from backend.app.repositories.doctor_repository import DoctorRepository
 from backend.app.repositories.facility_repository import FacilityRepository
+from backend.app.repositories.health_journey_repository import HealthJourneyRepository
 from backend.app.repositories.otp_repository import OTPRepository
 from backend.app.repositories.patient_repository import PatientRepository
 from backend.app.repositories.worker_repository import WorkerRepository
+from backend.app.schemas.auth import PatientSelfRegisterRequest
 from backend.app.services.sms_service import SMSService
 
 
@@ -36,6 +38,7 @@ class AuthService:
         worker_repo: Optional[WorkerRepository] = None,
         facility_repo: Optional[FacilityRepository] = None,
         doctor_repo: Optional[DoctorRepository] = None,
+        journey_repo: Optional[HealthJourneyRepository] = None,
         sms_service: Optional[SMSService] = None,
     ):
         self.otp_repo = otp_repo
@@ -43,6 +46,7 @@ class AuthService:
         self.worker_repo = worker_repo
         self.facility_repo = facility_repo
         self.doctor_repo = doctor_repo
+        self.journey_repo = journey_repo
         self.sms_service = sms_service or SMSService()
 
     def _hash_otp(self, mobile: str, otp: str) -> str:
@@ -106,10 +110,13 @@ class AuthService:
           - Expiration check
           - Attempt limits with automatic invalidation on threshold exceed
           - Constant-time cryptographic verification
-          - Patient registration lookup
+          - Patient registration check:
+              - If patient exists: Issues full PATIENT JWT access token.
+              - If patient does NOT exist: Issues a secure signed registration_token (15m TTL)
+                and prompts patient self-registration.
 
         Returns:
-            Dictionary containing access_token and authenticated patient profile.
+            Dictionary containing auth token / registration token and status.
         """
         otp_record = self.otp_repo.get_latest_active_otp(mobile)
 
@@ -158,14 +165,103 @@ class AuthService:
         # Mark OTP as successfully redeemed
         self.otp_repo.mark_used(otp_record)
 
-        # Look up patient record
+        # Look up existing patient record
         patient = self.patient_repo.find_by_mobile(mobile)
-        if not patient:
-            raise NotFoundError(
-                "Patient not registered with this mobile number. Please register first."
+        if patient:
+            # Issue JWT Access Token for existing patient
+            access_token = create_access_token(
+                subject=str(patient.id),
+                role="PATIENT",
+                extra_claims={"mobile": patient.mobile},
             )
 
-        # Issue JWT Access Token
+            return {
+                "is_registered": True,
+                "access_token": access_token,
+                "token_type": "bearer",
+                "role": "PATIENT",
+                "patient": {
+                    "id": patient.id,
+                    "mobile": patient.mobile,
+                    "full_name": patient.full_name,
+                    "age": patient.age,
+                    "gender": patient.gender,
+                    "village": patient.village,
+                    "district": patient.district,
+                    "abha_number": patient.abha_number,
+                    "role": "PATIENT",
+                },
+            }
+
+        # New patient: generate a signed registration token allowing self-registration
+        registration_token = create_access_token(
+            subject=mobile,
+            role="UNREGISTERED_PATIENT",
+            extra_claims={"mobile": mobile, "verified": True},
+            expires_delta=timedelta(minutes=15),
+        )
+
+        return {
+            "is_registered": False,
+            "mobile": mobile,
+            "registration_token": registration_token,
+            "message": "OTP verified successfully. Please complete patient registration.",
+        }
+
+    def register_patient_self(
+        self,
+        payload: PatientSelfRegisterRequest,
+        token: str,
+    ) -> Dict[str, Any]:
+        """
+        Self-register a new patient in PostgreSQL after successful OTP mobile verification.
+
+        Validates:
+          - Cryptographic authenticity and TTL of registration_token.
+          - Mobile in token matches mobile in payload.
+          - Mandatory patient demographic fields (name, age, gender, village, district).
+          - Non-duplicate mobile uniqueness.
+
+        Returns:
+            Dictionary with access_token, role='PATIENT', and registered patient profile.
+        """
+        token_data = decode_access_token(token)
+        if token_data.role not in ("UNREGISTERED_PATIENT", "PATIENT"):
+            raise AuthenticationError("Invalid registration token role")
+
+        token_mobile = token_data.mobile or token_data.user_id
+        if token_mobile != payload.mobile:
+            raise AuthenticationError("Verified mobile number in token does not match registration payload")
+
+        # Prevent duplicate mobile registration
+        existing = self.patient_repo.find_by_mobile(payload.mobile)
+        if existing:
+            raise ValidationAppError("A patient is already registered with this mobile number. Please log in.")
+
+        # Create patient record in PostgreSQL
+        patient = self.patient_repo.create_patient(
+            mobile=payload.mobile,
+            full_name=payload.full_name.strip(),
+            age=payload.age,
+            gender=payload.gender.strip().upper(),
+            village=payload.village.strip(),
+            district=payload.district.strip(),
+            abha_number=payload.abha_number.strip() if payload.abha_number else None,
+            consent=payload.consent,
+        )
+
+        # Log timeline registration event
+        if self.journey_repo:
+            now_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            self.journey_repo.create_event(
+                patient_id=patient.id,
+                event_type="REGISTRATION",
+                title="Patient Registration",
+                description="Patient profile self-registered with OTP mobile verification.",
+                event_date=now_date,
+            )
+
+        # Issue full JWT Access Token
         access_token = create_access_token(
             subject=str(patient.id),
             role="PATIENT",
@@ -173,6 +269,7 @@ class AuthService:
         )
 
         return {
+            "is_registered": True,
             "access_token": access_token,
             "token_type": "bearer",
             "role": "PATIENT",
@@ -180,10 +277,14 @@ class AuthService:
                 "id": patient.id,
                 "mobile": patient.mobile,
                 "full_name": patient.full_name,
+                "age": patient.age,
+                "gender": patient.gender,
+                "village": patient.village,
                 "district": patient.district,
                 "abha_number": patient.abha_number,
                 "role": "PATIENT",
             },
+            "message": "Patient registered successfully",
         }
 
     def get_patient_by_id(self, patient_id: int) -> Patient:
