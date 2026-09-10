@@ -119,6 +119,20 @@
   color: #059669;
 }
 
+.role-card-staff .role-icon-box {
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.role-card-staff:hover {
+  border-color: #2563EB;
+}
+
+.role-tag-verified {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
 .role-icon-box {
   width: 50px;
   height: 50px;

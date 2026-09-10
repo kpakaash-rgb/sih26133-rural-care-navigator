@@ -70,6 +70,7 @@ class Settings(BaseSettings):
     OTP_MAX_ATTEMPTS: int = 3
     OTP_DEMO_MODE: bool = True
     DEMO_OTP: str = "123456"
+    DEMO_WORKER_PASSWORD: str = "password123"
 
     # ──────────────────────────────────────────────
     # SMS Provider Configuration
@@ -81,6 +82,43 @@ class Settings(BaseSettings):
     SMS_TEMPLATE_ID: Optional[str] = None
     SMS_ENABLED: bool = False
 
+    # ──────────────────────────────────────────────
+    # Sarvam AI STT Configuration (Telephone Audio: 8 kHz, PCM mono)
+    # ──────────────────────────────────────────────
+    SARVAM_API_KEY: Optional[str] = None
+    SARVAM_STT_MODEL: str = "saaras:v3-realtime"
+    SARVAM_STT_LANGUAGE_CODE: str = "en-IN"
+    SARVAM_STT_SAMPLE_RATE: int = 8000
+    SARVAM_STT_AUDIO_CODEC: str = "pcm_s16le"
+    SARVAM_STT_WS_URL: str = "wss://api.sarvam.ai/speech-to-text-realtime/ws"
+
+    # ──────────────────────────────────────────────
+    # Sarvam AI TTS Configuration (Telephone Audio: 8 kHz WAV)
+    # ──────────────────────────────────────────────
+    SARVAM_TTS_MODEL: str = "bulbul:v3"
+    SARVAM_TTS_LANGUAGE_CODE: str = "en-IN"
+    SARVAM_TTS_SPEAKER: str = "shubh"
+    SARVAM_TTS_SAMPLE_RATE: int = 8000
+    SARVAM_TTS_OUTPUT_CODEC: str = "wav"
+    SARVAM_TTS_API_URL: str = "https://api.sarvam.ai/text-to-speech"
+
+    # ──────────────────────────────────────────────
+    # Exotel VoiceBot / AgentStream Configuration
+    # ──────────────────────────────────────────────
+    EXOTEL_ACCOUNT_SID: Optional[str] = None
+    EXOTEL_API_KEY: Optional[str] = None
+    EXOTEL_API_TOKEN: Optional[str] = None
+    EXOTEL_EXOPHONE: Optional[str] = None
+    EXOTEL_STREAM_URL: Optional[str] = "wss://delusion-moody-spruce.ngrok-free.dev/api/v1/ivr/exotel"
+    EXOTEL_AUDIO_ENCODING: str = "audio/l16"
+    EXOTEL_SAMPLE_RATE: int = 8000
+    EXOTEL_OUTBOUND_CALL_URL: str = "https://api.exotel.com/v1/Accounts/{account_sid}/Calls/connect.json"
+
+    # ──────────────────────────────────────────────
+    # Local Generative Conversational Model Configuration
+    # ──────────────────────────────────────────────
+    LOCAL_GENERATIVE_RESPONSES_ENABLED: bool = False
+    LOCAL_GENERATIVE_SHADOW_MODE: bool = True
 
     # ──────────────────────────────────────────────
     # CORS

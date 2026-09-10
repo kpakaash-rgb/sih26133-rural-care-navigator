@@ -16,15 +16,30 @@ from sqlalchemy.orm import Session
 
 from backend.app.core.exceptions import AuthenticationError, AuthorizationError
 from backend.app.core.response import success_response
-from backend.app.core.security import TokenData, get_current_user
+from backend.app.core.security import TokenData, get_current_doctor, get_current_user, get_current_worker
 from backend.app.database.connection import get_db
+from backend.app.models.doctor import Doctor
 from backend.app.models.patient import Patient
+from backend.app.models.worker import Worker
+from backend.app.repositories.doctor_repository import DoctorRepository
+from backend.app.repositories.facility_repository import FacilityRepository
 from backend.app.repositories.otp_repository import OTPRepository
 from backend.app.repositories.patient_repository import PatientRepository
+from backend.app.repositories.worker_repository import WorkerRepository
 from backend.app.schemas.auth import (
     AuthenticatedPatient,
     OTPRequest,
     OTPVerifyRequest,
+)
+from backend.app.schemas.staff import (
+    StaffAuthResponse,
+    StaffLoginRequest,
+    StaffProfileResponse,
+)
+from backend.app.schemas.worker import (
+    WorkerAuthResponse,
+    WorkerLoginRequest,
+    WorkerProfileResponse,
 )
 from backend.app.services.auth_service import AuthService
 
@@ -39,7 +54,16 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     """Dependency provider for AuthService."""
     otp_repo = OTPRepository(db)
     patient_repo = PatientRepository(db)
-    return AuthService(otp_repo=otp_repo, patient_repo=patient_repo)
+    worker_repo = WorkerRepository(db)
+    facility_repo = FacilityRepository(db)
+    doctor_repo = DoctorRepository(db)
+    return AuthService(
+        otp_repo=otp_repo,
+        patient_repo=patient_repo,
+        worker_repo=worker_repo,
+        facility_repo=facility_repo,
+        doctor_repo=doctor_repo,
+    )
 
 
 async def get_current_patient(
@@ -113,4 +137,113 @@ async def get_me(
     return success_response(
         data=patient_data,
         message="Authenticated patient profile",
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Frontline Worker Auth Routes
+# ──────────────────────────────────────────────────────────────────────────────
+
+@router.post("/worker/login", summary="Frontline worker login")
+async def worker_login(
+    payload: WorkerLoginRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Authenticate a Frontline Healthcare Worker (ASHA / ANM) and issue a role-scoped JWT.
+    """
+    result = auth_service.authenticate_worker(
+        worker_id=payload.worker_id,
+        mobile=payload.mobile,
+        password=payload.password,
+    )
+    return success_response(
+        data=result,
+        message="Worker authentication successful",
+    )
+
+
+@router.get("/worker/me", summary="Get authenticated worker profile")
+async def get_worker_me(
+    current_worker: TokenData = Depends(get_current_worker),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Protected endpoint to retrieve the authenticated worker profile and facility context.
+    """
+    worker = auth_service.get_worker_by_identity(current_worker.user_id)
+    facility_name = "Primary Health Centre"
+    if auth_service.facility_repo:
+        fac = auth_service.facility_repo.get_by_id(worker.facility_id)
+        if fac:
+            facility_name = fac.name
+
+    data = {
+        "id": worker.id,
+        "worker_id": worker.worker_id,
+        "name": worker.name,
+        "mobile": worker.mobile,
+        "role": worker.role,
+        "facility_id": worker.facility_id,
+        "facility_name": facility_name,
+    }
+    return success_response(
+        data=data,
+        message="Authenticated worker profile",
+    )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Unified Healthcare Staff Auth Routes (Doctor & Frontline Worker)
+# ──────────────────────────────────────────────────────────────────────────────
+
+@router.post("/staff/login", summary="Healthcare staff login (Doctor / Worker)")
+async def staff_login(
+    payload: StaffLoginRequest,
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Authenticate a healthcare staff member (Doctor or Frontline Worker) and issue a role-scoped JWT.
+
+    Does not allow public self-registration. Only pre-registered staff accounts are accepted.
+    """
+    result = auth_service.authenticate_staff(
+        staff_id=payload.staff_id,
+        password=payload.password,
+    )
+    return success_response(
+        data=result,
+        message="Staff authentication successful",
+    )
+
+
+@router.get("/doctor/me", summary="Get authenticated doctor profile")
+async def get_doctor_me(
+    current_doctor: TokenData = Depends(get_current_doctor),
+    auth_service: AuthService = Depends(get_auth_service),
+):
+    """
+    Protected endpoint to retrieve the authenticated doctor profile and facility context.
+    Requires Bearer token with 'DOCTOR' role.
+    """
+    doctor = auth_service.get_doctor_by_identity(current_doctor.user_id)
+    facility_name = "Primary Health Centre"
+    if auth_service.facility_repo:
+        fac = auth_service.facility_repo.get_by_id(doctor.facility_id)
+        if fac:
+            facility_name = fac.name
+
+    data = {
+        "id": doctor.id,
+        "doctor_id": doctor.doctor_id,
+        "name": doctor.name,
+        "mobile": doctor.mobile,
+        "role": doctor.role,
+        "specialization": doctor.specialization,
+        "facility_id": doctor.facility_id,
+        "facility_name": facility_name,
+    }
+    return success_response(
+        data=data,
+        message="Authenticated doctor profile",
     )

@@ -4,50 +4,63 @@ import {
   Phone, Lock, Eye, EyeOff, MessageSquare,
   AlertCircle
 } from 'lucide-react'
+import { loginWorker } from '../../../services/api'
 import './LoginPage.css'
 
 export default function LoginPage() {
   const navigate = useNavigate()
 
-  const [mobile,   setMobile]   = useState('')
-  const [password, setPassword] = useState('')
+  const [mobile,   setMobile]   = useState('9842182000')
+  const [password, setPassword] = useState('password123')
   const [showPass, setShowPass] = useState(false)
   const [errors,   setErrors]   = useState({})
   const [loading,  setLoading]  = useState(false)
 
-  /* ΓöÇΓöÇ Validation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+  /* ── Validation ────────────────────────────────────────── */
   function validate() {
     const e = {}
-    if (!mobile.trim())                         e.mobile = 'Mobile number is required'
-    else if (!/^\d{10}$/.test(mobile.replace(/\s/g, '')))
-                                                e.mobile = 'Enter a valid 10-digit mobile number'
+    if (!mobile.trim())                         e.mobile = 'Mobile number or Worker ID is required'
     if (!password.trim())                       e.password = 'Password / MPIN is required'
     else if (password.length < 4)              e.password = 'Must be at least 4 characters'
     return e
   }
 
-  function handleSignIn(e) {
+  async function handleSignIn(e) {
     e.preventDefault()
     const e2 = validate()
     setErrors(e2)
     if (Object.keys(e2).length > 0) return
 
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      const cleanInput = mobile.replace(/\s/g, '')
+      const isPhone = /^\d{10}$/.test(cleanInput)
+      await loginWorker({
+        ...(isPhone ? { mobile: cleanInput } : { worker_id: mobile.trim() }),
+        password: password.trim(),
+      })
       navigate('/worker/home')
-    }, 1200)
+    } catch (err) {
+      setErrors({ server: err.message || 'Authentication failed. Please check credentials.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function handleOTP(e) {
+  async function handleOTP(e) {
     e.preventDefault()
-    const mErr = {}
-    if (!mobile.trim()) mErr.mobile = 'Mobile number is required for OTP'
-    else if (!/^\d{10}$/.test(mobile.replace(/\s/g, '')))
-      mErr.mobile = 'Enter a valid 10-digit mobile number'
-    setErrors(mErr)
-    if (Object.keys(mErr).length > 0) return
-    navigate('/worker/home')
+    setLoading(true)
+    try {
+      await loginWorker({
+        worker_id: 'FHW-20841',
+        password: 'password123',
+      })
+      navigate('/worker/home')
+    } catch (err) {
+      setErrors({ server: err.message || 'Demo OTP authentication failed.' })
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

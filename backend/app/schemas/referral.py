@@ -20,6 +20,7 @@ class ReferralCreate(BaseModel):
     priority: Optional[str] = Field("ROUTINE", description="Priority: ROUTINE, URGENT, EMERGENCY", examples=["ROUTINE"])
     appointment_id: Optional[int] = Field(None, description="Optional associated appointment ID", examples=[1])
     from_facility_id: Optional[int] = Field(None, description="Optional originating facility ID", examples=[1])
+    patient_id: Optional[int] = Field(None, description="Target patient ID when created by Frontline Worker", examples=[1])
 
 
 class ReferralFacilityInfo(BaseModel):

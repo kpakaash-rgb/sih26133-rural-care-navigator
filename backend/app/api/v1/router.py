@@ -33,9 +33,15 @@ from backend.app.api.v1.routes.mobile_clinics import router as mobile_clinics_ro
 from backend.app.api.v1.routes.referrals import router as referrals_router
 from backend.app.api.v1.routes.schemes import router as schemes_router
 from backend.app.api.v1.routes.triage import router as triage_router
+from backend.app.api.v1.routes.patients import router as patients_router
+from backend.app.api.v1.routes.queues import router as queues_router
+from backend.app.api.v1.routes.screening import router as screening_router
+from backend.app.api.v1.routes.doctor import router as doctor_router
 from backend.app.api.v1.routes.hospital_recommendation import (
     router as hospital_recommendation_router,
 )
+from backend.app.api.v1.routes.ivr import router as ivr_router
+
 api_v1_router = APIRouter(prefix="/api/v1")
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -43,7 +49,11 @@ api_v1_router = APIRouter(prefix="/api/v1")
 # ──────────────────────────────────────────────────────────────────────────────
 api_v1_router.include_router(health_router)
 api_v1_router.include_router(auth_router)
+api_v1_router.include_router(doctor_router)
+api_v1_router.include_router(patients_router)
+api_v1_router.include_router(screening_router)
 api_v1_router.include_router(facilities_router)
+api_v1_router.include_router(queues_router)
 api_v1_router.include_router(appointments_router)
 api_v1_router.include_router(referrals_router)
 api_v1_router.include_router(health_journey_router)
@@ -52,6 +62,7 @@ api_v1_router.include_router(schemes_router)
 api_v1_router.include_router(mobile_clinics_router)
 api_v1_router.include_router(triage_router)
 api_v1_router.include_router(hospital_recommendation_router)
+api_v1_router.include_router(ivr_router)
 
 
 

@@ -1,10 +1,31 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { HeartPulse, Stethoscope, Users, ArrowRight, ShieldCheck, Activity } from 'lucide-react'
+import { HeartPulse, Stethoscope, ArrowRight, ShieldCheck, Activity } from 'lucide-react'
+import { getStaffSession } from '../services/api'
 import './RoleSelection.css'
 
 export default function RoleSelection() {
   const navigate = useNavigate()
+
+  // If a valid session already exists, route directly to the respective portal
+  useEffect(() => {
+    const staffSession = getStaffSession()
+    if (staffSession && staffSession.token) {
+      if (staffSession.role === 'DOCTOR') {
+        navigate('/doctor', { replace: true })
+        return
+      }
+      if (staffSession.role === 'WORKER') {
+        navigate('/worker/home', { replace: true })
+        return
+      }
+    }
+
+    const patientToken = localStorage.getItem('access_token')
+    if (patientToken) {
+      navigate('/patient', { replace: true })
+    }
+  }, [navigate])
 
   return (
     <div className="role-selection-wrapper">
@@ -30,7 +51,7 @@ export default function RoleSelection() {
         {/* Role Cards Stack */}
         <main className="role-cards-stack">
           
-          {/* 1. PATIENT ROLE */}
+          {/* 1. PATIENT */}
           <button
             type="button"
             className="role-card-btn role-card-patient"
@@ -43,54 +64,32 @@ export default function RoleSelection() {
             <div className="role-card-content">
               <div className="role-card-title-row">
                 <h2 className="role-card-title">Patient</h2>
-                <span className="role-tag role-tag-live">Active</span>
+                <span className="role-tag role-tag-live">Public Access</span>
               </div>
               <p className="role-card-desc">
-                Find the right care, check availability, book appointments and track your care.
+                For patients seeking healthcare
               </p>
             </div>
             <ArrowRight className="role-arrow-icon" size={20} />
           </button>
 
-          {/* 2. DOCTOR ROLE */}
+          {/* 2. HEALTHCARE STAFF */}
           <button
             type="button"
-            className="role-card-btn role-card-doctor"
-            onClick={() => navigate('/doctor')}
-            id="role-card-doctor"
+            className="role-card-btn role-card-staff"
+            onClick={() => navigate('/staff/login')}
+            id="role-card-staff"
           >
             <div className="role-icon-box">
               <Stethoscope size={26} strokeWidth={2.2} />
             </div>
             <div className="role-card-content">
               <div className="role-card-title-row">
-                <h2 className="role-card-title">Doctor</h2>
-                <span className="role-tag role-tag-dev">Phase 3/4</span>
+                <h2 className="role-card-title">Healthcare Staff</h2>
+                <span className="role-tag role-tag-verified">Authorized Staff</span>
               </div>
               <p className="role-card-desc">
-                Manage appointments, review patients, consult and create referrals.
-              </p>
-            </div>
-            <ArrowRight className="role-arrow-icon" size={20} />
-          </button>
-
-          {/* 3. FRONTLINE WORKER ROLE */}
-          <button
-            type="button"
-            className="role-card-btn role-card-worker"
-            onClick={() => navigate('/worker')}
-            id="role-card-worker"
-          >
-            <div className="role-icon-box">
-              <Users size={26} strokeWidth={2.2} />
-            </div>
-            <div className="role-card-content">
-              <div className="role-card-title-row">
-                <h2 className="role-card-title">Frontline Worker</h2>
-                <span className="role-tag role-tag-dev">Phase 4</span>
-              </div>
-              <p className="role-card-desc">
-                Register patients, perform screening, manage tasks and support referrals.
+                For doctors and frontline healthcare workers
               </p>
             </div>
             <ArrowRight className="role-arrow-icon" size={20} />
@@ -102,7 +101,7 @@ export default function RoleSelection() {
         <footer className="role-footer">
           <div className="role-footer-indicators">
             <span><span className="role-dot"></span>FastAPI Connected</span>
-            <span><span className="role-dot"></span>AI Triage Ready</span>
+            <span><span className="role-dot"></span>Role Security Active</span>
             <span><span className="role-dot"></span>Offline PWA</span>
           </div>
           <p className="role-footer-copy">

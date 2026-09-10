@@ -16,7 +16,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from backend.app.api.v1.routes.auth import get_current_patient
+from backend.app.core.exceptions import AuthenticationError, AuthorizationError, ValidationAppError
 from backend.app.core.response import success_response
+from backend.app.core.security import TokenData, get_current_user
 from backend.app.database.connection import get_db
 from backend.app.models.patient import Patient
 from backend.app.repositories.appointment_repository import AppointmentRepository
@@ -60,21 +62,38 @@ def get_referral_service(db: Session = Depends(get_db)) -> ReferralService:
 @router.post("", summary="Create a referral")
 async def create_referral(
     payload: ReferralCreate,
-    patient: Patient = Depends(get_current_patient),
+    current_user: TokenData = Depends(get_current_user),
     referral_service: ReferralService = Depends(get_referral_service),
 ):
     """
     Create a patient referral to a specialized healthcare centre.
 
-    Patient identity is strictly derived from the authenticated token.
+    Supports both Patient self-referral and Frontline Worker referrals.
     """
+    target_patient_id: int
+    from_fac_id = payload.from_facility_id
+
+    if current_user.role == "PATIENT":
+        try:
+            target_patient_id = int(current_user.user_id)
+        except (ValueError, TypeError):
+            raise AuthenticationError("Invalid patient user in token")
+    elif current_user.role in ("WORKER", "DOCTOR"):
+        if not payload.patient_id:
+            raise ValidationAppError(f"patient_id is required when creating a {current_user.role.lower()} referral")
+        target_patient_id = payload.patient_id
+        if current_user.facility_id:
+            from_fac_id = current_user.facility_id
+    else:
+        raise AuthorizationError("Unauthorized to create referrals")
+
     referral = referral_service.create_referral(
-        patient_id=patient.id,
+        patient_id=target_patient_id,
         to_facility_id=payload.to_facility_id,
         reason=payload.reason,
         priority=payload.priority or "ROUTINE",
         appointment_id=payload.appointment_id,
-        from_facility_id=payload.from_facility_id,
+        from_facility_id=from_fac_id,
     )
     return success_response(
         data=referral,

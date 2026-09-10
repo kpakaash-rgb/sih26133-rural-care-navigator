@@ -3,7 +3,8 @@ import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
-import { getFacilityDetails, getFacilityServices } from '../../services/api'
+import { getFacilityDetails, getFacilityServices, getFacilityQueue } from '../../services/api'
+import { formatQueueLastUpdated } from '../../utils'
 
 function formatFacilityType(type) {
   switch (type) {
@@ -36,6 +37,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
     { id: 2, name: 'Basic tests', available: true },
     { id: 3, name: 'Medicines', available: true },
   ])
+  const [queue, setQueue] = useState(null)
 
   useEffect(() => {
     let isMounted = true
@@ -44,7 +46,8 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
     Promise.all([
       getFacilityDetails(targetId).catch(() => null),
       getFacilityServices(targetId).catch(() => null),
-    ]).then(([details, srvs]) => {
+      getFacilityQueue(targetId).catch(() => null),
+    ]).then(([details, srvs, queueData]) => {
       if (isMounted) {
         if (details) {
           setFacility({
@@ -57,6 +60,9 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
         }
         if (Array.isArray(srvs) && srvs.length > 0) {
           setServices(srvs)
+        }
+        if (queueData) {
+          setQueue(queueData)
         }
       }
     })
@@ -152,6 +158,68 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
               <span className="address-pin-glyph" aria-hidden="true">📍</span>
               <span>{facility.address}</span>
             </div>
+          </div>
+        </section>
+
+        {/* Live Facility Queue Status Section */}
+        <section className="facility-services-section" style={{ marginTop: '16px' }}>
+          <h2 className="facility-section-heading">LIVE FACILITY QUEUE</h2>
+
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '12px',
+              padding: '14px 16px',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+            }}
+          >
+            {queue ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748b' }}>Queue Status:</span>
+                    <span
+                      style={{
+                        padding: '3px 10px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        backgroundColor: queue.status === 'NORMAL' ? '#dcfce7' : queue.status === 'BUSY' ? '#fef3c7' : '#fee2e2',
+                        color: queue.status === 'NORMAL' ? '#166534' : queue.status === 'BUSY' ? '#92400e' : '#991b1b',
+                      }}
+                    >
+                      {queue.status}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>
+                      {queue.waiting_patients} patients waiting
+                    </span>
+                    <span style={{ fontSize: '13px', color: '#0284c7', fontWeight: 600 }}>
+                      ~{queue.estimated_wait_minutes} min wait
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    fontSize: '11.5px',
+                    color: formatQueueLastUpdated(queue.last_updated).isStale ? '#b45309' : '#64748b',
+                    fontStyle: 'italic',
+                    borderTop: '1px solid #f1f5f9',
+                    paddingTop: '6px',
+                  }}
+                >
+                  {formatQueueLastUpdated(queue.last_updated).text}
+                </div>
+              </div>
+            ) : (
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>
+                Queue information unavailable
+              </p>
+            )}
           </div>
         </section>
 

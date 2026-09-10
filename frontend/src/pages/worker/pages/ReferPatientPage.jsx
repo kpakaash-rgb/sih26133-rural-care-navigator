@@ -1,15 +1,16 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   ArrowLeft, Copy, ChevronDown, ShieldCheck,
   MapPin, Clock, User, Mic, CloudOff, Send,
   CheckCircle2, Bell, Info, Building2,
-  AlertTriangle, Siren, CalendarClock, Wifi
+  AlertTriangle, Siren, CalendarClock, Wifi, AlertCircle
 } from 'lucide-react'
+import { getPatientDetailsById, getFacilities, createWorkerReferral } from '../../../services/api'
 import './ReferPatientPage.css'
 
-/* ΓöÇΓöÇ Demo Data ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
-const patient = {
+/* ── Fallback Demo Data ── */
+const defaultPatient = {
   name: 'Anitha Kumar', initials: 'AK', gender: 'Female',
   id: 'P104827', age: 42, village: 'Kovilur',
   visitTime: 'Today, 09:30 AM',
@@ -25,53 +26,120 @@ const REASONS = [
   'Immunisation adverse reaction',
 ]
 
-const FACILITIES = [
-  { id: 1, name: 'Kovilur Primary Health Centre', type: 'Sub-district PHC', sector: 'Sector B-4', km: 4.2, doctor: 'Dr. R. Sundaram', transit: '~15 mins', open: true },
-  { id: 2, name: 'Ramanathapuram District Hospital', type: 'District Hospital', sector: 'Sector A-1', km: 18.5, doctor: 'Dr. P. Muthu', transit: '~45 mins', open: true },
+const DEFAULT_FACILITIES = [
+  { id: 2, name: 'Kovilur Primary Health Centre', type: 'Sub-district PHC', sector: 'Sector B-4', km: 4.2, doctor: 'Dr. R. Sundaram', transit: '~15 mins', open: true },
+  { id: 3, name: 'Ramanathapuram District Hospital', type: 'District Hospital', sector: 'Sector A-1', km: 18.5, doctor: 'Dr. P. Muthu', transit: '~45 mins', open: true },
 ]
 
 const PRIORITIES = [
   {
     key: 'routine', label: 'Routine',
     icon: CalendarClock, color: 'neutral',
-    desc: 'Within 7 days ┬╖ Scheduled clinical review or preventive assessment.',
+    desc: 'Within 7 days • Scheduled clinical review or preventive assessment.',
     time: 'Within 7 days',
   },
   {
     key: 'urgent', label: 'Urgent',
     icon: AlertTriangle, color: 'warning',
-    desc: 'Within 24ΓÇô48 hours ┬╖ Escalated queue. Coordinator notified.',
-    time: 'Within 24ΓÇô48 hours',
+    desc: 'Within 24–48 hours • Escalated queue. Coordinator notified.',
+    time: 'Within 24–48 hours',
   },
   {
     key: 'emergency', label: 'Emergency',
     icon: Siren, color: 'danger',
-    desc: 'Immediate ┬╖ Critical distress / ambulance dispatch required.',
+    desc: 'Immediate • Critical distress / ambulance dispatch required.',
     time: 'Immediate',
   },
 ]
 
 const DEMO_NOTES = `Patient reports persistent fever for 3 days with elevated BP (138/88) and mild respiratory fatigue. Vitals recorded during morning home visit. Routine antipyretic advised locally; awaiting medical officer evaluation.`
 
-/* ΓöÇΓöÇ Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Component ── */
 export default function ReferPatientPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const routePatientId = location.state?.patientId
 
+  const [patient, setPatient] = useState(defaultPatient)
+  const [facilities, setFacilities] = useState(DEFAULT_FACILITIES)
   const [reason,   setReason]   = useState(REASONS[0])
-  const [facility, _setFacility] = useState(FACILITIES[0])
+  const [facility, setFacility] = useState(DEFAULT_FACILITIES[0])
   const [priority, setPriority] = useState('urgent')
   const [notes,    setNotes]    = useState(DEMO_NOTES)
   const [loading,  setLoading]  = useState(false)
   const [success,  setSuccess]  = useState(false)
+  const [apiError, setApiError] = useState('')
   const [idCopied, setIdCopied] = useState(false)
   const [ptCopied, setPtCopied] = useState(false)
+  const [referralId, setReferralId] = useState('REF-2026-1842')
 
-  const REFERRAL_ID = 'REF-2026-1842'
+  useEffect(() => {
+    let isMounted = true
+    if (routePatientId) {
+      getPatientDetailsById(routePatientId)
+        .then((data) => {
+          if (isMounted && data) {
+            setPatient({
+              id: data.id,
+              displayId: `P${String(data.id).padStart(6, '0')}`,
+              name: data.full_name,
+              initials: (data.full_name || 'Patient').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+              gender: data.gender || 'Female',
+              age: data.age ?? 42,
+              village: data.village || data.district || 'Kovilur',
+              visitTime: 'Today, 09:30 AM',
+              lastVitals: '138/88 mmHg',
+            })
+          }
+        })
+        .catch(() => {})
+    }
 
-  function handleSubmit(e) {
+    getFacilities()
+      .then((data) => {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((f) => ({
+            id: f.id,
+            name: f.name,
+            type: f.facility_type || 'Health Centre',
+            sector: f.location || 'Local Sector',
+            km: 4.2,
+            doctor: 'Medical Officer On Duty',
+            transit: '~15 mins',
+            open: true,
+          }))
+          setFacilities(mapped)
+          setFacility(mapped[0])
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      isMounted = false
+    }
+  }, [routePatientId])
+
+  async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => { setLoading(false); setSuccess(true) }, 1400)
+    setApiError('')
+    try {
+      const targetPatientId = typeof patient.id === 'number' ? patient.id : 1
+      const created = await createWorkerReferral({
+        patient_id: targetPatientId,
+        to_facility_id: facility.id || 2,
+        reason: reason,
+        priority: priority.toUpperCase(),
+      })
+      if (created?.id) {
+        setReferralId(`REF-${new Date().getFullYear()}-${String(created.id).padStart(4, '0')}`)
+      }
+      setSuccess(true)
+    } catch (err) {
+      setApiError(err.message || 'Failed to submit referral.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function copy(val, setter) {
@@ -79,7 +147,7 @@ export default function ReferPatientPage() {
     setter(true); setTimeout(() => setter(false), 2000)
   }
 
-  /* ΓöÇΓöÇ Success state ΓöÇΓöÇ */
+  /* ── Success state ── */
   if (success) {
     return (
       <div className="rr-root animate-fade-in">
@@ -108,9 +176,9 @@ export default function ReferPatientPage() {
           <div className="rr-ref-id-row">
             <div>
               <p className="rr-ref-label">Referral Reference ID</p>
-              <p className="rr-ref-val">{REFERRAL_ID}</p>
+              <p className="rr-ref-val">{referralId}</p>
             </div>
-            <button className="rr-copy-btn" onClick={() => copy(REFERRAL_ID, setIdCopied)}>
+            <button className="rr-copy-btn" onClick={() => copy(referralId, setIdCopied)}>
               <Copy size={14} /> {idCopied ? 'Copied!' : 'Copy'}
             </button>
           </div>
@@ -146,18 +214,18 @@ export default function ReferPatientPage() {
         <button id="btn-track-referral" className="rr-submit-btn" style={{ marginTop: 0 }}>
           <Bell size={18} /> Track Referral
         </button>
-        <button className="rr-back-summary" onClick={() => navigate('/worker/patient-summary')}>
+        <button className="rr-back-summary" onClick={() => navigate('/worker/patient-summary', { state: { patientId: patient.id } })}>
           <ArrowLeft size={15} /> Back to Patient Summary
         </button>
       </div>
     )
   }
 
-  /* ΓöÇΓöÇ Form state ΓöÇΓöÇ */
+  /* ── Form state ── */
   return (
     <form className="rr-root animate-fade-in" onSubmit={handleSubmit}>
 
-      {/* ΓöÇΓöÇ Page Header ΓöÇΓöÇ */}
+      {/* Page Header */}
       <div className="rr-page-header">
         <button type="button" className="rr-back-btn" onClick={() => navigate(-1)}><ArrowLeft size={22} /></button>
         <div className="rr-header-mid">
@@ -170,20 +238,26 @@ export default function ReferPatientPage() {
         <button type="button" className="rr-info-btn" aria-label="Info"><Info size={18} /></button>
       </div>
 
-      {/* ΓöÇΓöÇ Patient Summary Card ΓöÇΓöÇ */}
+      {apiError && (
+        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', color: '#991b1b', fontSize: '13px', fontWeight: 600, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertCircle size={16} /> {apiError}
+        </div>
+      )}
+
+      {/* Patient Summary Card */}
       <div className="rr-patient-card">
         <div className="rr-patient-top">
-          <div className="rr-patient-avatar">AK</div>
+          <div className="rr-patient-avatar">{patient.initials}</div>
           <div className="rr-patient-info">
             <div className="rr-patient-name-row">
               <span className="rr-patient-name">{patient.name}</span>
-              <span className="rr-patient-gender">ΓÖÇ</span>
-              <span className="rr-id-badge">≡ƒ¬¬ {patient.id}</span>
-              <button type="button" className="rr-copy-icon" onClick={() => copy(patient.id, setPtCopied)}>
+              <span className="rr-patient-gender">♀</span>
+              <span className="rr-id-badge">🆔 {patient.displayId || patient.id}</span>
+              <button type="button" className="rr-copy-icon" onClick={() => copy(patient.displayId || String(patient.id), setPtCopied)}>
                 <Copy size={12} />{ptCopied && <span className="rr-tip">Copied!</span>}
               </button>
             </div>
-            <p className="rr-patient-meta">Village: {patient.village} ΓÇó Age: {patient.age} ΓÇó {patient.gender}</p>
+            <p className="rr-patient-meta">Village: {patient.village} • Age: {patient.age} • {patient.gender}</p>
           </div>
         </div>
         <div className="rr-patient-footer">
@@ -192,7 +266,7 @@ export default function ReferPatientPage() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Reason for Referral ΓöÇΓöÇ */}
+      {/* Reason for Referral */}
       <div className="rr-section">
         <div className="rr-section-header">
           <h3 className="rr-section-title">Reason for Referral</h3>
@@ -215,18 +289,30 @@ export default function ReferPatientPage() {
         </p>
       </div>
 
-      {/* ΓöÇΓöÇ Recommended Facility ΓöÇΓöÇ */}
+      {/* Recommended Facility */}
       <div className="rr-section">
         <div className="rr-section-header">
           <h3 className="rr-section-title">Recommended Facility</h3>
-          <button type="button" className="rr-change-link">Change</button>
+          <select
+            id="select-referral-facility"
+            style={{ fontSize: '12px', fontWeight: 600, padding: '4px 8px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+            value={facility.id}
+            onChange={(e) => {
+              const selected = facilities.find(f => f.id === Number(e.target.value))
+              if (selected) setFacility(selected)
+            }}
+          >
+            {facilities.map(f => (
+              <option key={f.id} value={f.id}>{f.name}</option>
+            ))}
+          </select>
         </div>
         <div className="rr-facility-card">
           <div className="rr-facility-header">
             <div className="rr-facility-icon"><Building2 size={18} /></div>
             <div className="rr-facility-name-wrap">
               <p className="rr-facility-name">{facility.name}</p>
-              <p className="rr-facility-type">{facility.type} ΓÇó {facility.sector}</p>
+              <p className="rr-facility-type">{facility.type} • {facility.sector}</p>
             </div>
             {facility.open && <span className="rr-open-badge">Open Now</span>}
           </div>
@@ -238,7 +324,7 @@ export default function ReferPatientPage() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Priority Level ΓöÇΓöÇ */}
+      {/* Priority Level */}
       <div className="rr-section">
         <div className="rr-section-header">
           <h3 className="rr-section-title">Priority Level</h3>

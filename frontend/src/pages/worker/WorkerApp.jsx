@@ -2,7 +2,6 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import './worker.css'
 import WorkerAppLayout         from './WorkerAppLayout'
-import LoginPage               from './pages/LoginPage'
 import HomePage                from './pages/HomePage'
 import PatientsPage            from './pages/PatientsPage'
 import TasksPage               from './pages/TasksPage'
@@ -20,8 +19,8 @@ export default function WorkerApp() {
   return (
     <div className="worker-app-shell">
       <Routes>
-        {/* Public Standalone */}
-        <Route path="login" element={<LoginPage />} />
+        {/* Redirect standalone worker login to unified staff login */}
+        <Route path="login" element={<Navigate to="/staff/login" replace />} />
 
         {/* Authenticated layout shell */}
         <Route path="/" element={<WorkerAppLayout />}>
@@ -37,8 +36,8 @@ export default function WorkerApp() {
           <Route path="profile"          element={<ProfilePage />} />
         </Route>
 
-        {/* Fallback → login */}
-        <Route path="*" element={<Navigate to="/worker/login" replace />} />
+        {/* Fallback → /staff/login */}
+        <Route path="*" element={<Navigate to="/staff/login" replace />} />
       </Routes>
     </div>
   )

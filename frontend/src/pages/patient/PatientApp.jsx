@@ -72,6 +72,7 @@ export default function PatientApp() {
 
   const [selectedScheme, setSelectedScheme] = useState(null)
   const [selectedFacility, setSelectedFacility] = useState(null)
+  const [selectedReferral, setSelectedReferral] = useState(null)
 
   const [triageData, setTriageData] = useState({
     urgency: null,
@@ -104,10 +105,14 @@ export default function PatientApp() {
       if (data.facility) {
         setSelectedFacility(data.facility)
       }
+      if (data.referral) {
+        setSelectedReferral(data.referral)
+      }
       // Government scheme details
       if (screenId === SCREENS.SCHEME_DETAILS) {
         setSelectedScheme(data)
       }
+
 
       // AI Triage → Care Guidance
       else if (screenId === SCREENS.CARE_GUIDANCE) {
@@ -162,7 +167,7 @@ export default function PatientApp() {
           fontSize: '0.8rem',
           color: '#475569',
         }}>
-          <span>Role: <strong>Patient Portal</strong></span>
+          <span>Portal: <strong>Patient Services</strong></span>
           <button
             type="button"
             onClick={() => navigate('/')}
@@ -176,7 +181,7 @@ export default function PatientApp() {
               padding: '2px 6px',
             }}
           >
-            ← Switch Role
+            ← Portal Home
           </button>
         </div>
       )}
@@ -284,6 +289,7 @@ export default function PatientApp() {
       {currentScreen === SCREENS.REFERRAL && (
         <ReferralCreated
           onNavigate={handleNavigate}
+          referral={selectedReferral}
         />
       )}
 
@@ -296,6 +302,7 @@ export default function PatientApp() {
       {currentScreen === SCREENS.TRACK_REFERRAL && (
         <TrackReferral
           onNavigate={handleNavigate}
+          referral={selectedReferral}
         />
       )}
 

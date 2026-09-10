@@ -1,31 +1,32 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   ArrowLeft, Calendar, MapPin, User, Copy,
   Thermometer, Activity, Heart, Wind,
   Clock, CheckCircle2, AlertTriangle, AlertCircle,
   ChevronDown, ChevronUp, ClipboardList,
   Building2, UserCheck, RefreshCw, Lock,
-  ShieldCheck, Wifi, ExternalLink, CalendarClock
+  ShieldCheck, Wifi, ExternalLink, CalendarClock, Phone
 } from 'lucide-react'
+import { getPatientDetailsById, getLatestScreening, getDoctorPatientClinicalSummary } from '../../../services/api'
 import './PatientSummaryPage.css'
 
-/* ΓöÇΓöÇ Demo Data ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
-const patient = {
+/* ── Fallback Demo Data ── */
+const defaultPatient = {
   name: 'Anitha Kumar', initials: 'AK',
   id: 'P104827', age: 42, gender: 'Female',
   village: 'Kovilur, Ward 3',
   asha: 'Sunita Devi',
 }
 
-const symptoms = [
+const defaultSymptoms = [
   { label: 'Fever',    color: 'danger'  },
   { label: 'Cough',    color: 'primary' },
   { label: 'Weakness', color: 'warning' },
 ]
 
-const vitals = [
-  { key: 'temp', label: 'BODY TEMP',       value: '38.2', unit: '┬░C',   icon: Thermometer, note: 'Elevated (Mild Fever)',  noteType: 'warn'   },
+const defaultVitals = [
+  { key: 'temp', label: 'BODY TEMP',       value: '38.2', unit: '°C',   icon: Thermometer, note: 'Elevated (Mild Fever)',  noteType: 'warn'   },
   { key: 'bp',   label: 'BLOOD PRESSURE',  value: '138/88', unit: 'mmHg', icon: Activity,    note: 'Pre-hypertensive',      noteType: 'warn'   },
   { key: 'hr',   label: 'HEART RATE',      value: '96',   unit: 'bpm',  icon: Heart,       note: 'Normal Baseline',       noteType: 'ok'     },
   { key: 'spo2', label: 'OXYGEN (SpO2)',    value: '95',   unit: '%',    icon: Wind,        note: 'Adequate Ambient',      noteType: 'ok'     },
@@ -58,22 +59,21 @@ const pastVisits = [
   },
 ]
 
-/* ΓöÇΓöÇ Status Config ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Status Config ── */
 const STATUS_LEVELS = [
   { step: 1, label: 'Routine',    key: 'routine'   },
   { step: 2, label: 'Attention',  key: 'attention' },
   { step: 3, label: 'Urgent',     key: 'urgent'    },
 ]
-const currentStatus = 'attention' // routine | attention | urgent
 
-/* ΓöÇΓöÇ Note type helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Note type helpers ── */
 function NoteIcon({ type }) {
   if (type === 'ok')     return <CheckCircle2 size={12} />
   if (type === 'warn')   return <AlertTriangle size={12} />
   return                        <AlertCircle  size={12} />
 }
 
-/* ΓöÇΓöÇ Collapsible card ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Collapsible card ── */
 function CollapsibleCard({ title, subtitle, defaultOpen = true, children }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
@@ -95,13 +95,86 @@ function CollapsibleCard({ title, subtitle, defaultOpen = true, children }) {
   )
 }
 
-/* ΓöÇΓöÇ Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Component ── */
 export default function PatientSummaryPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const routePatientId = location.state?.patientId
+
   const [copied, setCopied] = useState(false)
+  const [patient, setPatient] = useState(defaultPatient)
+  const [symptoms, setSymptoms] = useState(defaultSymptoms)
+  const [vitals, setVitals] = useState(defaultVitals)
+  const [screeningDate, setScreeningDate] = useState('03 Sep 2026')
+  const [currentStatus, setCurrentStatus] = useState('attention') // routine | attention | urgent
+  const [voiceEncounter, setVoiceEncounter] = useState(null)
+
+  useEffect(() => {
+    let isMounted = true
+
+    if (routePatientId) {
+      getDoctorPatientClinicalSummary(routePatientId)
+        .then((data) => {
+          if (isMounted && data?.voice_encounter) {
+            setVoiceEncounter(data.voice_encounter)
+          }
+        })
+        .catch(() => {})
+
+      getPatientDetailsById(routePatientId)
+        .then((data) => {
+          if (isMounted && data) {
+            setPatient({
+              id: data.id,
+              displayId: `P${String(data.id).padStart(6, '0')}`,
+              name: data.full_name,
+              initials: (data.full_name || 'Patient').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase(),
+              age: data.age ?? 42,
+              gender: data.gender || 'Female',
+              village: data.village || data.district || 'Village Area',
+              asha: 'Meena Devi',
+            })
+          }
+        })
+        .catch(() => {})
+
+      getLatestScreening(routePatientId)
+        .then((sc) => {
+          if (isMounted && sc) {
+            if (sc.screened_at) {
+              setScreeningDate(new Date(sc.screened_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }))
+            }
+            if (sc.triage_level) {
+              const lvl = sc.triage_level.toLowerCase()
+              if (lvl.includes('urgent') || lvl.includes('emergency') || lvl === 'level 1') setCurrentStatus('urgent')
+              else if (lvl.includes('routine') || lvl.includes('low') || lvl === 'level 3') setCurrentStatus('routine')
+              else setCurrentStatus('attention')
+            }
+            if (Array.isArray(sc.symptoms) && sc.symptoms.length > 0) {
+              setSymptoms(sc.symptoms.map(s => ({
+                label: s,
+                color: s.toLowerCase().includes('fever') || s.toLowerCase().includes('breath') ? 'danger' : 'primary'
+              })))
+            }
+            const newVitals = [
+              { key: 'temp', label: 'BODY TEMP', value: sc.temperature ? String(sc.temperature) : '37.0', unit: '°C', icon: Thermometer, note: sc.temperature >= 38 ? 'Elevated (Mild Fever)' : 'Normal Baseline', noteType: sc.temperature >= 38 ? 'warn' : 'ok' },
+              { key: 'bp', label: 'BLOOD PRESSURE', value: (sc.systolic_bp && sc.diastolic_bp) ? `${sc.systolic_bp}/${sc.diastolic_bp}` : '120/80', unit: 'mmHg', icon: Activity, note: (sc.systolic_bp >= 135 || sc.diastolic_bp >= 85) ? 'Pre-hypertensive' : 'Optimal Limits', noteType: (sc.systolic_bp >= 135 || sc.diastolic_bp >= 85) ? 'warn' : 'ok' },
+              { key: 'hr', label: 'HEART RATE', value: sc.heart_rate ? String(sc.heart_rate) : '76', unit: 'bpm', icon: Heart, note: (sc.heart_rate > 100 || sc.heart_rate < 55) ? 'Check baseline' : 'Normal Baseline', noteType: 'ok' },
+              { key: 'spo2', label: 'OXYGEN (SpO2)', value: sc.spo2 ? String(sc.spo2) : '98', unit: '%', icon: Wind, note: (sc.spo2 && sc.spo2 < 95) ? 'Below ambient' : 'Adequate Ambient', noteType: (sc.spo2 && sc.spo2 < 95) ? 'warn' : 'ok' },
+            ]
+            setVitals(newVitals)
+          }
+        })
+        .catch(() => {})
+    }
+
+    return () => {
+      isMounted = false
+    }
+  }, [routePatientId])
 
   function copyId() {
-    navigator.clipboard?.writeText(patient.id)
+    navigator.clipboard?.writeText(patient.displayId || String(patient.id))
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
 
@@ -189,10 +262,10 @@ export default function PatientSummaryPage() {
         </p>
       </div>
 
-      {/* ΓöÇΓöÇ Latest Screening ΓöÇΓöÇ */}
-      <CollapsibleCard title="Latest Screening" subtitle="03 Sep 2026">
+      {/* Latest Screening */}
+      <CollapsibleCard title="Latest Screening" subtitle={screeningDate}>
         <p className="ps-screen-by">
-          <User size={13} /> Recorded by Sunita Devi (ASHA)
+          <User size={13} /> Recorded by {patient.asha || 'ASHA Worker'}
         </p>
 
         {/* Symptom chips */}
@@ -225,7 +298,76 @@ export default function PatientSummaryPage() {
         </div>
       </CollapsibleCard>
 
-      {/* ΓöÇΓöÇ Coordination & Action Plan ΓöÇΓöÇ */}
+      {/* Voice IVR Triage Encounter */}
+      {voiceEncounter && (
+        <CollapsibleCard 
+          title="Voice / AI Intake Encounter" 
+          subtitle={voiceEncounter.created_at ? new Date(voiceEncounter.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recent Voice Call'}
+        >
+          <div className="ps-info-grid" style={{ marginBottom: '0.75rem' }}>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><User size={13} /> Caller / Patient</p>
+              <p className="ps-info-val">
+                {voiceEncounter.patient_name || patient.name || 'Anonymous'}
+                {voiceEncounter.age ? ` (${voiceEncounter.age}y` : ''}
+                {voiceEncounter.gender ? `, ${voiceEncounter.gender})` : voiceEncounter.age ? ')' : ''}
+              </p>
+            </div>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><MapPin size={13} /> Locality / Village</p>
+              <p className="ps-info-val">{voiceEncounter.locality || patient.village || 'Not specified'}</p>
+            </div>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><Phone size={13} /> Call Language & Phone</p>
+              <p className="ps-info-val">
+                {voiceEncounter.language === 'hi' ? 'Hindi' : 'English'} • {voiceEncounter.caller_phone || voiceEncounter.phone_number || 'Voice Call'}
+              </p>
+            </div>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><Activity size={13} /> Triage Urgency</p>
+              <p className="ps-info-val" style={{ 
+                fontWeight: '700', 
+                color: voiceEncounter.is_emergency ? '#dc2626' : voiceEncounter.triage_urgency === 'urgent' ? '#ea580c' : voiceEncounter.triage_urgency === 'needs_attention' ? '#d97706' : '#16a34a' 
+              }}>
+                {voiceEncounter.triage_urgency ? voiceEncounter.triage_urgency.toUpperCase() : 'ROUTINE'}
+                {voiceEncounter.severity ? ` (${voiceEncounter.severity})` : ''}
+              </p>
+            </div>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><AlertCircle size={13} /> Symptoms & Duration</p>
+              <p className="ps-info-val">
+                {voiceEncounter.symptoms && voiceEncounter.symptoms.length > 0 ? voiceEncounter.symptoms.join(', ') : 'Reported verbally'}
+                {voiceEncounter.symptom_duration ? ` • ${voiceEncounter.symptom_duration}` : ''}
+              </p>
+            </div>
+            <div className="ps-info-item">
+              <p className="ps-info-label"><Building2 size={13} /> Recommended Step / Facility</p>
+              <p className="ps-info-val">
+                {voiceEncounter.recommended_care_level || 'PHC Assessment'} • {voiceEncounter.recommended_facility_name || voiceEncounter.facility_name || 'Nearest Facility'}
+              </p>
+            </div>
+          </div>
+          {voiceEncounter.additional_notes && (
+            <div style={{ padding: '0.45rem 0.65rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', marginBottom: '0.5rem', fontSize: '0.82rem', color: '#475569' }}>
+              <strong>Intake Notes:</strong> {voiceEncounter.additional_notes}
+            </div>
+          )}
+          {voiceEncounter.appointment_id && (
+            <div style={{ padding: '0.5rem 0.75rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', marginBottom: '0.5rem' }}>
+              <p style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: '700', margin: 0 }}>
+                ✓ Voice-Booked Appointment #{voiceEncounter.appointment_id} ({voiceEncounter.appointment_type || 'Teleconsultation'})
+              </p>
+            </div>
+          )}
+          {voiceEncounter.transcript_summary && (
+            <p style={{ fontSize: '0.8rem', color: '#64748b', fontStyle: 'italic', margin: 0 }}>
+              {voiceEncounter.transcript_summary}
+            </p>
+          )}
+        </CollapsibleCard>
+      )}
+
+      {/* ── Coordination & Action Plan ── */}
       <CollapsibleCard title="Coordination & Action Plan" subtitle="Active Care Loop">
 
         {/* Follow-up */}
@@ -306,7 +448,7 @@ export default function PatientSummaryPage() {
 
       {/* ── Actions ── */}
       <div className="ps-actions">
-        <button id="btn-refer-patient" className="ps-btn-primary" onClick={() => navigate('/worker/refer-patient')}>
+        <button id="btn-refer-patient" className="ps-btn-primary" onClick={() => navigate('/worker/refer-patient', { state: { patientId: patient.id } })}>
           <Building2 size={19} />
           Refer Patient to PHC
           <ExternalLink size={16} style={{ marginLeft: 'auto' }} />

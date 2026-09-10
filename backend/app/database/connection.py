@@ -131,6 +131,12 @@ def create_all_tables() -> None:
     from backend.app.database.base import Base  # noqa: F401
     try:
         Base.metadata.create_all(bind=engine)
+        with engine.begin() as conn:
+            # Safely ensure newly added columns exist in PostgreSQL if table already existed
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS age INTEGER;"))
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(20);"))
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS village VARCHAR(255);"))
+            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS facility_id INTEGER;"))
     except Exception as exc:
         logger.warning(
             "Database table creation skipped or database unreachable: %s", exc

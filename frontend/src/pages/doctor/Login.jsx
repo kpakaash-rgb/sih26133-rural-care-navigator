@@ -22,7 +22,7 @@ export default function Login({ onLogin }) {
           <p className="card-subtitle">Sign in to manage patients and consultations.</p>
         </div>
 
-        <form className="login-form" onSubmit={(e) => { e.preventDefault(); onLogin && onLogin(); }}>
+        <form className="login-form" onSubmit={(e) => { e.preventDefault(); onLogin?.(); }}>
           {/* Mobile Number Field */}
           <div className="input-group">
             <label htmlFor="mobile">MOBILE NUMBER</label>

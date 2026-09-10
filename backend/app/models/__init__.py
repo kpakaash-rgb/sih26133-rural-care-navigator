@@ -19,10 +19,17 @@ from backend.app.models.referral import Referral
 from backend.app.models.scheme import GovernmentScheme
 from backend.app.models.hospital_queue import HospitalQueue
 from backend.app.models.facility_equipment import FacilityEquipment
+from backend.app.models.doctor import Doctor
+from backend.app.models.worker import Worker
+from backend.app.models.screening import Screening
+from backend.app.models.consultation import Consultation
+from backend.app.models.voice_encounter import VoiceEncounter
 
 __all__ = [
     "Appointment",
     "AvailabilitySlot",
+    "Consultation",
+    "Doctor",
     "Facility",
     "FacilityService",
     "FacilityEquipment",
@@ -34,6 +41,9 @@ __all__ = [
     "Patient",
     "Referral",
     "HospitalQueue",
+    "Worker",
+    "Screening",
+    "VoiceEncounter",
 ]
 
 

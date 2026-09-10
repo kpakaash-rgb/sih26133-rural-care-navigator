@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   MapPin, Phone, ShieldCheck,
@@ -6,31 +6,74 @@ import {
   Headphones, HardDrive, Copy,
   Check, PlusSquare, Cloud
 } from 'lucide-react'
+import { getWorkerSession, getWorkerMe, clearWorkerSession, getWorkerPatients } from '../../../services/api'
 import './ProfilePage.css'
 
-const WORKER = {
+const DEFAULT_WORKER = {
   name: 'Meena Devi',
   initials: 'MD',
   id: 'FHW-20841',
-  role: 'ASHA ΓÇó Senior Care Facilitator',
-  phc: 'Kovilur Primary Health Centre (PHC)',
-  cluster: 'Kovilur Health Zone ΓÇó Tiruvannamalai',
-  phone: '+91 90000 12345',
+  role: 'ASHA • Senior Care Facilitator',
+  phc: 'PHC Malshiras (Facility #1)',
+  cluster: 'Solapur District • Sector A-4',
+  phone: '+91 98421 82000',
 }
-
-const STATS = [
-  { value: '42', label: 'Active Cohort', colorClass: 'pf-sv-blue' },
-  { value: '68', label: 'Visits Made', colorClass: 'pf-sv-teal' },
-  { value: '100%', label: 'Sync Rate', colorClass: 'pf-sv-green', icon: Cloud },
-]
 
 export default function ProfilePage() {
   const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
   const [cacheCleared, setCacheCleared] = useState(false)
+  const [worker, setWorker] = useState(() => {
+    const session = getWorkerSession()
+    if (session?.worker) {
+      const w = session.worker
+      return {
+        name: w.name || w.fullName || 'Meena Devi',
+        initials: (w.name || 'MD').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+        id: w.worker_id || 'FHW-20841',
+        role: w.role === 'WORKER' ? 'ASHA • Senior Care Facilitator' : w.role,
+        phc: w.facility_id ? `PHC Facility #${w.facility_id}` : 'PHC Malshiras (Facility #1)',
+        cluster: 'Primary Health Network • Active Zone',
+        phone: w.mobile ? `+91 ${w.mobile}` : '+91 98421 82000',
+      }
+    }
+    return DEFAULT_WORKER
+  })
+  const [cohortCount, setCohortCount] = useState(42)
+
+  useEffect(() => {
+    let isMounted = true
+    getWorkerMe()
+      .then((w) => {
+        if (isMounted && w) {
+          setWorker({
+            name: w.name,
+            initials: (w.name || 'MD').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+            id: w.worker_id,
+            role: 'ASHA • Senior Care Facilitator',
+            phc: `PHC Facility #${w.facility_id}`,
+            cluster: 'Primary Health Network • Active Zone',
+            phone: `+91 ${w.mobile}`,
+          })
+        }
+      })
+      .catch(() => {})
+
+    getWorkerPatients()
+      .then((patients) => {
+        if (isMounted && Array.isArray(patients) && patients.length > 0) {
+          setCohortCount(patients.length)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   function handleCopyId() {
-    navigator.clipboard?.writeText(WORKER.id)
+    navigator.clipboard?.writeText(worker.id)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -41,8 +84,15 @@ export default function ProfilePage() {
   }
 
   function handleSignOut() {
-    navigate('/worker/login')
+    clearWorkerSession()
+    navigate('/staff/login', { replace: true })
   }
+
+  const stats = [
+    { value: String(cohortCount), label: 'Active Cohort', colorClass: 'pf-sv-blue' },
+    { value: '68', label: 'Visits Made', colorClass: 'pf-sv-teal' },
+    { value: '100%', label: 'Sync Rate', colorClass: 'pf-sv-green', icon: Cloud },
+  ]
 
   return (
     <div className="pf-root animate-fade-in">
@@ -63,7 +113,7 @@ export default function ProfilePage() {
       <div className="pf-card">
         <div className="pf-card-top">
           <div className="pf-avatar-wrap">
-            <div className="pf-avatar">{WORKER.initials}</div>
+            <div className="pf-avatar">{worker.initials}</div>
             <div className="pf-avatar-check" aria-label="Verified frontline worker">
               <Check size={13} strokeWidth={3} />
             </div>
@@ -71,9 +121,9 @@ export default function ProfilePage() {
 
           <div className="pf-worker-info">
             <div className="pf-name-row">
-              <h2 className="pf-worker-name">{WORKER.name}</h2>
+              <h2 className="pf-worker-name">{worker.name}</h2>
               <span className="pf-id-badge">
-                ≡ƒ¬¬ {WORKER.id}
+                🆔 {worker.id}
                 <button
                   type="button"
                   className="pf-copy-btn"
@@ -85,11 +135,11 @@ export default function ProfilePage() {
               </span>
             </div>
 
-            <p className="pf-role-title">{WORKER.role}</p>
+            <p className="pf-role-title">{worker.role}</p>
 
             <div className="pf-phc-facility">
               <PlusSquare size={13} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />
-              <span>{WORKER.phc}</span>
+              <span>{worker.phc}</span>
             </div>
           </div>
         </div>
@@ -101,7 +151,7 @@ export default function ProfilePage() {
               <MapPin size={15} className="pf-detail-icon" />
               <div>
                 <p className="pf-detail-label">Assigned Cluster</p>
-                <p className="pf-detail-val">{WORKER.cluster}</p>
+                <p className="pf-detail-val">{worker.cluster}</p>
               </div>
             </div>
           </div>
@@ -111,7 +161,7 @@ export default function ProfilePage() {
               <Phone size={15} className="pf-detail-icon" />
               <div>
                 <p className="pf-detail-label">Registered SIM</p>
-                <p className="pf-detail-val">{WORKER.phone}</p>
+                <p className="pf-detail-val">{worker.phone}</p>
               </div>
             </div>
             <span className="pf-badge-official">Official</span>
@@ -119,15 +169,15 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* ΓöÇΓöÇ Monthly Field Reach ΓöÇΓöÇ */}
+      {/* Monthly Field Reach */}
       <section>
         <div className="pf-section-header">
           <h3 className="pf-section-title">MONTHLY FIELD REACH</h3>
-          <span className="pf-section-date">March 2025</span>
+          <span className="pf-section-date">Live Cohort</span>
         </div>
 
         <div className="pf-stats-grid">
-          {STATS.map((s) => {
+          {stats.map((s) => {
             const Icon = s.icon
             return (
               <div key={s.label} className="pf-stat-card">

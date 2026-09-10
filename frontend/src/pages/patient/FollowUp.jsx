@@ -1,11 +1,78 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
+import { getPatientFollowUps, completeFollowUp, cancelFollowUp } from '../../services/api'
+
+function formatFollowUpDate(dateStr) {
+  if (!dateStr) return 'Scheduled Date'
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return dateStr
+    return d.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  } catch {
+    return dateStr
+  }
+}
 
 export default function FollowUp({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('services')
+  const [followUps, setFollowUps] = useState([])
+  const [selectedFollowUp, setSelectedFollowUp] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+  const [isMutating, setIsMutating] = useState(false)
+
+  const reloadFollowUps = async () => {
+    try {
+      const data = await getPatientFollowUps()
+      if (Array.isArray(data) && data.length > 0) {
+        setFollowUps(data)
+        setSelectedFollowUp(data[0])
+      } else {
+        setFollowUps([])
+        setSelectedFollowUp(null)
+      }
+    } catch (err) {
+      setErrorMessage(err.message || 'Unable to load follow-up checkups.')
+    }
+  }
+
+  useEffect(() => {
+    let isMounted = true
+
+    getPatientFollowUps()
+      .then((data) => {
+        if (isMounted) {
+          if (Array.isArray(data) && data.length > 0) {
+            setFollowUps(data)
+            setSelectedFollowUp(data[0])
+          } else {
+            setFollowUps([])
+            setSelectedFollowUp(null)
+          }
+          setIsLoading(false)
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setErrorMessage(err.message || 'Unable to load follow-up checkups.')
+          setIsLoading(false)
+        }
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -26,21 +93,63 @@ export default function FollowUp({ onNavigate }) {
 
   const handleViewAppointment = () => {
     if (onNavigate) {
-      onNavigate(SCREENS.APPOINTMENT_CONFIRMED)
+      onNavigate(SCREENS.APPOINTMENTS)
     }
   }
 
   const handleGetDirections = () => {
-    window.open('https://maps.google.com/?q=PHC+Malshiras', '_blank')
+    window.open('https://maps.google.com/?q=Primary+Health+Centre', '_blank')
   }
 
-  const appointmentData = {
-    facility: 'PHC Malshiras',
-    service: 'General Medicine',
-    date: 'Friday, Oct 27',
-    time: '10:30 AM',
-    status: 'Upcoming',
+  const handleComplete = async (id) => {
+    setIsMutating(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+    try {
+      await completeFollowUp(id)
+      setSuccessMessage('Follow-up marked as completed.')
+      await reloadFollowUps()
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to complete follow-up.')
+    } finally {
+      setIsMutating(false)
+    }
   }
+
+  const handleCancel = async (id) => {
+    if (!window.confirm('Are you sure you want to cancel this follow-up checkup?')) {
+      return
+    }
+    setIsMutating(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+    try {
+      await cancelFollowUp(id)
+      setSuccessMessage('Follow-up cancelled.')
+      await reloadFollowUps()
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to cancel follow-up.')
+    } finally {
+      setIsMutating(false)
+    }
+  }
+
+  const statusDisplay = (selectedFollowUp?.status === 'SCHEDULED' || selectedFollowUp?.status === 'PENDING')
+    ? 'Upcoming'
+    : selectedFollowUp?.status === 'COMPLETED'
+    ? 'Completed'
+    : selectedFollowUp?.status === 'CANCELLED'
+    ? 'Cancelled'
+    : selectedFollowUp?.status || 'Scheduled'
+
+  const statusBg = selectedFollowUp?.status === 'COMPLETED'
+    ? '#059669'
+    : selectedFollowUp?.status === 'CANCELLED'
+    ? '#dc2626'
+    : '#004b87'
+
+  const isPending = selectedFollowUp?.status === 'PENDING' || selectedFollowUp?.status === 'SCHEDULED'
+
 
   return (
     <div className="follow-up-screen-wrapper">
@@ -55,91 +164,233 @@ export default function FollowUp({ onNavigate }) {
       <main className="follow-up-scrollable-content">
         {/* Title and Subtitle Section */}
         <section className="follow-up-header-section">
-          <h1 className="follow-up-main-title">Your next step</h1>
+          <h1 className="follow-up-main-title">Care Follow-up</h1>
           <p className="follow-up-subtitle">
-            Your doctor has asked you to come back for a follow-up.
+            Track and complete scheduled health checkups with your care provider.
           </p>
         </section>
 
-        {/* Upcoming Follow-up Appointment Card */}
-        <article className="follow-up-appointment-card">
-          {/* Top Row with Facility & Upcoming Pill Badge */}
-          <div className="follow-up-card-top-row">
-            <div className="follow-up-facility-info">
-              <div className="follow-up-icon-box" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="3" width="18" height="18" rx="4" stroke="#004b87" strokeWidth="2" />
-                  <path d="M12 8v8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </div>
-              <div className="follow-up-identity">
-                <h2 className="follow-up-facility-name">{appointmentData.facility}</h2>
-                <p className="follow-up-service-name">{appointmentData.service}</p>
-              </div>
-            </div>
-
-            <div className="follow-up-upcoming-badge">
-              <span className="badge-cal-icon" aria-hidden="true">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                </svg>
-              </span>
-              <span>{appointmentData.status}</span>
-            </div>
+        {/* Feedback Messages */}
+        {successMessage && (
+          <div
+            role="status"
+            style={{
+              backgroundColor: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              color: '#065f46',
+              fontSize: '13.5px',
+            }}
+          >
+            {successMessage}
           </div>
+        )}
 
-          {/* Date & Time Row */}
-          <div className="follow-up-datetime-section">
-            <div className="follow-up-datetime-item">
-              <span className="datetime-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-              </span>
-              <span className="datetime-text">{appointmentData.date}</span>
-            </div>
-
-            <div className="follow-up-datetime-item">
-              <span className="datetime-icon" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-              </span>
-              <span className="datetime-text">{appointmentData.time}</span>
-            </div>
+        {errorMessage && (
+          <div
+            role="alert"
+            style={{
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '6px',
+              padding: '10px 14px',
+              color: '#991b1b',
+              fontSize: '13.5px',
+            }}
+          >
+            {errorMessage}
           </div>
+        )}
 
-          {/* Action Buttons */}
-          <div className="follow-up-actions-group">
+        {/* Loading State */}
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '24px 16px', color: '#64748b' }}>
+            <p>Loading follow-up details...</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !selectedFollowUp && (
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '10px',
+              padding: '24px 16px',
+              textAlign: 'center',
+              color: '#475569',
+            }}
+          >
+            <p style={{ fontWeight: 600, fontSize: '15px', color: '#0f172a', marginBottom: '6px' }}>
+              No Scheduled Follow-ups
+            </p>
+            <p style={{ fontSize: '13px', lineHeight: 1.4, margin: '0 0 16px' }}>
+              You do not have any pending follow-up consultations. Check your appointments or explore healthcare options.
+            </p>
             <button
               type="button"
               className="follow-up-primary-btn"
-              onClick={handleViewAppointment}
+              onClick={() => onNavigate && onNavigate(SCREENS.APPOINTMENTS)}
             >
-              View Appointment
-            </button>
-
-            <button
-              type="button"
-              className="follow-up-directions-btn"
-              onClick={handleGetDirections}
-            >
-              <span className="btn-glyph-directions" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="3 11 22 2 13 21 11 13 3 11" />
-                </svg>
-              </span>
-              <span>Get Directions</span>
+              View My Appointments
             </button>
           </div>
-        </article>
+        )}
+
+        {/* Upcoming Follow-up Appointment Card */}
+        {selectedFollowUp && !isLoading && (
+          <>
+            {followUps.length > 1 && (
+              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                {followUps.map((fu) => (
+                  <button
+                    key={fu.id}
+                    type="button"
+                    onClick={() => setSelectedFollowUp(fu)}
+                    style={{
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      border: fu.id === selectedFollowUp.id ? '2px solid #004b87' : '1px solid #cbd5e1',
+                      backgroundColor: fu.id === selectedFollowUp.id ? '#eff6ff' : '#ffffff',
+                      color: fu.id === selectedFollowUp.id ? '#004b87' : '#475569',
+                      fontWeight: 600,
+                      fontSize: '12.5px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Follow-up #{fu.id} ({fu.status})
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <article className="follow-up-appointment-card">
+              {/* Top Row with Facility & Status Badge */}
+              <div className="follow-up-card-top-row">
+                <div className="follow-up-facility-info">
+                  <div className="follow-up-icon-box" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="3" width="18" height="18" rx="4" stroke="#004b87" strokeWidth="2" />
+                      <path d="M12 8v8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div className="follow-up-identity">
+                    <h2 className="follow-up-facility-name">
+                      {selectedFollowUp.appointment_id
+                        ? `Appointment #${selectedFollowUp.appointment_id}`
+                        : selectedFollowUp.referral_id
+                        ? `Referral #${selectedFollowUp.referral_id}`
+                        : 'Follow-up Consultation'}
+                    </h2>
+                    <p className="follow-up-service-name">
+                      {selectedFollowUp.notes || 'Clinical review & checkup'}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="follow-up-upcoming-badge" style={{ backgroundColor: statusBg }}>
+                  <span className="badge-cal-icon" aria-hidden="true">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                    </svg>
+                  </span>
+                  <span>{statusDisplay}</span>
+                </div>
+              </div>
+
+              {/* Date & Time Row */}
+              <div className="follow-up-datetime-section">
+                <div className="follow-up-datetime-item">
+                  <span className="datetime-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </span>
+                  <span className="datetime-text">{formatFollowUpDate(selectedFollowUp.follow_up_date)}</span>
+                </div>
+
+                {selectedFollowUp.appointment_id && (
+                  <div className="follow-up-datetime-item">
+                    <span className="datetime-icon" aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                    </span>
+                    <span className="datetime-text">Linked to Appointment #{selectedFollowUp.appointment_id}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="follow-up-actions-group">
+                {isPending && (
+                  <button
+                    type="button"
+                    className="follow-up-primary-btn"
+                    onClick={() => handleComplete(selectedFollowUp.id)}
+                    disabled={isMutating}
+                    style={{ backgroundColor: '#059669' }}
+                  >
+                    {isMutating ? 'Updating...' : '✓ Mark Checkup as Completed'}
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  className="follow-up-primary-btn"
+                  onClick={handleViewAppointment}
+                >
+                  View My Appointments
+                </button>
+
+                <button
+                  type="button"
+                  className="follow-up-directions-btn"
+                  onClick={handleGetDirections}
+                >
+                  <span className="btn-glyph-directions" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                    </svg>
+                  </span>
+                  <span>Get Directions</span>
+                </button>
+
+                {isPending && (
+                  <button
+                    type="button"
+                    onClick={() => handleCancel(selectedFollowUp.id)}
+                    disabled={isMutating}
+                    style={{
+                      width: '100%',
+                      backgroundColor: '#ffffff',
+                      color: '#dc2626',
+                      border: '1px solid #fca5a5',
+                      borderRadius: '8px',
+                      padding: '11px 16px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      cursor: isMutating ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.15s ease',
+                      marginTop: '4px',
+                    }}
+                  >
+                    {isMutating ? 'Cancelling...' : 'Cancel Follow-up'}
+                  </button>
+                )}
+              </div>
+            </article>
+          </>
+        )}
 
         {/* Healthcare Facility Illustration Container */}
         <section className="follow-up-illustration-card">
@@ -219,3 +470,4 @@ export default function FollowUp({ onNavigate }) {
     </div>
   )
 }
+

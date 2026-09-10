@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  BriefcaseMedical, Bell, Edit3, Clock, Settings2,
-  ShieldCheck, LogOut, ChevronRight, MapPin, BadgeCheck,
-  LayoutDashboard, Users, CalendarDays, UserCircle
+  BriefcaseMedical, Bell, Clock, Settings2,
+  ShieldCheck, LogOut, MapPin, BadgeCheck,
+  LayoutDashboard, Users, CalendarDays, UserCircle, RefreshCw
 } from 'lucide-react';
+import { getDoctorMe, getStaffSession } from '../../services/api';
 
 /* ─── Reusable Toggle ─────────────────────────────── */
 function Toggle({ checked, onChange }) {
@@ -74,150 +75,188 @@ function PrefRow({ label, sub, checked, onChange }) {
   );
 }
 
-/* ─── Security Row ────────────────────────────────── */
-function SecRow({ label, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: '100%', display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', padding: '0.875rem 1rem',
-        background: 'none', border: 'none', cursor: 'pointer',
-        borderBottom: '1px solid #F9FAFB',
-      }}
-    >
-      <span style={{ fontWeight: 600, fontSize: '0.875rem', color: '#374151' }}>{label}</span>
-      <ChevronRight size={16} style={{ color: '#9CA3AF' }} />
-    </button>
-  );
-}
-
 /* ─── Main Component ──────────────────────────────── */
 export default function Profile({ navigate, onLogout }) {
   const [showSignOut, setShowSignOut] = useState(false);
+  const [doctorProfile, setDoctorProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [prefs, setPrefs] = useState({
     criticalAlerts: true,
     appointmentReminders: true,
-    referralUpdates: false,
+    referralUpdates: true,
   });
+
+  const session = getStaffSession();
+
+  const refreshProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getDoctorMe();
+      setDoctorProfile(data);
+    } catch (err) {
+      console.error('Failed to fetch doctor profile:', err);
+      if (session?.user) {
+        setDoctorProfile(session.user);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [session?.user]);
+
+  useEffect(() => {
+    let ignore = false;
+    async function init() {
+      try {
+        const data = await getDoctorMe();
+        if (!ignore) {
+          setDoctorProfile(data);
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error('Failed to fetch doctor profile:', err);
+          if (session?.user) {
+            setDoctorProfile(session.user);
+          }
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    init();
+    return () => { ignore = true; };
+  }, [session?.user]);
 
   const toggle = key => setPrefs(p => ({ ...p, [key]: !p[key] }));
 
+  const doctorName = doctorProfile?.name || session?.user?.name || 'Dr. Healthcare Officer';
+  const doctorId = doctorProfile?.doctor_id || doctorProfile?.staff_id || 'DOC-10101';
+  const specialization = doctorProfile?.specialization || 'General Medicine';
+  const facilityName = doctorProfile?.facility_name || 'Primary Health Centre';
+  const role = doctorProfile?.role || 'DOCTOR';
+  const mobile = doctorProfile?.mobile || '9842183000';
+
+  const initials = doctorName
+    .replace('Dr.', '')
+    .trim()
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() || 'DR';
+
   return (
     <div className="app-container pb-24 min-h-screen" style={{ background: '#F0F4F8' }}>
-
-      {/* ── Global Header ── */}
+      {/* Global Header */}
       <header className="global-header">
         <div className="header-brand">
           <BriefcaseMedical size={20} strokeWidth={2.5} />
           <span>Rural Care Navigator</span>
         </div>
         <div className="header-actions">
+          <button
+            onClick={refreshProfile}
+            title="Refresh profile"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          </button>
           <Bell size={22} className="header-bell" strokeWidth={2} />
           <span className="header-indicator" />
         </div>
       </header>
 
-      {/* ── Scrollable body ── */}
+      {/* Scrollable body */}
       <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
 
-        {/* ── 1. Profile Hero Card ── */}
+        {/* Profile Card */}
         <Card>
-          {/* Blue gradient banner */}
           <div style={{
             height: 72,
             background: 'linear-gradient(135deg, #0A58CA 0%, #3B82F6 100%)',
           }} />
 
-          {/* Avatar + name block */}
           <div style={{ padding: '0 1.25rem 1.25rem', position: 'relative' }}>
-            {/* Avatar */}
             <div style={{
-              width: 80, height: 80, borderRadius: '50%',
+              width: 76, height: 76, borderRadius: '50%',
               background: '#DBEAFE', color: 'var(--primary-blue)',
-              fontWeight: 900, fontSize: '1.6rem',
+              fontWeight: 900, fontSize: '1.5rem',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: '4px solid #fff',
               boxShadow: '0 4px 12px rgba(10,88,202,0.15)',
-              position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)',
+              position: 'absolute', top: -38, left: '50%', transform: 'translateX(-50%)',
             }}>
-              PS
+              {initials}
             </div>
 
-            {/* Spacer for avatar */}
-            <div style={{ height: 48 }} />
+            <div style={{ height: 44 }} />
 
-            {/* Name & specialization */}
             <div style={{ textAlign: 'center', marginBottom: '0.875rem' }}>
               <div style={{ fontWeight: 800, fontSize: '1.2rem', color: '#111827' }}>
-                Dr. Priya Sharma
+                {doctorName}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: 3 }}>
-                General Medicine
+              <div style={{ fontSize: '0.875rem', color: '#6B7280', marginTop: 2 }}>
+                {specialization} • Role: <strong>{role}</strong>
               </div>
             </div>
 
             {/* Chips */}
             <div style={{
               display: 'flex', gap: '0.5rem', justifyContent: 'center',
-              flexWrap: 'wrap', marginBottom: '1.125rem',
+              flexWrap: 'wrap', marginBottom: '1rem',
             }}>
-              {[
-                { icon: BadgeCheck, label: 'DOC-2048' },
-                { icon: MapPin, label: 'Rural Care Health Centre' },
-              ].map(({ icon: Icon, label }) => (
-                <span key={label} style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 4,
-                  background: '#F1F5F9', color: '#475569',
-                  fontSize: '0.72rem', fontWeight: 700,
-                  padding: '5px 12px', borderRadius: 999,
-                }}>
-                  <Icon size={12} strokeWidth={2.5} style={{ flexShrink: 0 }} />
-                  {label}
-                </span>
-              ))}
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                background: '#F1F5F9', color: '#475569',
+                fontSize: '0.72rem', fontWeight: 700,
+                padding: '5px 12px', borderRadius: 999,
+              }}>
+                <BadgeCheck size={12} strokeWidth={2.5} style={{ flexShrink: 0 }} />
+                {doctorId}
+              </span>
+
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                background: '#F1F5F9', color: '#475569',
+                fontSize: '0.72rem', fontWeight: 700,
+                padding: '5px 12px', borderRadius: 999,
+              }}>
+                <MapPin size={12} strokeWidth={2.5} style={{ flexShrink: 0 }} />
+                {facilityName}
+              </span>
             </div>
 
-            {/* Contact row */}
+            {/* Details Table */}
             <div style={{
-              display: 'flex', justifyContent: 'center', gap: '1.5rem',
-              borderTop: '1px solid #F1F5F9', borderBottom: '1px solid #F1F5F9',
-              padding: '0.75rem 0', marginBottom: '1rem',
+              background: '#F8FAFC', borderRadius: '12px', padding: '0.75rem',
+              border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', gap: '0.5rem',
+              fontSize: '0.85rem'
             }}>
-              {[
-                { label: 'Patients', value: '248' },
-                { label: 'Referrals', value: '31' },
-                { label: 'Exp.', value: '8 yr' },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ textAlign: 'center' }}>
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: '#0A58CA' }}>{value}</div>
-                  <div style={{ fontSize: '0.7rem', color: '#9CA3AF', marginTop: 1 }}>{label}</div>
-                </div>
-              ))}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748B' }}>Official Mobile:</span>
+                <span style={{ fontWeight: '600', color: '#1E293B' }}>+91 {mobile}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748B' }}>Primary Facility ID:</span>
+                <span style={{ fontWeight: '600', color: '#1E293B' }}>Facility #{doctorProfile?.facility_id || 1}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#64748B' }}>Authentication:</span>
+                <span style={{ fontWeight: '700', color: '#15803D' }}>Verified Staff JWT</span>
+              </div>
             </div>
-
-            {/* Edit Profile button */}
-            <button style={{
-              width: '100%', padding: '0.75rem',
-              background: 'var(--primary-blue)', color: '#fff',
-              border: 'none', borderRadius: 12, cursor: 'pointer',
-              fontWeight: 700, fontSize: '0.95rem',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              boxShadow: '0 4px 14px rgba(10,88,202,0.25)',
-            }}>
-              <Edit3 size={16} /> Edit Profile
-            </button>
           </div>
         </Card>
 
-        {/* ── 2. Availability ── */}
+        {/* Schedule & Availability */}
         <Card>
-          <SectionTitle icon={Clock} label="Availability" />
+          <SectionTitle icon={Clock} label="OPD Consultation Timings" />
           <div style={{ padding: '0 1rem' }}>
             {[
-              { day: 'Mon – Fri', time: '08:00 – 18:00', off: false },
-              { day: 'Saturday', time: '09:00 – 13:00', off: false },
-              { day: 'Sunday', time: 'Off Call', off: true },
+              { day: 'Mon – Fri', time: '09:00 – 17:00 (Daily OPD)', off: false },
+              { day: 'Saturday', time: '09:00 – 13:00 (Half Day)', off: false },
+              { day: 'Sunday', time: 'Emergency On-Call', off: true },
             ].map(({ day, time, off }) => (
               <div key={day} style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -236,82 +275,47 @@ export default function Profile({ navigate, onLogout }) {
               </div>
             ))}
           </div>
-          <div style={{ padding: '0.75rem 1rem 1rem' }}>
-            <button style={{
-              width: '100%', padding: '0.65rem',
-              border: '1.5px solid var(--primary-blue)',
-              borderRadius: 10, color: 'var(--primary-blue)',
-              background: 'transparent', fontWeight: 700, fontSize: '0.875rem',
-              cursor: 'pointer',
-            }}>
-              Manage Schedule
-            </button>
-          </div>
         </Card>
 
-        {/* ── 3. Notification Preferences ── */}
+        {/* Preferences */}
         <Card>
-          <SectionTitle icon={Settings2} label="Preferences" />
+          <SectionTitle icon={Settings2} label="Clinical Preferences" />
           <div>
             <PrefRow
-              label="Critical Alerts"
-              sub="SMS & Push for emergencies"
+              label="Critical Urgency Alerts"
+              sub="Instant notifications for emergency triage"
               checked={prefs.criticalAlerts}
               onChange={() => toggle('criticalAlerts')}
             />
             <div style={{ height: 1, background: '#F9FAFB', margin: '0 1rem' }} />
             <PrefRow
-              label="Appointment Reminders"
-              sub="Push notifications"
+              label="Appointment Updates"
+              sub="Live queue synchronization"
               checked={prefs.appointmentReminders}
               onChange={() => toggle('appointmentReminders')}
             />
             <div style={{ height: 1, background: '#F9FAFB', margin: '0 1rem' }} />
             <PrefRow
-              label="Referral Updates"
-              sub="In-app notifications"
+              label="Referral Tracking"
+              sub="Status notifications for dispatched referrals"
               checked={prefs.referralUpdates}
               onChange={() => toggle('referralUpdates')}
             />
           </div>
+        </Card>
 
-          {/* Language */}
-          <div style={{
-            padding: '0.875rem 1rem',
-            borderTop: '1px solid #F1F5F9',
-          }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#6B7280', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Language
-            </div>
-            <div style={{ position: 'relative' }}>
-              <select style={{
-                width: '100%', padding: '0.65rem 2.5rem 0.65rem 0.875rem',
-                border: '1.5px solid #E5E7EB', borderRadius: 10,
-                fontSize: '0.875rem', fontWeight: 600, color: '#111827',
-                background: '#F9FAFB', appearance: 'none', cursor: 'pointer',
-              }}>
-                <option>English</option>
-                <option>Hindi</option>
-                <option>Tamil</option>
-                <option>Telugu</option>
-              </select>
-              <ChevronRight
-                size={16}
-                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%) rotate(90deg)', color: '#9CA3AF', pointerEvents: 'none' }}
-              />
-            </div>
+        {/* Security / System Info */}
+        <Card>
+          <SectionTitle icon={ShieldCheck} label="Security & Access Role" />
+          <div style={{ padding: '0.875rem 1rem', fontSize: '0.85rem', color: '#475569', lineHeight: 1.5 }}>
+            <p>
+              Your session is authenticated under the <strong>DOCTOR</strong> role. 
+              Only authorized clinical functions are permitted. Session data is never shared across facilities.
+            </p>
           </div>
         </Card>
 
-        {/* ── 4. Security ── */}
-        <Card>
-          <SectionTitle icon={ShieldCheck} label="Security" />
-          <SecRow label="Authentication Settings" />
-          <SecRow label="Change Password" />
-          <div style={{ height: 4 }} />
-        </Card>
-
-        {/* ── 5. Sign Out ── */}
+        {/* Sign Out Button */}
         <button
           onClick={() => setShowSignOut(true)}
           style={{
@@ -321,15 +325,15 @@ export default function Profile({ navigate, onLogout }) {
             border: '1.5px solid #FECACA', borderRadius: 14,
             fontWeight: 700, fontSize: '0.925rem', cursor: 'pointer',
           }}
+          id="doctor-profile-signout-btn"
         >
-          <LogOut size={18} /> Sign Out
+          <LogOut size={18} /> Sign Out of Staff Portal
         </button>
 
-        {/* bottom spacer so sign-out is above nav */}
         <div style={{ height: '0.5rem' }} />
       </div>
 
-      {/* ── Sign Out Modal ── */}
+      {/* Sign Out Modal */}
       {showSignOut && (
         <div style={{
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
@@ -345,9 +349,11 @@ export default function Profile({ navigate, onLogout }) {
               }}>
                 <LogOut size={22} />
               </div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', marginBottom: '0.5rem' }}>Sign Out?</h3>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 800, color: '#111827', marginBottom: '0.5rem' }}>
+                Sign Out?
+              </h3>
               <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '1.5rem', lineHeight: 1.5 }}>
-                Are you sure you want to sign out of Rural Care Navigator?
+                Signing out will end your doctor session and return you to the staff login portal.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
                 <button
@@ -367,6 +373,7 @@ export default function Profile({ navigate, onLogout }) {
                     background: '#DC2626', color: '#fff',
                     fontWeight: 700, border: 'none', cursor: 'pointer', fontSize: '0.925rem',
                   }}
+                  id="confirm-signout-btn"
                 >
                   Sign Out
                 </button>
@@ -376,18 +383,18 @@ export default function Profile({ navigate, onLogout }) {
         </div>
       )}
 
-      {/* ── Bottom Navigation ── */}
+      {/* Bottom Navigation */}
       <nav className="bottom-nav">
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate('dashboard'); }}>
+        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate?.('dashboard'); }}>
           <LayoutDashboard size={24} /><span className="nav-label">Dashboard</span>
         </a>
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate('patients'); }}>
+        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate?.('patients'); }}>
           <Users size={24} /><span className="nav-label">Patients</span>
         </a>
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate('appointments'); }}>
+        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate?.('appointments'); }}>
           <CalendarDays size={24} /><span className="nav-label">Appointments</span>
         </a>
-        <a href="#" className="nav-item active" onClick={e => { e.preventDefault(); navigate('profile'); }}>
+        <a href="#" className="nav-item active" onClick={e => { e.preventDefault(); navigate?.('profile'); }}>
           <UserCircle size={24} /><span className="nav-label">Profile</span>
         </a>
       </nav>

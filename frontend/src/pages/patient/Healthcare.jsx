@@ -3,7 +3,8 @@ import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
-import { recommendHospitals, getFacilities } from '../../services/api'
+import { recommendHospitals, getFacilities, getFacilityQueue } from '../../services/api'
+import { formatQueueLastUpdated } from '../../utils'
 
 function formatFacilityType(type) {
   switch (type) {
@@ -97,37 +98,75 @@ export default function Healthcare({ onNavigate, triageData }) {
 
           const recs = response?.recommendations || []
           if (isMounted && recs.length > 0) {
-            const mapped = recs.map((rec) => ({
-              id: rec.facility_id,
-              name: rec.hospital_name,
-              category: formatFacilityType(rec.facility_type),
-              distance: rec.distance_km != null ? `${rec.distance_km} km away` : 'Nearby',
-              services: rec.matched_services.length > 0 ? rec.matched_services : ['General Medicine'],
-              reason: rec.recommendation_reason || 'This place has what you need and is near you.',
-              queueStatus: rec.queue_status === 'UNKNOWN' ? 'Queue status unavailable' : rec.queue_status,
-              raw: rec,
-            }))
-            setFacilities(mapped)
-            setIsAiRecommended(true)
-            setIsLoading(false)
-            return
+            // Also fetch fresh queue detail for each facility to ensure last_updated timestamp is present
+            const mapped = await Promise.all(
+              recs.map(async (rec) => {
+                let queueData = null
+                try {
+                  queueData = await getFacilityQueue(rec.facility_id)
+                } catch {
+                  // Ignore fallback
+                }
+
+                const waitingPatients = queueData?.waiting_patients ?? rec.waiting_patients ?? 0
+                const estimatedWait = queueData?.estimated_wait_minutes ?? rec.estimated_wait_minutes ?? 0
+                const status = queueData?.status || (rec.queue_status === 'UNKNOWN' ? null : rec.queue_status) || 'NORMAL'
+                const lastUpdated = queueData?.last_updated || null
+
+                return {
+                  id: rec.facility_id,
+                  name: rec.hospital_name,
+                  category: formatFacilityType(rec.facility_type),
+                  distance: rec.distance_km != null ? `${rec.distance_km} km away` : 'Nearby',
+                  services: rec.matched_services.length > 0 ? rec.matched_services : ['General Medicine'],
+                  reason: rec.recommendation_reason || 'This place has what you need and is near you.',
+                  queueStatus: status,
+                  waitingPatients,
+                  estimatedWaitMinutes: estimatedWait,
+                  lastUpdated,
+                  raw: rec,
+                }
+              })
+            )
+            if (isMounted) {
+              setFacilities(mapped)
+              setIsAiRecommended(true)
+              setIsLoading(false)
+              return
+            }
           }
         }
 
         const facilitiesData = await getFacilities({ lat, lon })
         if (isMounted && Array.isArray(facilitiesData) && facilitiesData.length > 0) {
-          const mapped = facilitiesData.map((fac) => ({
-            id: fac.id,
-            name: fac.name,
-            category: formatFacilityType(fac.type),
-            distance: fac.distance_km != null ? `${fac.distance_km} km away` : 'Nearby',
-            services: fac.services?.map((s) => s.name) || ['General Medicine', 'Doctor', 'Basic Tests'],
-            reason: 'Operational healthcare facility near your location.',
-            queueStatus: 'Queue status unavailable',
-            raw: fac,
-          }))
-          setFacilities(mapped)
-          setIsAiRecommended(false)
+          const mapped = await Promise.all(
+            facilitiesData.map(async (fac) => {
+              let queueData = null
+              try {
+                queueData = await getFacilityQueue(fac.id)
+              } catch {
+                // Ignore fallback
+              }
+
+              return {
+                id: fac.id,
+                name: fac.name,
+                category: formatFacilityType(fac.type),
+                distance: fac.distance_km != null ? `${fac.distance_km} km away` : 'Nearby',
+                services: fac.services?.map((s) => s.name) || ['General Medicine', 'Doctor', 'Basic Tests'],
+                reason: 'Operational healthcare facility near your location.',
+                queueStatus: queueData?.status || null,
+                waitingPatients: queueData?.waiting_patients ?? null,
+                estimatedWaitMinutes: queueData?.estimated_wait_minutes ?? null,
+                lastUpdated: queueData?.last_updated || null,
+                raw: fac,
+              }
+            })
+          )
+          if (isMounted) {
+            setFacilities(mapped)
+            setIsAiRecommended(false)
+          }
         }
       } catch {
         if (isMounted) {
@@ -310,11 +349,52 @@ export default function Healthcare({ onNavigate, triageData }) {
                   </ul>
                 </div>
 
-                <div className="facility-availability-row">
-                  <span className="availability-label">Status:</span>
-                  <span className="availability-items" style={{ color: '#475569', fontStyle: 'italic' }}>
-                    {fac.queueStatus}
-                  </span>
+                <div className="facility-availability-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+                  {fac.queueStatus ? (
+                    <>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span className="availability-label" style={{ fontWeight: 700 }}>Queue:</span>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '11.5px',
+                            fontWeight: 700,
+                            backgroundColor: fac.queueStatus === 'NORMAL' ? '#dcfce7' : fac.queueStatus === 'BUSY' ? '#fef3c7' : '#fee2e2',
+                            color: fac.queueStatus === 'NORMAL' ? '#166534' : fac.queueStatus === 'BUSY' ? '#92400e' : '#991b1b',
+                          }}
+                        >
+                          {fac.queueStatus}
+                        </span>
+                        {fac.waitingPatients != null && (
+                          <span style={{ fontSize: '12px', color: '#334155' }}>
+                            {fac.waitingPatients} patients waiting
+                          </span>
+                        )}
+                        {fac.estimatedWaitMinutes != null && (
+                          <span style={{ fontSize: '12px', color: '#64748b' }}>
+                            • ~{fac.estimatedWaitMinutes} min wait
+                          </span>
+                        )}
+                      </div>
+                      {fac.lastUpdated && (
+                        <div
+                          style={{
+                            fontSize: '11px',
+                            color: formatQueueLastUpdated(fac.lastUpdated).isStale ? '#b45309' : '#64748b',
+                            fontStyle: 'italic',
+                          }}
+                        >
+                          {formatQueueLastUpdated(fac.lastUpdated).text}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <span className="availability-items" style={{ color: '#64748b', fontStyle: 'italic' }}>
+                      Queue information unavailable
+                    </span>
+                  )}
                 </div>
 
                 <div className="why-facility-box">

@@ -1,0 +1,162 @@
+[
+  {
+    "case_num": 1,
+    "description": "Novel Symptom combo (ear pain+fever) in Kurduvadi",
+    "context": "phase:SYMPTOMS\nsym:ear pain,fever\ndur:NONE\nloc:Kurduvadi\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "I note that you are experiencing dizziness.",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 44.76
+  },
+  {
+    "case_num": 2,
+    "description": "Novel Eye irritation in Sangola",
+    "context": "phase:DURATION\nsym:eye irritation,redness\ndur:NONE\nloc:Sangola\nname:Sanjay\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "According to triage recommendations, you should visit Solapur Civil Hospital. Would you prefer a teleconsultation or an in-person clinic visit?",
+    "is_verbatim_in_dataset": true,
+    "latency_ms": 176.57
+  },
+  {
+    "case_num": 3,
+    "description": "Novel village Natepute",
+    "context": "phase:NAME\nsym:joint swelling\ndur:5 days\nloc:Natepute\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "Based on your symptoms, calling from Malshiras. Would you prefer?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 92.87
+  },
+  {
+    "case_num": 4,
+    "description": "Novel name Deepak from Tembhurni",
+    "context": "phase:AGE\nsym:dizziness\ndur:today\nloc:Tembhurni\nname:Deepak\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "According to triage recommendations, let us find the doctor.",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 75.72
+  },
+  {
+    "case_num": 5,
+    "description": "Novel chest congestion for 4 days",
+    "context": "phase:LOCALITY\nsym:chest congestion\ndur:for 4 days\nloc:NONE\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "Understood, you have had cough for 2 days. Which village, town, or area are you calling from?",
+    "is_verbatim_in_dataset": true,
+    "latency_ms": 161.38
+  },
+  {
+    "case_num": 6,
+    "description": "Novel facility Kurduvadi Rural Hospital",
+    "context": "phase:TRIAGE_PRESENTED\nsym:severe cough,breathlessness\ndur:4 days\nloc:Kurduvadi\nname:Deepak\nage:62\ngender:male\ncare:CHC\nfacility:Kurduvadi Rural Hospital\nlang:en",
+    "response": "आपके. Kya aap yahan appointment, let us find the doctor is recommended. Would you like to book an appointment?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 252.2
+  },
+  {
+    "case_num": 7,
+    "description": "Novel skin allergy patient Sanjay",
+    "context": "phase:BOOKING_CONFIRM\nsym:skin allergy\ndur:3 days\nloc:Malshiras\nname:Sanjay\nage:35\ngender:male\ncare:PHC\nfacility:Malshiras PHC\nlang:en",
+    "response": "Based on your follow-up visit with the doctor. I found Malshiras Primary Health Centre near Pandharpur. Would you like to book an appointment?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 238.86
+  },
+  {
+    "case_num": 8,
+    "description": "Novel fracture recovery follow-up",
+    "context": "phase:FOLLOW_UP\nsym:fracture recovery\ndur:3 weeks\nloc:Pandharpur\nname:Arun\nage:52\ngender:male\ncare:CHC\nfacility:Pandharpur CHC\nlang:en",
+    "response": "According to triage recommendations, you should visit. Would you prefer a teleconsultation or an in-person clinic visit?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 178.25
+  },
+  {
+    "case_num": 9,
+    "description": "Hindi: Novel kaan dard",
+    "context": "phase:SYMPTOMS\nsym:kaan dard\ndur:NONE\nloc:Kurduvadi\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "समझ गया, आपको pet dard aur kamzori हो रहा है। कृपया है यह तकलीफ, आपकोई अन्लॉला है?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 291.92
+  },
+  {
+    "case_num": 10,
+    "description": "Hindi: Novel eye problem duration",
+    "context": "phase:DURATION\nsym:aankh lal hona aur jalan\ndur:NONE\nloc:NONE\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "Aapke lakshano ke liye kripya male ya area se baat karna uchit rahega. Kya aap yahan appointment lena chahte hain?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 156.89
+  },
+  {
+    "case_num": 11,
+    "description": "Hindi: Novel Karmala name prompt",
+    "context": "phase:NAME\nsym:tez bukhar\ndur:chaar din se\nloc:Karmala\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "Aapke follow-up ke liye hum registration shuru kar raha hai?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 91.73
+  },
+  {
+    "case_num": 12,
+    "description": "Hindi: Novel name Manoj age prompt",
+    "context": "phase:AGE\nsym:peeth dard\ndur:ek hafte se\nloc:Pandharpur\nname:Manoj\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "Aapke lakshano ke liye kripya male ya mareez ka naam batayein?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 81.4
+  },
+  {
+    "case_num": 13,
+    "description": "Hindi: Novel kamzori locality prompt",
+    "context": "phase:LOCALITY\nsym:kamzori aur chakkar\ndur:do din se\nloc:NONE\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "समझ गया, ek hafte se bukhar है। आप किस गांव, कस्बे या शहर से बोल रहे हैं?",
+    "is_verbatim_in_dataset": true,
+    "latency_ms": 253.04
+  },
+  {
+    "case_num": 14,
+    "description": "Hindi: Novel Tembhurni PHC",
+    "context": "phase:TRIAGE_PRESENTED\nsym:pet dard aur ulti\ndur:kal se\nloc:Tembhurni\nname:Pooja\nage:28\ngender:female\ncare:PHC\nfacility:Tembhurni PHC\nlang:hi",
+    "response": "Aapke lakshano ke aadhar par doctor is recommended. Kya aap yahan appointment lena chahte hain?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 100.65
+  },
+  {
+    "case_num": 15,
+    "description": "Hinglish: Novel booking mode for Pradeep",
+    "context": "phase:BOOKING_TYPE\nsym:severe cold\ndur:3 days\nloc:Akluj\nname:Pradeep\nage:44\ngender:male\ncare:CHC\nfacility:Akluj Rural Hospital\nlang:hi",
+    "response": "हम Malshiras PHC में जुत नहींचिलिने किने अनुसार स्ध फॉलो-अप स्लॉ",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 296.04
+  },
+  {
+    "case_num": 16,
+    "description": "Hindi: Novel booking confirm Lata",
+    "context": "phase:BOOKING_CONFIRM\nsym:sar dard\ndur:do din se\nloc:Sangola\nname:Lata\nage:36\ngender:female\ncare:PHC\nfacility:Sangola PHC\nlang:hi",
+    "response": "क्लिनिकल दिशों के अनुर Solapur Civil Hospital में जांच कराने पानाना उचित",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 282.17
+  },
+  {
+    "case_num": 17,
+    "description": "English: Safety questions for Govind (72yo)",
+    "context": "phase:SAFETY_QUESTIONS\nsym:severe fever,sweating\ndur:3 days\nloc:Baramati\nname:Govind\nage:72\ngender:male\ncare:NONE\nfacility:NONE\nlang:en",
+    "response": "Based on your symptoms, let us find another appointment. I found Malshiras Primary Health Centre near Pandharpur. Would you like to book an appointment?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 211.63
+  },
+  {
+    "case_num": 18,
+    "description": "English: Ended call for Govind",
+    "context": "phase:ENDED\nsym:fever\ndur:2 days\nloc:Shirpur\nname:Govind\nage:72\ngender:male\ncare:PHC\nfacility:Shirpur PHC\nlang:en",
+    "response": "Based on your symptoms, a clinical evaluation at a primary healthcare centre is recommended. I found Malshiras Primary Health Centre near Pandharpur. Would you like to book an appointment?",
+    "is_verbatim_in_dataset": true,
+    "latency_ms": 231.2
+  },
+  {
+    "case_num": 19,
+    "description": "Hinglish: Repeat request",
+    "context": "phase:REQUEST_REPEAT\nsym:NONE\ndur:NONE\nloc:NONE\nname:NONE\nage:NONE\ngender:NONE\ncare:NONE\nfacility:NONE\nlang:hi",
+    "response": "Main sun nahi paya. Kripya thoda tez aawaz mein dobara bolein.",
+    "is_verbatim_in_dataset": true,
+    "latency_ms": 90.15
+  },
+  {
+    "case_num": 20,
+    "description": "English: Change type for Meena",
+    "context": "phase:CHANGE_APPOINTMENT_TYPE\nsym:knee arthritis\ndur:2 months\nloc:Pandharpur\nname:Meena\nage:58\ngender:female\ncare:CHC\nfacility:Pandharpur CHC\nlang:en",
+    "response": "Based on your symptoms, let us find the doctor. Are you should visit with the patient's age appointment?",
+    "is_verbatim_in_dataset": false,
+    "latency_ms": 155.5
+  }
+]

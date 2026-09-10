@@ -17,3 +17,43 @@ export const formatDate = (dateString) => {
     return dateString
   }
 }
+
+/**
+ * Format queue last_updated timestamp with 2-hour staleness detection.
+ * @param {string|Date} lastUpdatedString
+ * @returns {{ text: string, isStale: boolean, diffMinutes: number }}
+ */
+export const formatQueueLastUpdated = (lastUpdatedString) => {
+  if (!lastUpdatedString) {
+    return { text: 'Queue information unavailable', isStale: false, diffMinutes: 0 }
+  }
+  const date = new Date(lastUpdatedString)
+  if (isNaN(date.getTime())) {
+    return { text: 'Queue information unavailable', isStale: false, diffMinutes: 0 }
+  }
+  const now = new Date()
+  const diffMinutes = Math.max(0, Math.floor((now.getTime() - date.getTime()) / 60000))
+
+  if (diffMinutes > 120) {
+    const hours = Math.floor(diffMinutes / 60)
+    return {
+      text: `Queue information may be outdated (Updated ${hours} ${hours === 1 ? 'hour' : 'hours'} ago)`,
+      isStale: true,
+      diffMinutes,
+    }
+  }
+
+  if (diffMinutes < 1) {
+    return {
+      text: 'Updated just now',
+      isStale: false,
+      diffMinutes: 0,
+    }
+  }
+
+  return {
+    text: `Updated ${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'} ago`,
+    isStale: false,
+    diffMinutes,
+  }
+}

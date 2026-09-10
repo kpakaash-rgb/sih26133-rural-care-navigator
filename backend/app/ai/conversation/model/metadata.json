@@ -1,0 +1,31 @@
+{
+  "model_type": "Multilingual TF-IDF (Subword + Word) + Calibrated Logistic Classifier",
+  "dataset_size": 609,
+  "train_samples": 487,
+  "validation_samples": 122,
+  "overall_accuracy": 0.8197,
+  "english_accuracy": 0.8983,
+  "hindi_hinglish_accuracy": 0.746,
+  "average_inference_latency_ms": 4.47,
+  "model_size_kb": 791.25,
+  "confidence_threshold": 0.45,
+  "classes": [
+    "ANSWER_NO",
+    "ANSWER_YES",
+    "BOOK_APPOINTMENT",
+    "CANCEL_BOOKING",
+    "CHANGE_APPOINTMENT_TYPE",
+    "CONFIRM_BOOKING",
+    "EMERGENCY",
+    "FACILITY_INFORMATION",
+    "FINISH",
+    "PROVIDE_DURATION",
+    "PROVIDE_LOCALITY",
+    "PROVIDE_SEVERITY",
+    "REPORT_SYMPTOMS",
+    "REQUEST_HELP",
+    "REQUEST_REPEAT",
+    "UNKNOWN"
+  ],
+  "timestamp": "2026-09-10 01:19:59"
+}

@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Home, Users, CheckSquare, User, Bell } from 'lucide-react'
+import { getStaffSession, clearStaffSession } from '../../services/api'
 
 /**
  * Persistent layout shell for all authenticated Worker screens.
@@ -10,6 +11,28 @@ import { Home, Users, CheckSquare, User, Bell } from 'lucide-react'
 export default function WorkerAppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const session = getStaffSession()
+
+  // Role guard: Ensure valid WORKER session. If missing or role mismatch, redirect to /staff/login
+  useEffect(() => {
+    const current = getStaffSession()
+    if (!current || !current.token || current.role !== 'WORKER') {
+      navigate('/staff/login', { replace: true })
+    }
+  }, [navigate])
+
+  const handleLogout = () => {
+    clearStaffSession()
+    navigate('/staff/login', { replace: true })
+  }
+
+  // Prevent rendering protected screens if unauthenticated
+  if (!session || !session.token || session.role !== 'WORKER') {
+    return null
+  }
+
+  const workerName = session.user?.name || 'Frontline Worker'
+  const facilityName = session.user?.facility_name || 'Primary Health Centre'
 
   const navItems = [
     { to: '/worker/home',     icon: Home,        label: 'Home' },
@@ -38,19 +61,43 @@ export default function WorkerAppLayout() {
               </svg>
             </div>
             <div>
-              <div className="header-title">Rural Care Navigator</div>
-              <div className="header-role">Role: Frontline Worker</div>
+              <div className="header-title">{facilityName}</div>
+              <div className="header-role">Worker: {workerName}</div>
             </div>
           </div>
         </div>
 
-        {/* Sync status badge & Switch Role */}
+        {/* Sync status badge & Switch / Logout */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="header-switch-role-btn"
+            title="Sign out of worker session"
+            id="worker-logout-btn"
+            style={{
+              background: 'rgba(239,68,68,0.25)',
+              border: '1px solid rgba(239,68,68,0.4)',
+              borderRadius: 20,
+              color: 'white',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              padding: '4px 10px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Sign Out
+          </button>
+
           <button
             type="button"
             onClick={() => navigate('/')}
             className="header-switch-role-btn"
-            title="Switch Role"
+            title="Portal Home"
             style={{
               background: 'rgba(255,255,255,0.18)',
               border: 'none',
@@ -66,7 +113,7 @@ export default function WorkerAppLayout() {
               whiteSpace: 'nowrap',
             }}
           >
-            ← Roles
+            ← Home
           </button>
 
           <div style={{

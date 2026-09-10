@@ -1,43 +1,44 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import {
   ArrowLeft, Copy, ShieldCheck, Check, Plus,
   Mic, Thermometer, Heart, Activity, Wind,
   Bluetooth, CheckCircle2, AlertCircle, AlertTriangle,
   Send, CloudOff, Info
 } from 'lucide-react'
+import { getPatientDetailsById, savePatientScreening } from '../../../services/api'
 import './ScreeningPage.css'
 
-/* ΓöÇΓöÇ Demo Patient ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
-const patient = {
+/* ── Fallback Demo Patient ── */
+const defaultPatient = {
   name: 'Anitha Kumar',
   id: 'P104827',
   initials: 'AK',
-  meta: 'Female, 28 Yrs ΓÇó Kovilur Village',
+  meta: 'Female, 28 Yrs • Kovilur Village',
 }
 
-/* ΓöÇΓöÇ Symptoms ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Symptoms ────────────────────────────────────────────────────── */
 const SYMPTOMS_LIST = [
   'Fever', 'Cough', 'Breathing Difficulty', 'Pain',
   'Weakness', 'Headache', 'Other',
 ]
 
-/* ΓöÇΓöÇ Vitals config ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Vitals config ──────────────────────────────────────────────── */
 const VITALS = [
-  { key: 'temp',   label: 'Body Temp',         unit: '┬░C',   icon: Thermometer, placeholder: '36.6',  hint: 'Normal: 36.1 ΓÇô 37.2┬░C' },
+  { key: 'temp',   label: 'Body Temp',         unit: '°C',   icon: Thermometer, placeholder: '36.6',  hint: 'Normal: 36.1 – 37.2°C' },
   { key: 'bp',     label: 'Blood Pressure',     unit: 'mmHg', icon: Activity,    placeholder: '120/80', hint: 'Normal: < 120/80 mmHg'  },
-  { key: 'hr',     label: 'Heart Rate',         unit: 'bpm',  icon: Heart,       placeholder: '72',     hint: 'Normal: 60 ΓÇô 100 bpm'   },
-  { key: 'spo2',   label: 'Oxygen (SpO2)',       unit: '%',    icon: Wind,        placeholder: '98',     hint: 'Normal: ΓëÑ 95%'          },
+  { key: 'hr',     label: 'Heart Rate',         unit: 'bpm',  icon: Heart,       placeholder: '72',     hint: 'Normal: 60 – 100 bpm'   },
+  { key: 'spo2',   label: 'Oxygen (SpO2)',       unit: '%',    icon: Wind,        placeholder: '98',     hint: 'Normal: ≥ 95%'          },
 ]
 
-/* ΓöÇΓöÇ Vital status evaluator ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Vital status evaluator ─────────────────────────────────────── */
 function vitalStatus(key, value) {
   if (!value) return null
   const v = parseFloat(value)
   if (isNaN(v)) return null
   switch (key) {
     case 'temp':
-      if (v >= 38.0) return { label: `Elevated (${((v * 9/5) + 32).toFixed(1)}┬░F)`, type: 'danger' }
+      if (v >= 38.0) return { label: `Elevated (${((v * 9/5) + 32).toFixed(1)}°F)`, type: 'danger' }
       if (v < 36.1)  return { label: 'Hypothermia risk', type: 'warn' }
       return { label: 'Normal range', type: 'ok' }
     case 'hr':
@@ -45,11 +46,11 @@ function vitalStatus(key, value) {
       if (v < 60)  return { label: 'Bradycardia', type: 'warn' }
       return { label: 'Within limit', type: 'ok' }
     case 'spo2':
-      if (v < 90)  return { label: 'Critical ΓÇö low oxygen', type: 'danger' }
+      if (v < 90)  return { label: 'Critical — low oxygen', type: 'danger' }
       if (v < 95)  return { label: 'Below normal', type: 'warn' }
       return { label: 'Normal ambient', type: 'ok' }
     case 'bp': {
-      const parts = value.split('/')
+      const parts = String(value).split('/')
       if (parts.length !== 2) return null
       const sys = parseInt(parts[0]); const dia = parseInt(parts[1])
       if (sys >= 140 || dia >= 90) return { label: 'Hypertensive', type: 'danger' }
@@ -60,16 +61,42 @@ function vitalStatus(key, value) {
   }
 }
 
-/* ΓöÇΓöÇ Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
+/* ── Component ──────────────────────────────────────────────────── */
 export default function ScreeningPage() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const routePatientId = location.state?.patientId
 
+  const [patient, setPatient] = useState(defaultPatient)
   const [symptoms,    setSymptoms]    = useState(['Fever', 'Cough', 'Breathing Difficulty', 'Headache'])
   const [description, setDescription] = useState('')
   const [vitals,      setVitals]      = useState({ temp: '38.2', bp: '138/88', hr: '96', spo2: '95' })
   const [copied,      setCopied]      = useState(false)
   const [submitted,   setSubmitted]   = useState(false)
   const [loading,     setLoading]     = useState(false)
+  const [apiError,    setApiError]    = useState('')
+
+  useEffect(() => {
+    let isMounted = true
+    if (routePatientId) {
+      getPatientDetailsById(routePatientId)
+        .then((data) => {
+          if (isMounted && data) {
+            setPatient({
+              id: data.id,
+              displayId: `P${String(data.id).padStart(6, '0')}`,
+              name: data.full_name,
+              initials: (data.full_name || 'Patient').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase(),
+              meta: `${data.gender || 'Patient'}, ${data.age ? data.age + ' Yrs' : ''} • ${data.village || data.district || 'Village'}`,
+            })
+          }
+        })
+        .catch(() => {})
+    }
+    return () => {
+      isMounted = false
+    }
+  }, [routePatientId])
 
   function toggleSymptom(s) {
     setSymptoms((prev) =>
@@ -82,18 +109,43 @@ export default function ScreeningPage() {
   }
 
   function handleCopyId() {
-    navigator.clipboard?.writeText(patient.id)
+    navigator.clipboard?.writeText(patient.displayId || String(patient.id))
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setApiError('')
+    try {
+      let sys = null
+      let dia = null
+      if (vitals.bp) {
+        const parts = String(vitals.bp).split('/')
+        if (parts.length === 2) {
+          sys = parseInt(parts[0]) || null
+          dia = parseInt(parts[1]) || null
+        }
+      }
+
+      const targetPatientId = typeof patient.id === 'number' ? patient.id : 1
+
+      await savePatientScreening(targetPatientId, {
+        temperature: vitals.temp ? parseFloat(vitals.temp) : null,
+        systolic_bp: sys,
+        diastolic_bp: dia,
+        heart_rate: vitals.hr ? parseInt(vitals.hr) : null,
+        spo2: vitals.spo2 ? parseInt(vitals.spo2) : null,
+        symptoms: symptoms,
+        notes: description,
+      })
       setSubmitted(true)
-    }, 1400)
+    } catch (err) {
+      setApiError(err.message || 'Failed to submit screening.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
@@ -108,10 +160,10 @@ export default function ScreeningPage() {
         </p>
         <div className="sc-submitted-id-row">
           <span className="sc-id-label">Patient ID</span>
-          <span className="sc-id-val">{patient.id}</span>
+          <span className="sc-id-val">{patient.displayId || patient.id}</span>
         </div>
         <div className="sc-submitted-actions">
-          <button className="sc-action-primary" onClick={() => navigate('/worker/patient-summary')}>
+          <button className="sc-action-primary" onClick={() => navigate('/worker/patient-summary', { state: { patientId: patient.id } })}>
             View Health Summary
           </button>
           <button className="sc-action-ghost" onClick={() => navigate('/worker/home')}>
@@ -146,13 +198,13 @@ export default function ScreeningPage() {
       {/* ΓöÇΓöÇ Patient Card ΓöÇΓöÇ */}
       <div className="sc-patient-card">
         <div className="sc-patient-left">
-          <div className="sc-patient-avatar">AK</div>
+          <div className="sc-patient-avatar">{patient.initials}</div>
           <div className="sc-patient-info">
             <div className="sc-patient-name-row">
               <h2 className="sc-patient-name">{patient.name}</h2>
               <span className="sc-patient-id-badge">
-                <span className="sc-id-icon">≡ƒ¬¬</span>
-                {patient.id}
+                <span className="sc-id-icon">🆔</span>
+                {patient.displayId || patient.id}
               </span>
             </div>
             <p className="sc-patient-meta">{patient.meta}</p>
@@ -164,7 +216,13 @@ export default function ScreeningPage() {
         </button>
       </div>
 
-      {/* ΓöÇΓöÇ AI Banner ΓöÇΓöÇ */}
+      {apiError && (
+        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', color: '#991b1b', fontSize: '13px', fontWeight: 600, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertCircle size={16} /> {apiError}
+        </div>
+      )}
+
+      {/* AI Banner */}
       <div className="sc-ai-banner">
         <ShieldCheck size={18} style={{ flexShrink: 0, color: 'var(--color-primary)' }} />
         <div>

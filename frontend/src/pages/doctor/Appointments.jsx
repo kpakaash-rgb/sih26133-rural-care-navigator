@@ -1,40 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  BriefcaseMedical, Bell, Clock, AlertTriangle,
+  BriefcaseMedical, Bell, Clock,
   LayoutDashboard, Users, CalendarDays, UserCircle,
-  ChevronRight, CheckCircle2
+  PlayCircle, RefreshCw, CheckCircle2
 } from 'lucide-react';
-
-const appointments = {
-  today: [
-    { id: 1, name: 'John Doe', initials: 'JD', avatarColor: '#DBEAFE', textColor: '#1D4ED8', time: '09:00 – 09:30 AM', service: 'Follow-up: Hypertension', status: 'Next' },
-    { id: 2, name: 'Mary Johnson', initials: 'MJ', avatarColor: '#E0E7FF', textColor: '#4338CA', time: '09:45 – 10:15 AM', service: 'Initial Consult: Joint Pain', status: 'Waiting' },
-    { id: 3, name: 'Robert Smith', initials: 'RS', avatarColor: '#FEE2E2', textColor: '#DC2626', time: '10:30 – 11:00 AM', service: 'Acute Chest Pain Evaluation', status: 'Urgent' },
-    { id: 4, name: 'Priya Sharma', initials: 'PS', avatarColor: '#DCFCE7', textColor: '#16A34A', time: '11:15 – 11:45 AM', service: 'General Consultation', status: 'Confirmed' },
-  ],
-  upcoming: [
-    { id: 5, name: 'Anita Verma', initials: 'AV', avatarColor: '#FEF9C3', textColor: '#CA8A04', time: 'Sep 5 • 10:00 AM', service: 'Follow-up: Diabetes Management', status: 'Confirmed' },
-    { id: 6, name: 'Ramesh Nair', initials: 'RN', avatarColor: '#E0E7FF', textColor: '#4338CA', time: 'Sep 6 • 02:30 PM', service: 'Post-op Review', status: 'Confirmed' },
-  ],
-  completed: [
-    { id: 7, name: 'Lakshmi Devi', initials: 'LD', avatarColor: '#F3F4F6', textColor: '#6B7280', time: '08:00 – 08:30 AM', service: 'General Consultation', status: 'Completed' },
-    { id: 8, name: 'Arun Kumar', initials: 'AK', avatarColor: '#F3F4F6', textColor: '#6B7280', time: '08:30 – 09:00 AM', service: 'Blood Pressure Check', status: 'Completed' },
-  ],
-};
+import { getDoctorAppointments } from '../../services/api';
 
 function StatusBadge({ status }) {
+  const norm = (status || 'SCHEDULED').toUpperCase();
   const cfg = {
-    Next:      { bg: '#DBEAFE', color: '#1D4ED8', label: 'NEXT' },
-    Waiting:   { bg: '#F3F4F6', color: '#374151', label: 'WAITING' },
-    Urgent:    { bg: '#DC2626', color: '#FFFFFF', label: 'URGENT' },
-    Confirmed: { bg: '#DCFCE7', color: '#15803D', label: 'CONFIRMED' },
-    Completed: { bg: '#F3F4F6', color: '#6B7280', label: 'DONE' },
+    URGENT:    { bg: '#DC2626', color: '#FFFFFF', label: 'URGENT' },
+    SCHEDULED: { bg: '#DBEAFE', color: '#1D4ED8', label: 'SCHEDULED' },
+    WAITING:   { bg: '#FEF3C7', color: '#92400E', label: 'WAITING' },
+    CONFIRMED: { bg: '#DCFCE7', color: '#15803D', label: 'CONFIRMED' },
+    COMPLETED: { bg: '#F3F4F6', color: '#475569', label: 'COMPLETED' },
+    CANCELLED: { bg: '#FEE2E2', color: '#B91C1C', label: 'CANCELLED' },
   };
-  const c = cfg[status] || cfg.Waiting;
+  const c = cfg[norm] || cfg.SCHEDULED;
   return (
     <span style={{
       background: c.bg, color: c.color,
-      fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.07em',
+      fontSize: '0.65rem', fontWeight: 800, letterSpacing: '0.07em',
       padding: '3px 10px', borderRadius: 999, textTransform: 'uppercase',
       whiteSpace: 'nowrap',
     }}>
@@ -43,279 +29,238 @@ function StatusBadge({ status }) {
   );
 }
 
-function AppointmentCard({ appt, navigate, onAction }) {
-  const isUrgent    = appt.status === 'Urgent';
-  const isCompleted = appt.status === 'Completed';
+export default function Appointments({ navigate, _onLogout, openPatient, startConsultation }) {
+  const [appointmentsList, setAppointmentsList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
 
-  return (
-    <div style={{
-      background: '#fff',
-      borderRadius: 16,
-      border: `1px solid ${isUrgent ? '#FECACA' : '#E5E7EB'}`,
-      borderLeft: `4px solid ${isUrgent ? '#DC2626' : isCompleted ? '#D1D5DB' : 'var(--primary-blue)'}`,
-      padding: '1rem',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '0.875rem',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-      opacity: isCompleted ? 0.8 : 1,
-    }}>
-      {/* Row 1 – Time + Badge */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.375rem',
-          color: isUrgent ? '#DC2626' : 'var(--primary-blue)',
-          fontWeight: 700, fontSize: '0.8rem',
-        }}>
-          <Clock size={14} strokeWidth={2.5} />
-          {appt.time}
-        </div>
-        <StatusBadge status={appt.status} />
-      </div>
+  const refreshAppointments = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await getDoctorAppointments();
+      setAppointmentsList(Array.isArray(data) ? data : []);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load appointments:', err);
+      setError('Unable to load appointments schedule.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-      {/* Row 2 – Avatar + Patient Info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{
-          width: 44, height: 44, borderRadius: '50%', flexShrink: 0,
-          background: appt.avatarColor, color: appt.textColor,
-          fontWeight: 800, fontSize: '0.9rem',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          {appt.initials}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontWeight: 700, fontSize: '1rem',
-            color: isCompleted ? '#9CA3AF' : '#111827',
-            textDecoration: isCompleted ? 'line-through' : 'none',
-            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-          }}>
-            {appt.name}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: '#6B7280', marginTop: 1 }}>
-            {appt.service}
-          </div>
-        </div>
-      </div>
+  useEffect(() => {
+    let ignore = false;
+    async function init() {
+      try {
+        const data = await getDoctorAppointments();
+        if (!ignore) {
+          setAppointmentsList(Array.isArray(data) ? data : []);
+          setError(null);
+        }
+      } catch (err) {
+        if (!ignore) {
+          console.error('Failed to load appointments:', err);
+          setError('Unable to load appointments schedule.');
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    }
+    init();
+    return () => { ignore = true; };
+  }, []);
 
-      {/* Row 3 – Actions */}
-      {isCompleted ? (
-        <button
-          onClick={() => navigate('patient_details')}
-          style={{
-            width: '100%', padding: '0.6rem',
-            border: '1.5px solid #E5E7EB', borderRadius: 10,
-            fontWeight: 700, fontSize: '0.85rem', color: '#6B7280',
-            background: 'transparent', cursor: 'pointer',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-          }}
-        >
-          <CheckCircle2 size={16} /> View Summary
-        </button>
-      ) : (
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            onClick={() => navigate('patient_details')}
-            style={{
-              flex: 1, padding: '0.6rem 0.5rem',
-              border: `1.5px solid var(--primary-blue)`,
-              borderRadius: 10, fontWeight: 700, fontSize: '0.85rem',
-              color: 'var(--primary-blue)', background: 'transparent', cursor: 'pointer',
-            }}
-          >
-            View Patient
-          </button>
-          <button
-            onClick={() => navigate('consultation')}
-            style={{
-              flex: 1, padding: '0.6rem 0.5rem',
-              border: 'none', borderRadius: 10, fontWeight: 700, fontSize: '0.85rem',
-              background: isUrgent ? '#DC2626' : 'var(--primary-blue)',
-              color: '#fff', cursor: 'pointer',
-            }}
-          >
-            Start Consultation
-          </button>
-        </div>
-      )}
-
-      {/* Secondary actions */}
-      {!isCompleted && (
-        <div style={{
-          display: 'flex', justifyContent: 'space-between',
-          paddingTop: '0.25rem', borderTop: '1px solid #F3F4F6',
-        }}>
-          <button
-            onClick={() => onAction('reschedule', appt.name)}
-            style={{ fontSize: '0.75rem', fontWeight: 700, color: '#6B7280', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem 0' }}
-          >
-            Reschedule
-          </button>
-          <button
-            onClick={() => onAction('cancel', appt.name)}
-            style={{ fontSize: '0.75rem', fontWeight: 700, color: '#DC2626', background: 'none', border: 'none', cursor: 'pointer', padding: '0.25rem 0' }}
-          >
-            Cancel
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function Appointments({ navigate, onLogout }) {
-  const [activeTab, setActiveTab] = useState('today');
-  const [modal, setModal] = useState({ type: null, patient: null });
-
-  const list = appointments[activeTab] || [];
-
-  const tabs = [
-    { key: 'today', label: 'Today' },
-    { key: 'upcoming', label: 'Upcoming' },
-    { key: 'completed', label: 'Completed' },
-  ];
+  const filteredAppointments = appointmentsList.filter((appt) => {
+    const st = (appt.status || '').toUpperCase();
+    if (activeTab === 'scheduled') return st === 'SCHEDULED' || st === 'WAITING' || st === 'CONFIRMED';
+    if (activeTab === 'completed') return st === 'COMPLETED';
+    return true;
+  });
 
   return (
     <div className="app-container pb-24 bg-gray-50 min-h-screen">
-      {/* Global Header */}
+      {/* Header */}
       <header className="global-header">
         <div className="header-brand">
           <BriefcaseMedical size={20} strokeWidth={2.5} />
           <span>Rural Care Navigator</span>
         </div>
         <div className="header-actions">
-          <Bell size={22} className="header-bell" strokeWidth={2} />
+          <button 
+            onClick={refreshAppointments} 
+            title="Refresh schedule"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+          >
+            <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          </button>
+          <Bell size={24} className="header-bell" strokeWidth={2} />
           <span className="header-indicator"></span>
         </div>
       </header>
 
-      {/* Page Title + Summary Bar */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #E5E7EB', padding: '1rem 1rem 0' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#111827', marginBottom: '0.25rem' }}>
-          Appointments
-        </h1>
-        <p style={{ fontSize: '0.8rem', color: '#6B7280', marginBottom: '1rem' }}>
-          Manage today's consultations and upcoming visits.
-        </p>
-
-        {/* Summary chips */}
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-          {[
-            { label: '4 Today', bg: '#DBEAFE', color: '#1D4ED8' },
-            { label: '1 Urgent', bg: '#FEE2E2', color: '#DC2626' },
-            { label: '2 Completed', bg: '#F3F4F6', color: '#6B7280' },
-          ].map(chip => (
-            <span key={chip.label} style={{
-              background: chip.bg, color: chip.color,
-              fontSize: '0.72rem', fontWeight: 700, padding: '4px 10px',
-              borderRadius: 999,
-            }}>{chip.label}</span>
-          ))}
+      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {/* Title */}
+        <div>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111827', margin: 0 }}>
+            Facility Appointments
+          </h1>
+          <p style={{ fontSize: '0.825rem', color: '#6B7280', marginTop: '2px' }}>
+            Scheduled consultations at your primary care centre.
+          </p>
         </div>
 
-        {/* Tab Bar */}
-        <div style={{ display: 'flex' }}>
-          {tabs.map(tab => (
+        {error && (
+          <div style={{
+            background: '#fee2e2', color: '#b91c1c', padding: '0.75rem 1rem',
+            borderRadius: '12px', fontSize: '0.875rem'
+          }}>
+            {error}
+          </div>
+        )}
+
+        {/* Tab Filters */}
+        <div style={{
+          display: 'flex', background: '#E5E7EB', borderRadius: 12, padding: 3,
+          gap: 4
+        }}>
+          {[
+            { id: 'all', label: `All (${appointmentsList.length})` },
+            { id: 'scheduled', label: 'Upcoming' },
+            { id: 'completed', label: 'Completed' },
+          ].map(tab => (
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
               style={{
-                flex: 1, padding: '0.75rem 0', fontSize: '0.875rem', fontWeight: 700,
-                textAlign: 'center', background: 'none', border: 'none', cursor: 'pointer',
-                borderBottom: activeTab === tab.key
-                  ? '2.5px solid var(--primary-blue)'
-                  : '2.5px solid transparent',
-                color: activeTab === tab.key ? 'var(--primary-blue)' : '#9CA3AF',
-                transition: 'all 0.2s',
+                flex: 1, padding: '0.5rem', border: 'none', borderRadius: 9,
+                fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer',
+                background: activeTab === tab.id ? '#fff' : 'transparent',
+                color: activeTab === tab.id ? 'var(--primary-blue)' : '#4B5563',
+                boxShadow: activeTab === tab.id ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.15s',
               }}
             >
               {tab.label}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Card List */}
-      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
-        {list.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#9CA3AF', padding: '3rem 0', fontSize: '0.9rem' }}>
-            No appointments here.
+        {/* Appointments List */}
+        {loading ? (
+          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#6B7280' }}>
+            <Clock size={36} style={{ margin: '0 auto 0.75rem', opacity: 0.4 }} />
+            <p style={{ fontWeight: 600 }}>Loading facility appointment schedule...</p>
+          </div>
+        ) : filteredAppointments.length === 0 ? (
+          <div style={{
+            background: '#fff', border: '1px solid #E5E7EB', borderRadius: 16,
+            padding: '2.5rem 1rem', textAlign: 'center', color: '#6B7280'
+          }}>
+            <CheckCircle2 size={36} style={{ margin: '0 auto 0.75rem', color: '#10B981' }} />
+            <h3 style={{ fontWeight: 700, color: '#111827', marginBottom: '4px' }}>No Appointments Found</h3>
+            <p style={{ fontSize: '0.85rem' }}>There are no appointments matching this category.</p>
           </div>
         ) : (
-          list.map(appt => (
-            <AppointmentCard
-              key={appt.id}
-              appt={appt}
-              navigate={navigate}
-              onAction={(type, patient) => setModal({ type, patient })}
-            />
-          ))
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem' }}>
+            {filteredAppointments.map((appt) => {
+              const isCompleted = (appt.status || '').toUpperCase() === 'COMPLETED';
+              const isUrgent = (appt.status || '').toUpperCase() === 'URGENT';
+
+              return (
+                <div
+                  key={appt.id}
+                  style={{
+                    background: '#fff',
+                    borderRadius: 16,
+                    border: `1px solid ${isUrgent ? '#FECACA' : '#E5E7EB'}`,
+                    borderLeft: `4px solid ${isUrgent ? '#DC2626' : isCompleted ? '#9CA3AF' : 'var(--primary-blue)'}`,
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                    opacity: isCompleted ? 0.85 : 1,
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '0.375rem',
+                      color: isUrgent ? '#DC2626' : 'var(--primary-blue)',
+                      fontWeight: 700, fontSize: '0.8rem',
+                    }}>
+                      <Clock size={14} strokeWidth={2.5} />
+                      {appt.appointment_date} • {appt.time}
+                    </div>
+                    <StatusBadge status={appt.status} />
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{
+                      width: 42, height: 42, borderRadius: '50%', flexShrink: 0,
+                      background: '#DBEAFE', color: 'var(--primary-blue)',
+                      fontWeight: 800, fontSize: '0.9rem',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {appt.patient_name?.slice(0, 2).toUpperCase() || 'PT'}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#111827' }}>
+                        {appt.patient_name}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#6B7280', marginTop: 1 }}>
+                        {appt.service_name || 'General Medicine'} • ID: #P{appt.patient_id}
+                      </div>
+                    </div>
+                  </div>
+
+                  {!isCompleted && (
+                    <div style={{ display: 'flex', gap: '8px', paddingTop: '0.25rem' }}>
+                      <button
+                        className="btn-primary"
+                        style={{
+                          flex: 1, padding: '0.6rem', fontSize: '0.85rem',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem'
+                        }}
+                        onClick={() => startConsultation ? startConsultation(appt.patient_id, appt.id) : (navigate && navigate('consultation'))}
+                      >
+                        <PlayCircle size={16} /> Start Consultation
+                      </button>
+                      <button
+                        className="btn-outline"
+                        style={{ padding: '0.6rem 0.85rem', fontSize: '0.85rem' }}
+                        onClick={() => openPatient ? openPatient(appt.patient_id, appt.id) : (navigate && navigate('patient_details'))}
+                      >
+                        Chart
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
-      {/* Modal */}
-      {modal.type && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
-          zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem',
-        }}>
-          <div style={{ background: '#fff', borderRadius: 20, width: '100%', maxWidth: 360, overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
-            <div style={{ padding: '1.5rem', textAlign: 'center' }}>
-              <div style={{
-                width: 52, height: 52, borderRadius: '50%',
-                background: '#FEE2E2', color: '#DC2626',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 1rem',
-              }}>
-                <AlertTriangle size={24} />
-              </div>
-              <h3 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#111827', marginBottom: '0.5rem' }}>
-                {modal.type === 'cancel' ? 'Cancel Appointment?' : 'Reschedule Appointment?'}
-              </h3>
-              <p style={{ fontSize: '0.875rem', color: '#6B7280', marginBottom: '1.5rem', lineHeight: 1.5 }}>
-                Are you sure you want to {modal.type} the appointment for{' '}
-                <strong style={{ color: '#111827' }}>{modal.patient}</strong>?
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
-                <button
-                  onClick={() => setModal({ type: null, patient: null })}
-                  style={{
-                    width: '100%', padding: '0.75rem', borderRadius: 12,
-                    background: '#F3F4F6', color: '#374151', fontWeight: 700,
-                    border: 'none', cursor: 'pointer', fontSize: '0.925rem',
-                  }}
-                >
-                  Keep Appointment
-                </button>
-                <button
-                  onClick={() => setModal({ type: null, patient: null })}
-                  style={{
-                    width: '100%', padding: '0.75rem', borderRadius: 12,
-                    background: '#DC2626', color: '#fff', fontWeight: 700,
-                    border: 'none', cursor: 'pointer', fontSize: '0.925rem',
-                  }}
-                >
-                  {modal.type === 'cancel' ? 'Cancel Appointment' : 'Confirm Reschedule'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Bottom Navigation */}
       <nav className="bottom-nav">
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate('dashboard'); }}>
-          <LayoutDashboard size={24} /><span className="nav-label">Dashboard</span>
+        <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); navigate?.('dashboard'); }}>
+          <LayoutDashboard size={24} />
+          <span className="nav-label">Dashboard</span>
         </a>
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate('patients'); }}>
-          <Users size={24} /><span className="nav-label">Patients</span>
+        <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); navigate?.('patients'); }}>
+          <Users size={24} />
+          <span className="nav-label">Patients</span>
         </a>
-        <a href="#" className="nav-item active" onClick={e => { e.preventDefault(); navigate('appointments'); }}>
-          <CalendarDays size={24} /><span className="nav-label">Appointments</span>
+        <a href="#" className="nav-item active">
+          <CalendarDays size={24} />
+          <span className="nav-label">Appointments</span>
         </a>
-        <a href="#" className="nav-item" onClick={e => { e.preventDefault(); navigate && navigate('profile'); }}>
-          <UserCircle size={24} /><span className="nav-label">Profile</span>
+        <a href="#" className="nav-item" onClick={(e) => { e.preventDefault(); navigate?.('profile'); }}>
+          <UserCircle size={24} />
+          <span className="nav-label">Profile</span>
         </a>
       </nav>
     </div>

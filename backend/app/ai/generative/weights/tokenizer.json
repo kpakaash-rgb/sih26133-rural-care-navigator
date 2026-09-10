@@ -1,0 +1,9030 @@
+{
+  "token_to_id": {
+    "<|pad|>": 0,
+    "<|unk|>": 1,
+    "<|context|>": 2,
+    "<|response|>": 3,
+    "<|end|>": 4,
+    "\n": 5,
+    " ": 6,
+    "'": 7,
+    "(": 8,
+    ")": 9,
+    ",": 10,
+    "-": 11,
+    ".": 12,
+    "0": 13,
+    "1": 14,
+    "2": 15,
+    "3": 16,
+    "4": 17,
+    "5": 18,
+    "8": 19,
+    ":": 20,
+    "?": 21,
+    "A": 22,
+    "B": 23,
+    "C": 24,
+    "D": 25,
+    "E": 26,
+    "F": 27,
+    "G": 28,
+    "H": 29,
+    "I": 30,
+    "J": 31,
+    "K": 32,
+    "L": 33,
+    "M": 34,
+    "N": 35,
+    "O": 36,
+    "P": 37,
+    "Q": 38,
+    "R": 39,
+    "S": 40,
+    "T": 41,
+    "U": 42,
+    "V": 43,
+    "W": 44,
+    "Y": 45,
+    "_": 46,
+    "a": 47,
+    "b": 48,
+    "c": 49,
+    "d": 50,
+    "e": 51,
+    "f": 52,
+    "g": 53,
+    "h": 54,
+    "i": 55,
+    "j": 56,
+    "k": 57,
+    "l": 58,
+    "m": 59,
+    "n": 60,
+    "o": 61,
+    "p": 62,
+    "q": 63,
+    "r": 64,
+    "s": 65,
+    "t": 66,
+    "u": 67,
+    "v": 68,
+    "w": 69,
+    "x": 70,
+    "y": 71,
+    "z": 72,
+    "ँ": 73,
+    "ं": 74,
+    "ः": 75,
+    "अ": 76,
+    "आ": 77,
+    "इ": 78,
+    "ई": 79,
+    "उ": 80,
+    "ए": 81,
+    "औ": 82,
+    "क": 83,
+    "ख": 84,
+    "ग": 85,
+    "घ": 86,
+    "च": 87,
+    "छ": 88,
+    "ज": 89,
+    "झ": 90,
+    "ट": 91,
+    "ठ": 92,
+    "ड": 93,
+    "ढ": 94,
+    "ण": 95,
+    "त": 96,
+    "थ": 97,
+    "द": 98,
+    "ध": 99,
+    "न": 100,
+    "प": 101,
+    "फ": 102,
+    "ब": 103,
+    "भ": 104,
+    "म": 105,
+    "य": 106,
+    "र": 107,
+    "ल": 108,
+    "व": 109,
+    "श": 110,
+    "ष": 111,
+    "स": 112,
+    "ह": 113,
+    "़": 114,
+    "ा": 115,
+    "ि": 116,
+    "ी": 117,
+    "ु": 118,
+    "ू": 119,
+    "ृ": 120,
+    "े": 121,
+    "ै": 122,
+    "ॉ": 123,
+    "ो": 124,
+    "ौ": 125,
+    "्": 126,
+    "।": 127,
+    "ON": 128,
+    "NON": 129,
+    "NONE": 130,
+    "ar": 131,
+    "an": 132,
+    "ge": 133,
+    "ur": 134,
+    "ha": 135,
+    "se": 136,
+    "me": 137,
+    "it": 138,
+    "er": 139,
+    "in": 140,
+    "ang": 141,
+    "are": 142,
+    "il": 143,
+    "ame": 144,
+    "lo": 145,
+    "hi": 146,
+    "nd": 147,
+    "ac": 148,
+    "age": 149,
+    "ity": 150,
+    "care": 151,
+    "sy": 152,
+    "loc": 153,
+    "nder": 154,
+    "name": 155,
+    "sym": 156,
+    " क": 157,
+    "al": 158,
+    "fac": 159,
+    "facil": 160,
+    "facility": 161,
+    "pha": 162,
+    "phase": 163,
+    "dur": 164,
+    "gender": 165,
+    "lang": 166,
+    "en": 167,
+    " d": 168,
+    "HC": 169,
+    " y": 170,
+    "ou": 171,
+    " t": 172,
+    "at": 173,
+    "PHC": 174,
+    " c": 175,
+    " ह": 176,
+    "he": 177,
+    " a": 178,
+    "on": 179,
+    "har": 180,
+    "re": 181,
+    " se": 182,
+    " p": 183,
+    "ra": 184,
+    " ha": 185,
+    " k": 186,
+    "pur": 187,
+    "or": 188,
+    " you": 189,
+    " s": 190,
+    " स": 191,
+    "and": 192,
+    "ati": 193,
+    "Mal": 194,
+    "Mals": 195,
+    "Malshi": 196,
+    "Malshira": 197,
+    "Malshiras": 198,
+    "ay": 199,
+    "ol": 200,
+    " b": 201,
+    "Pand": 202,
+    "Pandhar": 203,
+    "Pandharpur": 204,
+    "ent": 205,
+    " आ": 206,
+    "le": 207,
+    "sh": 208,
+    "am": 209,
+    " ब": 210,
+    " म": 211,
+    " PHC": 212,
+    "ola": 213,
+    "st": 214,
+    "Su": 215,
+    " C": 216,
+    "TY": 217,
+    " आप": 218,
+    "om": 219,
+    "IN": 220,
+    "te": 221,
+    "entre": 222,
+    " me": 223,
+    "ing": 224,
+    "Sang": 225,
+    "Sangola": 226,
+    " din": 227,
+    "han": 228,
+    "ya": 229,
+    "oo": 230,
+    "ard": 231,
+    " द": 232,
+    "GE": 233,
+    " f": 234,
+    " dard": 235,
+    "ING": 236,
+    "th": 237,
+    " अ": 238,
+    " H": 239,
+    " य": 240,
+    " प": 241,
+    " hai": 242,
+    "ES": 243,
+    "is": 244,
+    " कर": 245,
+    "ri": 246,
+    "mal": 247,
+    "our": 248,
+    " con": 249,
+    "ita": 250,
+    "alth": 251,
+    " the": 252,
+    "Bar": 253,
+    "Baram": 254,
+    "Baramati": 255,
+    " ल": 256,
+    " ज": 257,
+    "ain": 258,
+    "ap": 259,
+    " day": 260,
+    "BO": 261,
+    "BOO": 262,
+    "BOOK": 263,
+    "BOOKING": 264,
+    " days": 265,
+    "uk": 266,
+    "male": 267,
+    "ul": 268,
+    " or": 269,
+    " n": 270,
+    "AGE": 271,
+    "Rame": 272,
+    "Ramesh": 273,
+    " your": 274,
+    "पय": 275,
+    "ek": 276,
+    " बत": 277,
+    "nita": 278,
+    "AN": 279,
+    " आपक": 280,
+    "ukhar": 281,
+    "ver": 282,
+    "LO": 283,
+    "PE": 284,
+    "el": 285,
+    "EN": 286,
+    " v": 287,
+    "fe": 288,
+    "ad": 289,
+    "Sub": 290,
+    "Centre": 291,
+    " र": 292,
+    "BOOKING_": 293,
+    "Sunita": 294,
+    "oul": 295,
+    "ould": 296,
+    "ho": 297,
+    "ase": 298,
+    "bukhar": 299,
+    " w": 300,
+    "RE": 301,
+    "TI": 302,
+    "TION": 303,
+    "ation": 304,
+    " P": 305,
+    " W": 306,
+    " to": 307,
+    "et": 308,
+    " an": 309,
+    " K": 310,
+    "lease": 311,
+    "si": 312,
+    " ग": 313,
+    "ak": 314,
+    " A": 315,
+    " He": 316,
+    " Health": 317,
+    " रह": 318,
+    "ic": 319,
+    "apk": 320,
+    "ER": 321,
+    "ult": 322,
+    "LOC": 323,
+    "LOCA": 324,
+    "LOCAL": 325,
+    "LOCALI": 326,
+    "LOCALITY": 327,
+    " l": 328,
+    "lin": 329,
+    " re": 330,
+    " Sub": 331,
+    " do": 332,
+    "ENT": 333,
+    "TYPE": 334,
+    "ED": 335,
+    " ra": 336,
+    " pain": 337,
+    " kar": 338,
+    " ap": 339,
+    " उ": 340,
+    " m": 341,
+    " he": 342,
+    " j": 343,
+    " is": 344,
+    " ya": 345,
+    " hain": 346,
+    " mein": 347,
+    " ho": 348,
+    "ct": 349,
+    " अप": 350,
+    "int": 351,
+    "sp": 352,
+    "ce": 353,
+    "teen": 354,
+    " Ho": 355,
+    "ital": 356,
+    "QU": 357,
+    "QUES": 358,
+    "Than": 359,
+    "Thank": 360,
+    " are": 361,
+    "ve": 362,
+    "nt": 363,
+    "spital": 364,
+    "fever": 365,
+    " conf": 366,
+    " पर": 367,
+    "ir": 368,
+    " have": 369,
+    " न": 370,
+    "hansi": 371,
+    " at": 372,
+    "ch": 373,
+    " त": 374,
+    "oint": 375,
+    "ment": 376,
+    " ka": 377,
+    "ell": 378,
+    " Hospital": 379,
+    "sult": 380,
+    "ro": 381,
+    " vis": 382,
+    " visit": 383,
+    "point": 384,
+    "pointment": 385,
+    " g": 386,
+    "NA": 387,
+    "NAM": 388,
+    "NAME": 389,
+    " clin": 390,
+    " clinic": 391,
+    " confir": 392,
+    "ANS": 393,
+    "ANSW": 394,
+    "ANSWER": 395,
+    "ANSWER_": 396,
+    "NO": 397,
+    " Centre": 398,
+    " slo": 399,
+    " slot": 400,
+    "gh": 401,
+    " appointment": 402,
+    "rip": 403,
+    "ripya": 404,
+    " tell": 405,
+    " please": 406,
+    " confirm": 407,
+    "MS": 408,
+    "un": 409,
+    "CHC": 410,
+    " व": 411,
+    "ein": 412,
+    "SY": 413,
+    "SYM": 414,
+    "SYMP": 415,
+    "SYMPT": 416,
+    "SYMPTO": 417,
+    "SYMPTOMS": 418,
+    "BOOKING_TYPE": 419,
+    "DU": 420,
+    "DUR": 421,
+    "DURA": 422,
+    "DURATION": 423,
+    "TR": 424,
+    "TRI": 425,
+    "TRIAGE": 426,
+    "TRIAGE_": 427,
+    "TRIAGE_P": 428,
+    "TRIAGE_PR": 429,
+    "TRIAGE_PRES": 430,
+    "TRIAGE_PRESENT": 431,
+    "TRIAGE_PRESENTED": 432,
+    " ki": 433,
+    "do": 434,
+    "ood": 435,
+    "ne": 436,
+    "ook": 437,
+    " CHC": 438,
+    "esh": 439,
+    "hat": 440,
+    "ss": 441,
+    " thi": 442,
+    "fer": 443,
+    "khansi": 444,
+    " aur": 445,
+    " health": 446,
+    "कल": 447,
+    "ed": 448,
+    " सम": 449,
+    " di": 450,
+    "per": 451,
+    "BOOKING_C": 452,
+    "BOOKING_CON": 453,
+    "BOOKING_CONF": 454,
+    "BOOKING_CONFI": 455,
+    "BOOKING_CONFIR": 456,
+    "BOOKING_CONFIRM": 457,
+    " consult": 458,
+    " I": 459,
+    "ill": 460,
+    " च": 461,
+    " this": 462,
+    " श": 463,
+    " bat": 464,
+    " e": 465,
+    "Shi": 466,
+    "Shir": 467,
+    "Shirpur": 468,
+    " pati": 469,
+    " patient": 470,
+    " book": 471,
+    " pre": 472,
+    "ah": 473,
+    " batay": 474,
+    " batayein": 475,
+    " loc": 476,
+    " in": 477,
+    " aapk": 478,
+    "mar": 479,
+    " o": 480,
+    "nderst": 481,
+    "ooj": 482,
+    "ooja": 483,
+    " ne": 484,
+    "one": 485,
+    " u": 486,
+    "ke": 487,
+    "धन": 488,
+    "यव": 489,
+    " cha": 490,
+    " te": 491,
+    " Kya": 492,
+    "pet": 493,
+    "टर": 494,
+    " Sangola": 495,
+    " li": 496,
+    " मर": 497,
+    " Pandharpur": 498,
+    " Malshiras": 499,
+    "ith": 500,
+    "nderstood": 501,
+    " prefer": 502,
+    "ough": 503,
+    "hone": 504,
+    "मर": 505,
+    " name": 506,
+    " be": 507,
+    " su": 508,
+    "पल": 509,
+    " sh": 510,
+    "Gan": 511,
+    "Ganesh": 512,
+    " ड": 513,
+    "adan": 514,
+    " doct": 515,
+    " doctor": 516,
+    "ble": 517,
+    "Pooja": 518,
+    " for": 519,
+    " फ": 520,
+    "SA": 521,
+    "SAF": 522,
+    "SAFE": 523,
+    "SAFETY": 524,
+    "SAFETY_": 525,
+    "SAFETY_QUES": 526,
+    "SAFETY_QUESTION": 527,
+    "SAFETY_QUESTIONS": 528,
+    "45": 529,
+    "Understood": 530,
+    " fe": 531,
+    " अस": 532,
+    "पत": 533,
+    " अपन": 534,
+    " consultation": 535,
+    " can": 536,
+    " गय": 537,
+    " S": 538,
+    "all": 539,
+    " सक": 540,
+    " समय": 541,
+    "ince": 542,
+    " अन": 543,
+    "ail": 544,
+    " Kripya": 545,
+    "The": 546,
+    "Theek": 547,
+    " rahe": 548,
+    " ji": 549,
+    "ote": 550,
+    "GRE": 551,
+    "GREE": 552,
+    "GREET": 553,
+    "GREETING": 554,
+    " chah": 555,
+    "female": 556,
+    " Would": 557,
+    " उपल": 558,
+    " उपलब": 559,
+    " यह": 560,
+    " call": 561,
+    " been": 562,
+    " vill": 563,
+    " village": 564,
+    "ama": 565,
+    "tom": 566,
+    "cough": 567,
+    " na": 568,
+    " chahte": 569,
+    "ene": 570,
+    "ach": 571,
+    " fr": 572,
+    " from": 573,
+    "टम": 574,
+    "na": 575,
+    "com": 576,
+    "Aapk": 577,
+    "od": 578,
+    " area": 579,
+    " aapko": 580,
+    "for": 581,
+    "aan": 582,
+    " ke": 583,
+    "42": 584,
+    "ist": 585,
+    " pro": 586,
+    " with": 587,
+    "rimar": 588,
+    "rimary": 589,
+    "omm": 590,
+    "ommun": 591,
+    "ommunity": 592,
+    "kal": 593,
+    " of": 594,
+    " सकत": 595,
+    " par": 596,
+    "av": 597,
+    " 0": 598,
+    "30": 599,
+    " PM": 600,
+    "sar": 601,
+    " h": 602,
+    " aap": 603,
+    "badan": 604,
+    " M": 605,
+    "ANSWER_NO": 606,
+    " भ": 607,
+    "ANSWER_Y": 608,
+    "ANSWER_YES": 609,
+    "REQUES": 610,
+    "REQUEST": 611,
+    "REQUEST_": 612,
+    "REQUEST_RE": 613,
+    "REQUEST_REPE": 614,
+    "REQUEST_REPEA": 615,
+    "REQUEST_REPEAT": 616,
+    " Primary": 617,
+    "son": 618,
+    " Could": 619,
+    " Community": 620,
+    "UN": 621,
+    "UNK": 622,
+    "UNKNO": 623,
+    "UNKNOW": 624,
+    "UNKNOWN": 625,
+    " av": 626,
+    " avail": 627,
+    " availa": 628,
+    " available": 629,
+    " sym": 630,
+    " symp": 631,
+    " symptom": 632,
+    " symptoms": 633,
+    "iv": 634,
+    "avita": 635,
+    " Please": 636,
+    "if": 637,
+    "CH": 638,
+    "CHAN": 639,
+    "CHANGE": 640,
+    "CHANGE_": 641,
+    "CHANGE_A": 642,
+    "CHANGE_AP": 643,
+    "CHANGE_APP": 644,
+    "CHANGE_APPO": 645,
+    "CHANGE_APPOIN": 646,
+    "CHANGE_APPOINT": 647,
+    "CHANGE_APPOINTM": 648,
+    "CHANGE_APPOINTMENT": 649,
+    "CHANGE_APPOINTMENT_": 650,
+    "CHANGE_APPOINTMENT_TYPE": 651,
+    "FO": 652,
+    "FOL": 653,
+    "FOLLO": 654,
+    "FOLLOW": 655,
+    "FOLLOW_": 656,
+    "FOLLOW_U": 657,
+    "FOLLOW_UP": 658,
+    " che": 659,
+    " Whi": 660,
+    " Which": 661,
+    "CAN": 662,
+    "CANC": 663,
+    "CANCE": 664,
+    "CANCEL": 665,
+    "CANCEL_": 666,
+    "CANCEL_BOOKING": 667,
+    "END": 668,
+    "ENDED": 669,
+    " main": 670,
+    "oos": 671,
+    "stom": 672,
+    "stomach": 673,
+    "ther": 674,
+    " T": 675,
+    " tele": 676,
+    "olapur": 677,
+    " Civ": 678,
+    " Civil": 679,
+    " ex": 680,
+    "GEN": 681,
+    "GEND": 682,
+    "GENDER": 683,
+    "ef": 684,
+    " phone": 685,
+    "nil": 686,
+    "ody": 687,
+    " ye": 688,
+    " raha": 689,
+    "Rah": 690,
+    "Rahul": 691,
+    "सम": 692,
+    "समझ": 693,
+    "uj": 694,
+    " any": 695,
+    "आप": 696,
+    "आपक": 697,
+    " exper": 698,
+    " experi": 699,
+    " experien": 700,
+    " experienc": 701,
+    " experiencing": 702,
+    " तकल": 703,
+    "cha": 704,
+    " like": 705,
+    " healthcare": 706,
+    " centre": 707,
+    " bol": 708,
+    "तन": 709,
+    "ye": 710,
+    "aya": 711,
+    "line": 712,
+    " पस": 713,
+    "कर": 714,
+    "person": 715,
+    "ath": 716,
+    " sa": 717,
+    "adac": 718,
+    "adache": 719,
+    "ound": 720,
+    " had": 721,
+    "Kavita": 722,
+    " care": 723,
+    "kl": 724,
+    "kluj": 725,
+    " that": 726,
+    "हत": 727,
+    " sama": 728,
+    " दर": 729,
+    " ba": 730,
+    "arr": 731,
+    " calling": 732,
+    "ahe": 733,
+    "ahesh": 734,
+    " haf": 735,
+    " hafte": 736,
+    "aree": 737,
+    "areez": 738,
+    "up": 739,
+    " karna": 740,
+    "ate": 741,
+    " recom": 742,
+    " recomme": 743,
+    " recommend": 744,
+    " age": 745,
+    "38": 746,
+    " करन": 747,
+    "che": 748,
+    "नक": 749,
+    "hanya": 750,
+    "hanyaw": 751,
+    "hanyawad": 752,
+    " found": 753,
+    "Anil": 754,
+    "day": 755,
+    " tom": 756,
+    " tomor": 757,
+    " tomorro": 758,
+    " tomorrow": 759,
+    "ant": 760,
+    " 1": 761,
+    "00": 762,
+    " AM": 763,
+    " has": 764,
+    "body": 765,
+    " What": 766,
+    "ekha": 767,
+    "ly": 768,
+    " मह": 769,
+    "जद": 770,
+    " ढ": 771,
+    "ढन": 772,
+    "low": 773,
+    " arr": 774,
+    " arran": 775,
+    " arrange": 776,
+    " local": 777,
+    " sub": 778,
+    "pe": 779,
+    " we": 780,
+    " meh": 781,
+    " mehs": 782,
+    " mehsoos": 783,
+    "हर": 784,
+    " ga": 785,
+    " gaon": 786,
+    "Dhanyawad": 787,
+    "anto": 788,
+    "antosh": 789,
+    "aanch": 790,
+    "kar": 791,
+    " and": 792,
+    "armal": 793,
+    "armala": 794,
+    " note": 795,
+    " naam": 796,
+    " jak": 797,
+    "since": 798,
+    "Note": 799,
+    "Noted": 800,
+    " हम": 801,
+    "rict": 802,
+    " wh": 803,
+    "sya": 804,
+    "vere": 805,
+    "ine": 806,
+    "chaar": 807,
+    " tak": 808,
+    " takle": 809,
+    " takleef": 810,
+    "hot": 811,
+    "Akluj": 812,
+    " hu": 813,
+    " baat": 814,
+    "wa": 815,
+    " neare": 816,
+    " nearest": 817,
+    " ab": 818,
+    " abou": 819,
+    " about": 820,
+    "ue": 821,
+    " kaun": 822,
+    " Ramesh": 823,
+    " kit": 824,
+    " kitne": 825,
+    " Are": 826,
+    "sha": 827,
+    " kam": 828,
+    " samasya": 829,
+    " severe": 830,
+    "नजद": 831,
+    "हल": 832,
+    "paanch": 833,
+    "ollow": 834,
+    " liye": 835,
+    " कल": 836,
+    " To": 837,
+    " locate": 838,
+    " locality": 839,
+    "aj": 840,
+    " subah": 841,
+    " tow": 842,
+    " town": 843,
+    " canc": 844,
+    " cancel": 845,
+    " kal": 846,
+    " Sunita": 847,
+    " कस": 848,
+    " शहर": 849,
+    "Mahesh": 850,
+    " Aap": 851,
+    "omit": 852,
+    "omiting": 853,
+    "Your": 854,
+    " आय": 855,
+    " gaya": 856,
+    "We": 857,
+    " sar": 858,
+    " med": 859,
+    " medic": 860,
+    " medical": 861,
+    " नह": 862,
+    "अप": 863,
+    " telep": 864,
+    " telephone": 865,
+    "Dist": 866,
+    "District": 867,
+    " nahi": 868,
+    " लक": 869,
+    "षण": 870,
+    "35": 871,
+    " male": 872,
+    " female": 873,
+    "ulti": 874,
+    " bre": 875,
+    " breath": 876,
+    "zz": 877,
+    "zzine": 878,
+    "zziness": 879,
+    " बह": 880,
+    " reg": 881,
+    " regist": 882,
+    " lak": 883,
+    " laksh": 884,
+    " lakshan": 885,
+    " chec": 886,
+    " check": 887,
+    " पक": 888,
+    " yest": 889,
+    " yester": 890,
+    " yesterday": 891,
+    "ched": 892,
+    "eh": 893,
+    " fever": 894,
+    "Main": 895,
+    "headache": 896,
+    " follow": 897,
+    "ow": 898,
+    "sist": 899,
+    "ore": 900,
+    " as": 901,
+    " seene": 902,
+    "other": 903,
+    "oi": 904,
+    "Karmala": 905,
+    "Santosh": 906,
+    "mb": 907,
+    "mber": 908,
+    " dis": 909,
+    "ous": 910,
+    " khansi": 911,
+    " गई": 912,
+    "pline": 913,
+    " on": 914,
+    " near": 915,
+    "ste": 916,
+    "Solapur": 917,
+    " Solapur": 918,
+    " proce": 919,
+    "ere": 920,
+    " cont": 921,
+    "ori": 922,
+    " since": 923,
+    "ness": 924,
+    "led": 925,
+    " pet": 926,
+    "Yeh": 927,
+    " kab": 928,
+    " if": 929,
+    " th": 930,
+    "kkar": 931,
+    "ack": 932,
+    " rahi": 933,
+    " bukhar": 934,
+    " kya": 935,
+    " dif": 936,
+    " when": 937,
+    " L": 938,
+    "Aapke": 939,
+    "ll": 940,
+    "riya": 941,
+    "Asha": 942,
+    " Baramati": 943,
+    " karke": 944,
+    " कन": 945,
+    "फर": 946,
+    " sched": 947,
+    " schedu": 948,
+    " i": 949,
+    "eta": 950,
+    " other": 951,
+    " discom": 952,
+    " discomfor": 953,
+    " discomfort": 954,
+    "यक": 955,
+    " dob": 956,
+    " dobar": 957,
+    " dobara": 958,
+    " shar": 959,
+    " sharing": 960,
+    "मस": 961,
+    " उच": 962,
+    " booking": 963,
+    "awa": 964,
+    " hoon": 965,
+    "ion": 966,
+    " shur": 967,
+    " shuru": 968,
+    " assist": 969,
+    " dizziness": 970,
+    "Could": 971,
+    " धन": 972,
+    " chest": 973,
+    "ify": 974,
+    "oh": 975,
+    "ohol": 976,
+    " hum": 977,
+    "uresh": 978,
+    " z": 979,
+    "Hel": 980,
+    " hel": 981,
+    " mor": 982,
+    " morn": 983,
+    " morning": 984,
+    " sak": 985,
+    " kare": 986,
+    " karein": 987,
+    " req": 988,
+    " aapka": 989,
+    " kiya": 990,
+    "Vi": 991,
+    "Vij": 992,
+    "Vijay": 993,
+    "Aapka": 994,
+    " Mareez": 995,
+    " umar": 996,
+    " saal": 997,
+    " उम": 998,
+    " वर": 999,
+    "por": 1000,
+    " us": 1001,
+    "पर": 1002,
+    " रख": 1003,
+    " lo": 1004,
+    "vi": 1005,
+    " hi": 1006,
+    "हम": 1007,
+    "सल": 1008,
+    "शन": 1009,
+    " mareez": 1010,
+    " shu": 1011,
+    " shub": 1012,
+    " shubh": 1013,
+    " eith": 1014,
+    " either": 1015,
+    " off": 1016,
+    " offline": 1017,
+    "Kya": 1018,
+    " jakar": 1019,
+    " dik": 1020,
+    " dikhan": 1021,
+    " dikhana": 1022,
+    "Base": 1023,
+    "Based": 1024,
+    " clinical": 1025,
+    " ev": 1026,
+    " eval": 1027,
+    " evalu": 1028,
+    " evaluation": 1029,
+    " recommended": 1030,
+    "यत": 1031,
+    " year": 1032,
+    " years": 1033,
+    " वह": 1034,
+    "लन": 1035,
+    " proceed": 1036,
+    "Thanks": 1037,
+    " aay": 1038,
+    " aayu": 1039,
+    " सल": 1040,
+    "co": 1041,
+    "Ac": 1042,
+    "Acc": 1043,
+    "Accor": 1044,
+    "Accord": 1045,
+    "According": 1046,
+    " tri": 1047,
+    " triage": 1048,
+    " recommendation": 1049,
+    " recommendations": 1050,
+    " should": 1051,
+    " telec": 1052,
+    " telecon": 1053,
+    " teleconsult": 1054,
+    " teleconsultation": 1055,
+    " vomiting": 1056,
+    "Would": 1057,
+    "ot": 1058,
+    "fil": 1059,
+    "file": 1060,
+    " kripya": 1061,
+    " cancelled": 1062,
+    " need": 1063,
+    "Nama": 1064,
+    "Namaste": 1065,
+    " back": 1066,
+    " register": 1067,
+    "lear": 1068,
+    "50": 1069,
+    " lakshano": 1070,
+    " aad": 1071,
+    " aadhar": 1072,
+    " uch": 1073,
+    " uchit": 1074,
+    " raheg": 1075,
+    " rahega": 1076,
+    " yahan": 1077,
+    " len": 1078,
+    " lena": 1079,
+    " diff": 1080,
+    " diffic": 1081,
+    " badan": 1082,
+    " kamz": 1083,
+    " kamzori": 1084,
+    " tez": 1085,
+    " chot": 1086,
+    " 03": 1087,
+    " 10": 1088,
+    " 02": 1089,
+    " Sha": 1090,
+    " Shall": 1091,
+    "huk": 1092,
+    "Rekha": 1093,
+    "aaj": 1094,
+    " 11": 1095,
+    " बज": 1096,
+    " इ": 1097,
+    " इस": 1098,
+    " schedule": 1099,
+    "Ge": 1100,
+    "Geeta": 1101,
+    " reque": 1102,
+    " request": 1103,
+    " week": 1104,
+    " Tak": 1105,
+    " Take": 1106,
+    " 3": 1107,
+    "Maine": 1108,
+    " dekha": 1109,
+    " ise": 1110,
+    " doon": 1111,
+    " 04": 1112,
+    "etail": 1113,
+    "etails": 1114,
+    " 2": 1115,
+    "ata": 1116,
+    " repor": 1117,
+    "Hello": 1118,
+    "गत": 1119,
+    " spe": 1120,
+    "ab": 1121,
+    " ulti": 1122,
+    " am": 1123,
+    " what": 1124,
+    "Kripya": 1125,
+    " महस": 1126,
+    " सह": 1127,
+    " proble": 1128,
+    " problem": 1129,
+    " al": 1130,
+    " koi": 1131,
+    " ek": 1132,
+    " helpline": 1133,
+    " headache": 1134,
+    " maine": 1135,
+    " feel": 1136,
+    " feeling": 1137,
+    " Let": 1138,
+    "ind": 1139,
+    " How": 1140,
+    " le": 1141,
+    "Shuk": 1142,
+    "Shukriya": 1143,
+    " तय": 1144,
+    "सर": 1145,
+    " confirmation": 1146,
+    "da": 1147,
+    " location": 1148,
+    " per": 1149,
+    "Bef": 1150,
+    "Before": 1151,
+    " there": 1152,
+    " high": 1153,
+    " confu": 1154,
+    " confusi": 1155,
+    " confusion": 1156,
+    " breathle": 1157,
+    " breathless": 1158,
+    " breathlessness": 1159,
+    " good": 1160,
+    " चक": 1161,
+    " छ": 1162,
+    "पन": 1163,
+    " लग": 1164,
+    " उल": 1165,
+    " saan": 1166,
+    " saans": 1167,
+    " lene": 1168,
+    " repe": 1169,
+    " repeat": 1170,
+    " clear": 1171,
+    "jh": 1172,
+    " jakd": 1173,
+    " jakdan": 1174,
+    " ti": 1175,
+    " time": 1176,
+    " another": 1177,
+    " details": 1178,
+    " apna": 1179,
+    " difficult": 1180,
+    " difficulty": 1181,
+    " breathing": 1182,
+    " int": 1183,
+    " inten": 1184,
+    " intense": 1185,
+    " contin": 1186,
+    " continu": 1187,
+    " continuous": 1188,
+    "To": 1189,
+    "chot": 1190,
+    "righ": 1191,
+    "right": 1192,
+    "es": 1193,
+    " बद": 1194,
+    " बदल": 1195,
+    " doos": 1196,
+    " doosra": 1197,
+    " not": 1198,
+    "jur": 1199,
+    "jury": 1200,
+    " समझ": 1201,
+    " stom": 1202,
+    " stomach": 1203,
+    " preferen": 1204,
+    " preference": 1205,
+    " cough": 1206,
+    " karne": 1207,
+    " mod": 1208,
+    "Mohol": 1209,
+    " fam": 1210,
+    " famil": 1211,
+    " family": 1212,
+    " member": 1213,
+    " reporte": 1214,
+    " reported": 1215,
+    " up": 1216,
+    " dek": 1217,
+    " dekh": 1218,
+    " lon": 1219,
+    " long": 1220,
+    " suf": 1221,
+    " suffer": 1222,
+    " suffering": 1223,
+    " कब": 1224,
+    " कई": 1225,
+    "नमस": 1226,
+    "kam": 1227,
+    "kamar": 1228,
+    " kamar": 1229,
+    "ural": 1230,
+    "How": 1231,
+    " man": 1232,
+    " many": 1233,
+    " hour": 1234,
+    " hours": 1235,
+    " more": 1236,
+    "Aapko": 1237,
+    " Yeh": 1238,
+    " hui": 1239,
+    "इए": 1240,
+    "chakkar": 1241,
+    " chakkar": 1242,
+    " conne": 1243,
+    " connect": 1244,
+    "seene": 1245,
+    " कम": 1246,
+    " कमज": 1247,
+    "id": 1248,
+    " औ": 1249,
+    " और": 1250,
+    " spec": 1251,
+    " specify": 1252,
+    "Since": 1253,
+    " bother": 1254,
+    " bothering": 1255,
+    " nu": 1256,
+    " number": 1257,
+    " ghan": 1258,
+    " ghante": 1259,
+    " ta": 1260,
+    " taak": 1261,
+    " taaki": 1262,
+    " iske": 1263,
+    " alawa": 1264,
+    " aaj": 1265,
+    " teen": 1266,
+    "ni": 1267,
+    " sam": 1268,
+    " samay": 1269,
+    " hospital": 1270,
+    " injury": 1271,
+    "Suresh": 1272,
+    " Aapk": 1273,
+    " gay": 1274,
+    " gayi": 1275,
+    " zar": 1276,
+    "oor": 1277,
+    " body": 1278,
+    " Santosh": 1279,
+    "Please": 1280,
+    " caller": 1281,
+    " who": 1282,
+    " ill": 1283,
+    "vomiting": 1284,
+    " find": 1285,
+    " रखन": 1286,
+    " Suresh": 1287,
+    " let": 1288,
+    " revi": 1289,
+    " revie": 1290,
+    " review": 1291,
+    " previ": 1292,
+    " previous": 1293,
+    " zuk": 1294,
+    " zukha": 1295,
+    " zukham": 1296,
+    " रद": 1297,
+    " today": 1298,
+    " May": 1299,
+    " kn": 1300,
+    " know": 1301,
+    " पह": 1302,
+    " slots": 1303,
+    "reat": 1304,
+    " aawa": 1305,
+    " aawaz": 1306,
+    " theek": 1307,
+    " tho": 1308,
+    " thoda": 1309,
+    " contac": 1310,
+    " contact": 1311,
+    " R": 1312,
+    " Rural": 1313,
+    " Care": 1314,
+    " Your": 1315,
+    " Wi": 1316,
+    " Wish": 1317,
+    " Wishing": 1318,
+    " reco": 1319,
+    " recover": 1320,
+    " recovery": 1321,
+    " ful": 1322,
+    " full": 1323,
+    "ving": 1324,
+    "we": 1325,
+    "weak": 1326,
+    "weakness": 1327,
+    "Pro": 1328,
+    "Profile": 1329,
+    " com": 1330,
+    " comp": 1331,
+    " comple": 1332,
+    " complete": 1333,
+    " ag": 1334,
+    " again": 1335,
+    " whene": 1336,
+    " whenever": 1337,
+    " khar": 1338,
+    " kharab": 1339,
+    " आइए": 1340,
+    " assistan": 1341,
+    " assistance": 1342,
+    " suc": 1343,
+    " succe": 1344,
+    " success": 1345,
+    " successf": 1346,
+    " successful": 1347,
+    " successfully": 1348,
+    " tha": 1349,
+    " thak": 1350,
+    " thakaan": 1351,
+    "Wel": 1352,
+    "Welco": 1353,
+    "Welcome": 1354,
+    " Rahul": 1355,
+    " Ganesh": 1356,
+    "सक": 1357,
+    " उनक": 1358,
+    "रण": 1359,
+    " sw": 1360,
+    " swit": 1361,
+    " (": 1362,
+    "Anita": 1363,
+    "gat": 1364,
+    "रक": 1365,
+    "पष": 1366,
+    "ast": 1367,
+    " samajh": 1368,
+    " paya": 1369,
+    " apne": 1370,
+    " ख": 1371,
+    " Anil": 1372,
+    " Is": 1373,
+    "odo": 1374,
+    "Lata": 1375,
+    " profile": 1376,
+    " cor": 1377,
+    " corre": 1378,
+    " correct": 1379,
+    " correctly": 1380,
+    " नमस": 1381,
+    " Vijay": 1382,
+    " आव": 1383,
+    " cl": 1384,
+    " clar": 1385,
+    " clarify": 1386,
+    "ern": 1387,
+    " registr": 1388,
+    " registration": 1389,
+    " sakein": 1390,
+    " suj": 1391,
+    " sujan": 1392,
+    " right": 1393,
+    " will": 1394,
+    " share": 1395,
+    " person": 1396,
+    " needing": 1397,
+    " thand": 1398,
+    " des": 1399,
+    " desc": 1400,
+    " descri": 1401,
+    " describ": 1402,
+    " describe": 1403,
+    " apni": 1404,
+    " Mahesh": 1405,
+    " goodb": 1406,
+    " goodbye": 1407,
+    " upd": 1408,
+    " Pooja": 1409,
+    " checkup": 1410,
+    " Karmala": 1411,
+    " Shirpur": 1412,
+    " Asha": 1413,
+    " Rekha": 1414,
+    " Geeta": 1415,
+    " ja": 1416,
+    " Anita": 1417,
+    " Lata": 1418,
+    " mode": 1419,
+    "Book": 1420,
+    "Booking": 1421,
+    " Kavita": 1422,
+    " bad": 1423,
+    "ahu": 1424,
+    " Akluj": 1425,
+    " Mohol": 1426,
+    " our": 1427,
+    " Aapko": 1428,
+    " diya": 1429,
+    "रल": 1430,
+    "यर": 1431,
+    "इन": 1432,
+    " समस": 1433,
+    " zaroor": 1434,
+    " zaroorat": 1435,
+    "chest": 1436,
+    "di": 1437,
+    "dizziness": 1438,
+    " how": 1439,
+    "haath": 1440,
+    " haath": 1441,
+    " gu": 1442,
+    " guid": 1443,
+    " guide": 1444,
+    " Namaste": 1445,
+    " Ap": 1446,
+    " Main": 1447,
+    " sakte": 1448,
+    " updat": 1449,
+    " updated": 1450,
+    " nex": 1451,
+    " next": 1452,
+    " op": 1453,
+    " open": 1454,
+    "For": 1455,
+    " hist": 1456,
+    " histor": 1457,
+    " history": 1458,
+    " ध": 1459,
+    "centre": 1460,
+    " नजद": 1461,
+    "खन": 1462,
+    "कअप": 1463,
+    "छल": 1464,
+    "खकर": 1465,
+    " inste": 1466,
+    " instead": 1467,
+    "Great": 1468,
+    " proceeding": 1469,
+    " now": 1470,
+    "Aapki": 1471,
+    " aa": 1472,
+    " saki": 1473,
+    " saa": 1474,
+    " saaf": 1475,
+    " dhe": 1476,
+    " dheere": 1477,
+    " contacting": 1478,
+    " Hel": 1479,
+    " Helpline": 1480,
+    " confirme": 1481,
+    " confirmed": 1482,
+    " speed": 1483,
+    " speedy": 1484,
+    " सद": 1485,
+    " aage": 1486,
+    " pra": 1487,
+    " prak": 1488,
+    " prakriya": 1489,
+    " po": 1490,
+    " poori": 1491,
+    " help": 1492,
+    " im": 1493,
+    " imp": 1494,
+    " impro": 1495,
+    " improving": 1496,
+    " persist": 1497,
+    " persisting": 1498,
+    "ose": 1499,
+    " mot": 1500,
+    " motion": 1501,
+    " motions": 1502,
+    "Good": 1503,
+    " here": 1504,
+    " scheduled": 1505,
+    " requested": 1506,
+    "सह": 1507,
+    " prog": 1508,
+    " progre": 1509,
+    " progress": 1510,
+    " resp": 1511,
+    " respon": 1512,
+    " response": 1513,
+    " lit": 1514,
+    " litt": 1515,
+    " little": 1516,
+    " lou": 1517,
+    " loud": 1518,
+    " louder": 1519,
+    " clearer": 1520,
+    "Sama": 1521,
+    "Samajh": 1522,
+    " kis": 1523,
+    " kisi": 1524,
+    " switch": 1525,
+    " switching": 1526,
+    " arranged": 1527,
+    " carr": 1528,
+    " carry": 1529,
+    " pri": 1530,
+    " prior": 1531,
+    " report": 1532,
+    " reports": 1533,
+    " iss": 1534,
+    " issue": 1535,
+    " issues": 1536,
+    " N": 1537,
+    " Nav": 1538,
+    " Navi": 1539,
+    " Navigat": 1540,
+    " Navigator": 1541,
+    " swa": 1542,
+    " आग": 1543,
+    " differ": 1544,
+    " different": 1545,
+    " facility": 1546,
+    " nearb": 1547,
+    " nearby": 1548,
+    " mis": 1549,
+    " misse": 1550,
+    " missed": 1551,
+    " last": 1552,
+    " st": 1553,
+    " state": 1554,
+    " statement": 1555,
+    " ju": 1556,
+    " just": 1557,
+    " said": 1558,
+    "Pard": 1559,
+    "Pardon": 1560,
+    " connection": 1561,
+    " wa": 1562,
+    " was": 1563,
+    " un": 1564,
+    " unc": 1565,
+    " unclear": 1566,
+    " kind": 1567,
+    " kindly": 1568,
+    " say": 1569,
+    " Con": 1570,
+    " Conf": 1571,
+    " Confir": 1572,
+    " Confirm": 1573,
+    " Confirming": 1574,
+    " rese": 1575,
+    " reser": 1576,
+    " reserving": 1577,
+    "chill": 1578,
+    "chills": 1579,
+    " sp": 1580,
+    " spa": 1581,
+    " spash": 1582,
+    " spasht": 1583,
+    " उपय": 1584,
+    " District": 1585,
+    " community": 1586,
+    "jodo": 1587,
+    " jodo": 1588,
+    " करक": 1589,
+    " सफ": 1590,
+    " सफल": 1591,
+    " सफलत": 1592,
+    "वक": 1593,
+    "Done": 1594,
+    " modif": 1595,
+    " modifi": 1596,
+    " modified": 1597,
+    "back": 1598,
+    " sun": 1599,
+    " bolein": 1600,
+    " आई": 1601,
+    " conge": 1602,
+    " congest": 1603,
+    " congestion": 1604,
+    " conc": 1605,
+    " concern": 1606,
+    "No": 1607,
+    " all": 1608,
+    " We": 1609,
+    " ch": 1610,
+    " choo": 1611,
+    " choose": 1612,
+    " alt": 1613,
+    " altern": 1614,
+    " alternati": 1615,
+    " alternative": 1616,
+    "Al": 1617,
+    "Alright": 1618,
+    " suit": 1619,
+    " suits": 1620,
+    " bet": 1621,
+    " bett": 1622,
+    " better": 1623,
+    "Cer": 1624,
+    "Cert": 1625,
+    "Certain": 1626,
+    "Certainly": 1627,
+    " switched": 1628,
+    " difficulti": 1629,
+    " difficulties": 1630,
+    " process": 1631,
+    " processing": 1632,
+    " aw": 1633,
+    " away": 1634,
+    " अभ": 1635,
+    " बदलकर": 1636,
+    "आव": 1637,
+    " कट": 1638,
+    " कटन": 1639,
+    " अब": 1640,
+    "Koi": 1641,
+    " dekhna": 1642,
+    " chahen": 1643,
+    " chahenge": 1644,
+    " treat": 1645,
+    " treating": 1646,
+    " ph": 1647,
+    " phy": 1648,
+    " physi": 1649,
+    " physic": 1650,
+    " physici": 1651,
+    " physician": 1652,
+    "tez": 1653,
+    " sur": 1654,
+    " sure": 1655,
+    " understood": 1656,
+    " ment": 1657,
+    " mention": 1658,
+    " tr": 1659,
+    " trou": 1660,
+    " trouble": 1661,
+    " could": 1662,
+    " hear": 1663,
+    " clearly": 1664,
+    " due": 1665,
+    " backg": 1666,
+    " backgr": 1667,
+    " background": 1668,
+    " noi": 1669,
+    " noise": 1670,
+    "Ver": 1671,
+    "Very": 1672,
+    " well": 1673,
+    " lock": 1674,
+    " locking": 1675,
+    " cho": 1676,
+    " chose": 1677,
+    " chosen": 1678,
+    " अग": 1679,
+    " अगल": 1680,
+    " dist": 1681,
+    " district": 1682,
+    "Line": 1683,
+    " baar": 1684,
+    " fir": 1685,
+    "hand": 1686,
+    " hand": 1687,
+    " जर": 1688,
+    "रत": 1689,
+    " did": 1690,
+    " q": 1691,
+    " qu": 1692,
+    " quit": 1693,
+    " quite": 1694,
+    " underst": 1695,
+    " understand": 1696,
+    "dast": 1697,
+    " dast": 1698,
+    " primary": 1699,
+    " ठ": 1700,
+    "sw": 1701,
+    "swell": 1702,
+    "swelling": 1703,
+    "अन": 1704,
+    " ए": 1705,
+    " एक": 1706,
+    " कह": 1707,
+    "मन": 1708,
+    " करत": 1709,
+    "Bahu": 1710,
+    "Bahut": 1711,
+    " badhi": 1712,
+    " badhiya": 1713,
+    " deta": 1714,
+    "All": 1715,
+    " registered": 1716,
+    " mess": 1717,
+    " message": 1718,
+    " sent": 1719,
+    " St": 1720,
+    " Stay": 1721,
+    " safe": 1722,
+    "lower": 1723,
+    "fati": 1724,
+    "fatig": 1725,
+    "fatigue": 1726,
+    " F": 1727,
+    " Fe": 1728,
+    " Feel": 1729,
+    " fre": 1730,
+    " free": 1731,
+    " needed": 1732,
+    " bi": 1733,
+    " bimar": 1734,
+    " bimari": 1735,
+    "Muj": 1736,
+    "Mujhe": 1737,
+    " aaya": 1738,
+    " cur": 1739,
+    " curr": 1740,
+    " current": 1741,
+    "रस": 1742,
+    " जब": 1743,
+    " आवश": 1744,
+    "यकत": 1745,
+    "टव": 1746,
+    "टवर": 1747,
+    " वज": 1748,
+    " वजह": 1749,
+    " थ": 1750,
+    "सभ": 1751,
+    "एग": 1752,
+    " booked": 1753,
+    " lete": 1754,
+    "बह": 1755,
+    " अच": 1756,
+    "col": 1757,
+    "cold": 1758,
+    " pur": 1759,
+    " puran": 1760,
+    " purani": 1761,
+    " jaanch": 1762,
+    " dekhkar": 1763,
+    " karwa": 1764,
+    " de": 1765,
+    " dete": 1766,
+    "Follow": 1767,
+    " peh": 1768,
+    " pehle": 1769,
+    " beh": 1770,
+    " beht": 1771,
+    " behtar": 1772,
+    " chan": 1773,
+    " change": 1774,
+    "Helpline": 1775,
+    " dhanyawad": 1776,
+    " Aapki": 1777,
+    " Apna": 1778,
+    " kha": 1779,
+    " khay": 1780,
+    " khayal": 1781,
+    " rak": 1782,
+    " rakhe": 1783,
+    " rakhein": 1784,
+    " pad": 1785,
+    " padne": 1786,
+    "Ap": 1787,
+    "Appointment": 1788,
+    " ty": 1789,
+    " type": 1790,
+    " update": 1791,
+    " Ag": 1792,
+    " Agl": 1793,
+    " Agla": 1794,
+    " sear": 1795,
+    " search": 1796,
+    " chuk": 1797,
+    " chuki": 1798,
+    " Healthcare": 1799,
+    " aan": 1800,
+    " aane": 1801,
+    " shuk": 1802,
+    " shukriya": 1803,
+    "Ji": 1804,
+    " bil": 1805,
+    " bilk": 1806,
+    " bilkul": 1807,
+    " badal": 1808,
+    " upl": 1809,
+    " uplab": 1810,
+    " uplabd": 1811,
+    " uplabdh": 1812,
+    " J": 1813,
+    " Jab": 1814,
+    " bhi": 1815,
+    " saf": 1816,
+    " safal": 1817,
+    " safalt": 1818,
+    " safaltap": 1819,
+    " safaltapoor": 1820,
+    " safaltapoorv": 1821,
+    " safaltapoorvak": 1822,
+    " nir": 1823,
+    " nird": 1824,
+    " nirdhar": 1825,
+    " nirdharit": 1826,
+    " pahu": 1827,
+    " pahuche": 1828,
+    " pahuchein": 1829,
+    "Details": 1830,
+    " SMS": 1831,
+    " zari": 1832,
+    " zariye": 1833,
+    " jan": 1834,
+    " jankar": 1835,
+    " jankari": 1836,
+    " bhe": 1837,
+    " bhej": 1838,
+    " jay": 1839,
+    " jaye": 1840,
+    " jayeg": 1841,
+    " jayegi": 1842,
+    " sup": 1843,
+    " suppor": 1844,
+    " support": 1845,
+    "loose": 1846,
+    " loose": 1847,
+    " r": 1848,
+    " rural": 1849,
+    " requ": 1850,
+    " requi": 1851,
+    " require": 1852,
+    " exp": 1853,
+    " expl": 1854,
+    " explain": 1855,
+    " आज": 1856,
+    " list": 1857,
+    " listen": 1858,
+    " swagat": 1859,
+    "joint": 1860,
+    " joint": 1861,
+    "Swa": 1862,
+    "Swagat": 1863,
+    "severe": 1864,
+    "Gre": 1865,
+    "Greet": 1866,
+    "Greeting": 1867,
+    "Greetings": 1868,
+    " would": 1869,
+    " disc": 1870,
+    " discu": 1871,
+    " discuss": 1872,
+    " aapki": 1873,
+    " Apni": 1874,
+    "injury": 1875,
+    " sahi": 1876,
+    " lower": 1877,
+    " swast": 1878,
+    " swasth": 1879,
+    " swasthya": 1880,
+    " saha": 1881,
+    " sahaya": 1882,
+    " sahayak": 1883,
+    " problems": 1884,
+    " fac": 1885,
+    " facing": 1886,
+    " kh": 1887,
+    " khul": 1888,
+    " khulkar": 1889,
+    " dig": 1890,
+    " digital": 1891,
+    " assistant": 1892,
+    " co": 1893,
+    " cond": 1894,
+    " condit": 1895,
+    " condition": 1896,
+    " so": 1897,
+    " proper": 1898,
+    " properly": 1899,
+    " pariv": 1900,
+    " parivar": 1901,
+    " sad": 1902,
+    " sada": 1903,
+    " sadasya": 1904,
+    " baare": 1905,
+    " bata": 1906
+  },
+  "merges": [
+    [
+      "O",
+      "N"
+    ],
+    [
+      "N",
+      "ON"
+    ],
+    [
+      "NON",
+      "E"
+    ],
+    [
+      "a",
+      "r"
+    ],
+    [
+      "a",
+      "n"
+    ],
+    [
+      "g",
+      "e"
+    ],
+    [
+      "u",
+      "r"
+    ],
+    [
+      "h",
+      "a"
+    ],
+    [
+      "s",
+      "e"
+    ],
+    [
+      "m",
+      "e"
+    ],
+    [
+      "i",
+      "t"
+    ],
+    [
+      "e",
+      "r"
+    ],
+    [
+      "i",
+      "n"
+    ],
+    [
+      "an",
+      "g"
+    ],
+    [
+      "ar",
+      "e"
+    ],
+    [
+      "i",
+      "l"
+    ],
+    [
+      "a",
+      "me"
+    ],
+    [
+      "l",
+      "o"
+    ],
+    [
+      "h",
+      "i"
+    ],
+    [
+      "n",
+      "d"
+    ],
+    [
+      "a",
+      "c"
+    ],
+    [
+      "a",
+      "ge"
+    ],
+    [
+      "it",
+      "y"
+    ],
+    [
+      "c",
+      "are"
+    ],
+    [
+      "s",
+      "y"
+    ],
+    [
+      "lo",
+      "c"
+    ],
+    [
+      "nd",
+      "er"
+    ],
+    [
+      "n",
+      "ame"
+    ],
+    [
+      "sy",
+      "m"
+    ],
+    [
+      " ",
+      "क"
+    ],
+    [
+      "a",
+      "l"
+    ],
+    [
+      "f",
+      "ac"
+    ],
+    [
+      "fac",
+      "il"
+    ],
+    [
+      "facil",
+      "ity"
+    ],
+    [
+      "p",
+      "ha"
+    ],
+    [
+      "pha",
+      "se"
+    ],
+    [
+      "d",
+      "ur"
+    ],
+    [
+      "ge",
+      "nder"
+    ],
+    [
+      "l",
+      "ang"
+    ],
+    [
+      "e",
+      "n"
+    ],
+    [
+      " ",
+      "d"
+    ],
+    [
+      "H",
+      "C"
+    ],
+    [
+      " ",
+      "y"
+    ],
+    [
+      "o",
+      "u"
+    ],
+    [
+      " ",
+      "t"
+    ],
+    [
+      "a",
+      "t"
+    ],
+    [
+      "P",
+      "HC"
+    ],
+    [
+      " ",
+      "c"
+    ],
+    [
+      " ",
+      "ह"
+    ],
+    [
+      "h",
+      "e"
+    ],
+    [
+      " ",
+      "a"
+    ],
+    [
+      "o",
+      "n"
+    ],
+    [
+      "h",
+      "ar"
+    ],
+    [
+      "r",
+      "e"
+    ],
+    [
+      " ",
+      "se"
+    ],
+    [
+      " ",
+      "p"
+    ],
+    [
+      "r",
+      "a"
+    ],
+    [
+      " ",
+      "ha"
+    ],
+    [
+      " ",
+      "k"
+    ],
+    [
+      "p",
+      "ur"
+    ],
+    [
+      "o",
+      "r"
+    ],
+    [
+      " y",
+      "ou"
+    ],
+    [
+      " ",
+      "s"
+    ],
+    [
+      " ",
+      "स"
+    ],
+    [
+      "an",
+      "d"
+    ],
+    [
+      "at",
+      "i"
+    ],
+    [
+      "M",
+      "al"
+    ],
+    [
+      "Mal",
+      "s"
+    ],
+    [
+      "Mals",
+      "hi"
+    ],
+    [
+      "Malshi",
+      "ra"
+    ],
+    [
+      "Malshira",
+      "s"
+    ],
+    [
+      "a",
+      "y"
+    ],
+    [
+      "o",
+      "l"
+    ],
+    [
+      " ",
+      "b"
+    ],
+    [
+      "P",
+      "and"
+    ],
+    [
+      "Pand",
+      "har"
+    ],
+    [
+      "Pandhar",
+      "pur"
+    ],
+    [
+      "en",
+      "t"
+    ],
+    [
+      " ",
+      "आ"
+    ],
+    [
+      "l",
+      "e"
+    ],
+    [
+      "s",
+      "h"
+    ],
+    [
+      "a",
+      "m"
+    ],
+    [
+      " ",
+      "ब"
+    ],
+    [
+      " ",
+      "म"
+    ],
+    [
+      " ",
+      "PHC"
+    ],
+    [
+      "ol",
+      "a"
+    ],
+    [
+      "s",
+      "t"
+    ],
+    [
+      "S",
+      "u"
+    ],
+    [
+      " ",
+      "C"
+    ],
+    [
+      "T",
+      "Y"
+    ],
+    [
+      " आ",
+      "प"
+    ],
+    [
+      "o",
+      "m"
+    ],
+    [
+      "I",
+      "N"
+    ],
+    [
+      "t",
+      "e"
+    ],
+    [
+      "ent",
+      "re"
+    ],
+    [
+      " ",
+      "me"
+    ],
+    [
+      "in",
+      "g"
+    ],
+    [
+      "S",
+      "ang"
+    ],
+    [
+      "Sang",
+      "ola"
+    ],
+    [
+      " d",
+      "in"
+    ],
+    [
+      "h",
+      "an"
+    ],
+    [
+      "y",
+      "a"
+    ],
+    [
+      "o",
+      "o"
+    ],
+    [
+      "ar",
+      "d"
+    ],
+    [
+      " ",
+      "द"
+    ],
+    [
+      "G",
+      "E"
+    ],
+    [
+      " ",
+      "f"
+    ],
+    [
+      " d",
+      "ard"
+    ],
+    [
+      "IN",
+      "G"
+    ],
+    [
+      "t",
+      "h"
+    ],
+    [
+      " ",
+      "अ"
+    ],
+    [
+      " ",
+      "H"
+    ],
+    [
+      " ",
+      "य"
+    ],
+    [
+      " ",
+      "प"
+    ],
+    [
+      " ha",
+      "i"
+    ],
+    [
+      "E",
+      "S"
+    ],
+    [
+      "i",
+      "s"
+    ],
+    [
+      " क",
+      "र"
+    ],
+    [
+      "r",
+      "i"
+    ],
+    [
+      "m",
+      "al"
+    ],
+    [
+      "o",
+      "ur"
+    ],
+    [
+      " c",
+      "on"
+    ],
+    [
+      "it",
+      "a"
+    ],
+    [
+      "al",
+      "th"
+    ],
+    [
+      " t",
+      "he"
+    ],
+    [
+      "B",
+      "ar"
+    ],
+    [
+      "Bar",
+      "am"
+    ],
+    [
+      "Baram",
+      "ati"
+    ],
+    [
+      " ",
+      "ल"
+    ],
+    [
+      " ",
+      "ज"
+    ],
+    [
+      "a",
+      "in"
+    ],
+    [
+      "a",
+      "p"
+    ],
+    [
+      " d",
+      "ay"
+    ],
+    [
+      "B",
+      "O"
+    ],
+    [
+      "BO",
+      "O"
+    ],
+    [
+      "BOO",
+      "K"
+    ],
+    [
+      "BOOK",
+      "ING"
+    ],
+    [
+      " day",
+      "s"
+    ],
+    [
+      "u",
+      "k"
+    ],
+    [
+      "mal",
+      "e"
+    ],
+    [
+      "u",
+      "l"
+    ],
+    [
+      " ",
+      "or"
+    ],
+    [
+      " ",
+      "n"
+    ],
+    [
+      "A",
+      "GE"
+    ],
+    [
+      "R",
+      "ame"
+    ],
+    [
+      "Rame",
+      "sh"
+    ],
+    [
+      " y",
+      "our"
+    ],
+    [
+      "प",
+      "य"
+    ],
+    [
+      "e",
+      "k"
+    ],
+    [
+      " ब",
+      "त"
+    ],
+    [
+      "n",
+      "ita"
+    ],
+    [
+      "A",
+      "N"
+    ],
+    [
+      " आप",
+      "क"
+    ],
+    [
+      "uk",
+      "har"
+    ],
+    [
+      "v",
+      "er"
+    ],
+    [
+      "L",
+      "O"
+    ],
+    [
+      "P",
+      "E"
+    ],
+    [
+      "e",
+      "l"
+    ],
+    [
+      "E",
+      "N"
+    ],
+    [
+      " ",
+      "v"
+    ],
+    [
+      "f",
+      "e"
+    ],
+    [
+      "a",
+      "d"
+    ],
+    [
+      "Su",
+      "b"
+    ],
+    [
+      "C",
+      "entre"
+    ],
+    [
+      " ",
+      "र"
+    ],
+    [
+      "BOOKING",
+      "_"
+    ],
+    [
+      "Su",
+      "nita"
+    ],
+    [
+      "ou",
+      "l"
+    ],
+    [
+      "oul",
+      "d"
+    ],
+    [
+      "h",
+      "o"
+    ],
+    [
+      "a",
+      "se"
+    ],
+    [
+      "b",
+      "ukhar"
+    ],
+    [
+      " ",
+      "w"
+    ],
+    [
+      "R",
+      "E"
+    ],
+    [
+      "T",
+      "I"
+    ],
+    [
+      "TI",
+      "ON"
+    ],
+    [
+      "ati",
+      "on"
+    ],
+    [
+      " ",
+      "P"
+    ],
+    [
+      " ",
+      "W"
+    ],
+    [
+      " t",
+      "o"
+    ],
+    [
+      "e",
+      "t"
+    ],
+    [
+      " ",
+      "an"
+    ],
+    [
+      " ",
+      "K"
+    ],
+    [
+      "le",
+      "ase"
+    ],
+    [
+      "s",
+      "i"
+    ],
+    [
+      " ",
+      "ग"
+    ],
+    [
+      "a",
+      "k"
+    ],
+    [
+      " ",
+      "A"
+    ],
+    [
+      " H",
+      "e"
+    ],
+    [
+      " He",
+      "alth"
+    ],
+    [
+      " र",
+      "ह"
+    ],
+    [
+      "i",
+      "c"
+    ],
+    [
+      "ap",
+      "k"
+    ],
+    [
+      "E",
+      "R"
+    ],
+    [
+      "ul",
+      "t"
+    ],
+    [
+      "LO",
+      "C"
+    ],
+    [
+      "LOC",
+      "A"
+    ],
+    [
+      "LOCA",
+      "L"
+    ],
+    [
+      "LOCAL",
+      "I"
+    ],
+    [
+      "LOCALI",
+      "TY"
+    ],
+    [
+      " ",
+      "l"
+    ],
+    [
+      "l",
+      "in"
+    ],
+    [
+      " ",
+      "re"
+    ],
+    [
+      " ",
+      "Sub"
+    ],
+    [
+      " d",
+      "o"
+    ],
+    [
+      "EN",
+      "T"
+    ],
+    [
+      "TY",
+      "PE"
+    ],
+    [
+      "E",
+      "D"
+    ],
+    [
+      " ",
+      "ra"
+    ],
+    [
+      " p",
+      "ain"
+    ],
+    [
+      " k",
+      "ar"
+    ],
+    [
+      " a",
+      "p"
+    ],
+    [
+      " ",
+      "उ"
+    ],
+    [
+      " ",
+      "m"
+    ],
+    [
+      " ",
+      "he"
+    ],
+    [
+      " ",
+      "j"
+    ],
+    [
+      " ",
+      "is"
+    ],
+    [
+      " y",
+      "a"
+    ],
+    [
+      " ha",
+      "in"
+    ],
+    [
+      " me",
+      "in"
+    ],
+    [
+      " ",
+      "ho"
+    ],
+    [
+      "c",
+      "t"
+    ],
+    [
+      " अ",
+      "प"
+    ],
+    [
+      "in",
+      "t"
+    ],
+    [
+      "s",
+      "p"
+    ],
+    [
+      "c",
+      "e"
+    ],
+    [
+      "te",
+      "en"
+    ],
+    [
+      " H",
+      "o"
+    ],
+    [
+      "it",
+      "al"
+    ],
+    [
+      "Q",
+      "U"
+    ],
+    [
+      "QU",
+      "ES"
+    ],
+    [
+      "T",
+      "han"
+    ],
+    [
+      "Than",
+      "k"
+    ],
+    [
+      " ",
+      "are"
+    ],
+    [
+      "v",
+      "e"
+    ],
+    [
+      "n",
+      "t"
+    ],
+    [
+      "sp",
+      "ital"
+    ],
+    [
+      "fe",
+      "ver"
+    ],
+    [
+      " con",
+      "f"
+    ],
+    [
+      " प",
+      "र"
+    ],
+    [
+      "i",
+      "r"
+    ],
+    [
+      " ha",
+      "ve"
+    ],
+    [
+      " ",
+      "न"
+    ],
+    [
+      "han",
+      "si"
+    ],
+    [
+      " ",
+      "at"
+    ],
+    [
+      "c",
+      "h"
+    ],
+    [
+      " ",
+      "त"
+    ],
+    [
+      "o",
+      "int"
+    ],
+    [
+      "me",
+      "nt"
+    ],
+    [
+      " k",
+      "a"
+    ],
+    [
+      "el",
+      "l"
+    ],
+    [
+      " Ho",
+      "spital"
+    ],
+    [
+      "s",
+      "ult"
+    ],
+    [
+      "r",
+      "o"
+    ],
+    [
+      " v",
+      "is"
+    ],
+    [
+      " vis",
+      "it"
+    ],
+    [
+      "p",
+      "oint"
+    ],
+    [
+      "point",
+      "ment"
+    ],
+    [
+      " ",
+      "g"
+    ],
+    [
+      "N",
+      "A"
+    ],
+    [
+      "NA",
+      "M"
+    ],
+    [
+      "NAM",
+      "E"
+    ],
+    [
+      " c",
+      "lin"
+    ],
+    [
+      " clin",
+      "ic"
+    ],
+    [
+      " conf",
+      "ir"
+    ],
+    [
+      "AN",
+      "S"
+    ],
+    [
+      "ANS",
+      "W"
+    ],
+    [
+      "ANSW",
+      "ER"
+    ],
+    [
+      "ANSWER",
+      "_"
+    ],
+    [
+      "N",
+      "O"
+    ],
+    [
+      " C",
+      "entre"
+    ],
+    [
+      " s",
+      "lo"
+    ],
+    [
+      " slo",
+      "t"
+    ],
+    [
+      "g",
+      "h"
+    ],
+    [
+      " ap",
+      "pointment"
+    ],
+    [
+      "ri",
+      "p"
+    ],
+    [
+      "rip",
+      "ya"
+    ],
+    [
+      " t",
+      "ell"
+    ],
+    [
+      " p",
+      "lease"
+    ],
+    [
+      " confir",
+      "m"
+    ],
+    [
+      "M",
+      "S"
+    ],
+    [
+      "u",
+      "n"
+    ],
+    [
+      "C",
+      "HC"
+    ],
+    [
+      " ",
+      "व"
+    ],
+    [
+      "e",
+      "in"
+    ],
+    [
+      "S",
+      "Y"
+    ],
+    [
+      "SY",
+      "M"
+    ],
+    [
+      "SYM",
+      "P"
+    ],
+    [
+      "SYMP",
+      "T"
+    ],
+    [
+      "SYMPT",
+      "O"
+    ],
+    [
+      "SYMPTO",
+      "MS"
+    ],
+    [
+      "BOOKING_",
+      "TYPE"
+    ],
+    [
+      "D",
+      "U"
+    ],
+    [
+      "DU",
+      "R"
+    ],
+    [
+      "DUR",
+      "A"
+    ],
+    [
+      "DURA",
+      "TION"
+    ],
+    [
+      "T",
+      "R"
+    ],
+    [
+      "TR",
+      "I"
+    ],
+    [
+      "TRI",
+      "AGE"
+    ],
+    [
+      "TRIAGE",
+      "_"
+    ],
+    [
+      "TRIAGE_",
+      "P"
+    ],
+    [
+      "TRIAGE_P",
+      "R"
+    ],
+    [
+      "TRIAGE_PR",
+      "ES"
+    ],
+    [
+      "TRIAGE_PRES",
+      "ENT"
+    ],
+    [
+      "TRIAGE_PRESENT",
+      "ED"
+    ],
+    [
+      " k",
+      "i"
+    ],
+    [
+      "d",
+      "o"
+    ],
+    [
+      "oo",
+      "d"
+    ],
+    [
+      "n",
+      "e"
+    ],
+    [
+      "oo",
+      "k"
+    ],
+    [
+      " C",
+      "HC"
+    ],
+    [
+      "e",
+      "sh"
+    ],
+    [
+      "ha",
+      "t"
+    ],
+    [
+      "s",
+      "s"
+    ],
+    [
+      " t",
+      "hi"
+    ],
+    [
+      "f",
+      "er"
+    ],
+    [
+      "k",
+      "hansi"
+    ],
+    [
+      " a",
+      "ur"
+    ],
+    [
+      " he",
+      "alth"
+    ],
+    [
+      "क",
+      "ल"
+    ],
+    [
+      "e",
+      "d"
+    ],
+    [
+      " स",
+      "म"
+    ],
+    [
+      " d",
+      "i"
+    ],
+    [
+      "p",
+      "er"
+    ],
+    [
+      "BOOKING_",
+      "C"
+    ],
+    [
+      "BOOKING_C",
+      "ON"
+    ],
+    [
+      "BOOKING_CON",
+      "F"
+    ],
+    [
+      "BOOKING_CONF",
+      "I"
+    ],
+    [
+      "BOOKING_CONFI",
+      "R"
+    ],
+    [
+      "BOOKING_CONFIR",
+      "M"
+    ],
+    [
+      " con",
+      "sult"
+    ],
+    [
+      " ",
+      "I"
+    ],
+    [
+      "il",
+      "l"
+    ],
+    [
+      " ",
+      "च"
+    ],
+    [
+      " thi",
+      "s"
+    ],
+    [
+      " ",
+      "श"
+    ],
+    [
+      " b",
+      "at"
+    ],
+    [
+      " ",
+      "e"
+    ],
+    [
+      "S",
+      "hi"
+    ],
+    [
+      "Shi",
+      "r"
+    ],
+    [
+      "Shir",
+      "pur"
+    ],
+    [
+      " p",
+      "ati"
+    ],
+    [
+      " pati",
+      "ent"
+    ],
+    [
+      " b",
+      "ook"
+    ],
+    [
+      " p",
+      "re"
+    ],
+    [
+      "a",
+      "h"
+    ],
+    [
+      " bat",
+      "ay"
+    ],
+    [
+      " batay",
+      "ein"
+    ],
+    [
+      " ",
+      "loc"
+    ],
+    [
+      " ",
+      "in"
+    ],
+    [
+      " a",
+      "apk"
+    ],
+    [
+      "m",
+      "ar"
+    ],
+    [
+      " ",
+      "o"
+    ],
+    [
+      "nder",
+      "st"
+    ],
+    [
+      "oo",
+      "j"
+    ],
+    [
+      "ooj",
+      "a"
+    ],
+    [
+      " n",
+      "e"
+    ],
+    [
+      "on",
+      "e"
+    ],
+    [
+      " ",
+      "u"
+    ],
+    [
+      "k",
+      "e"
+    ],
+    [
+      "ध",
+      "न"
+    ],
+    [
+      "य",
+      "व"
+    ],
+    [
+      " c",
+      "ha"
+    ],
+    [
+      " t",
+      "e"
+    ],
+    [
+      " K",
+      "ya"
+    ],
+    [
+      "p",
+      "et"
+    ],
+    [
+      "ट",
+      "र"
+    ],
+    [
+      " ",
+      "Sangola"
+    ],
+    [
+      " l",
+      "i"
+    ],
+    [
+      " म",
+      "र"
+    ],
+    [
+      " ",
+      "Pandharpur"
+    ],
+    [
+      " ",
+      "Malshiras"
+    ],
+    [
+      "it",
+      "h"
+    ],
+    [
+      "nderst",
+      "ood"
+    ],
+    [
+      " pre",
+      "fer"
+    ],
+    [
+      "ou",
+      "gh"
+    ],
+    [
+      "h",
+      "one"
+    ],
+    [
+      "म",
+      "र"
+    ],
+    [
+      " ",
+      "name"
+    ],
+    [
+      " b",
+      "e"
+    ],
+    [
+      " s",
+      "u"
+    ],
+    [
+      "प",
+      "ल"
+    ],
+    [
+      " s",
+      "h"
+    ],
+    [
+      "G",
+      "an"
+    ],
+    [
+      "Gan",
+      "esh"
+    ],
+    [
+      " ",
+      "ड"
+    ],
+    [
+      "ad",
+      "an"
+    ],
+    [
+      " do",
+      "ct"
+    ],
+    [
+      " doct",
+      "or"
+    ],
+    [
+      "b",
+      "le"
+    ],
+    [
+      "P",
+      "ooja"
+    ],
+    [
+      " f",
+      "or"
+    ],
+    [
+      " ",
+      "फ"
+    ],
+    [
+      "S",
+      "A"
+    ],
+    [
+      "SA",
+      "F"
+    ],
+    [
+      "SAF",
+      "E"
+    ],
+    [
+      "SAFE",
+      "TY"
+    ],
+    [
+      "SAFETY",
+      "_"
+    ],
+    [
+      "SAFETY_",
+      "QUES"
+    ],
+    [
+      "SAFETY_QUES",
+      "TION"
+    ],
+    [
+      "SAFETY_QUESTION",
+      "S"
+    ],
+    [
+      "4",
+      "5"
+    ],
+    [
+      "U",
+      "nderstood"
+    ],
+    [
+      " f",
+      "e"
+    ],
+    [
+      " अ",
+      "स"
+    ],
+    [
+      "प",
+      "त"
+    ],
+    [
+      " अप",
+      "न"
+    ],
+    [
+      " consult",
+      "ation"
+    ],
+    [
+      " c",
+      "an"
+    ],
+    [
+      " ग",
+      "य"
+    ],
+    [
+      " ",
+      "S"
+    ],
+    [
+      "al",
+      "l"
+    ],
+    [
+      " स",
+      "क"
+    ],
+    [
+      " सम",
+      "य"
+    ],
+    [
+      "in",
+      "ce"
+    ],
+    [
+      " अ",
+      "न"
+    ],
+    [
+      "a",
+      "il"
+    ],
+    [
+      " K",
+      "ripya"
+    ],
+    [
+      "T",
+      "he"
+    ],
+    [
+      "The",
+      "ek"
+    ],
+    [
+      " ra",
+      "he"
+    ],
+    [
+      " j",
+      "i"
+    ],
+    [
+      "o",
+      "te"
+    ],
+    [
+      "G",
+      "RE"
+    ],
+    [
+      "GRE",
+      "E"
+    ],
+    [
+      "GREE",
+      "T"
+    ],
+    [
+      "GREET",
+      "ING"
+    ],
+    [
+      " cha",
+      "h"
+    ],
+    [
+      "fe",
+      "male"
+    ],
+    [
+      " W",
+      "ould"
+    ],
+    [
+      " उ",
+      "पल"
+    ],
+    [
+      " उपल",
+      "ब"
+    ],
+    [
+      " य",
+      "ह"
+    ],
+    [
+      " c",
+      "all"
+    ],
+    [
+      " be",
+      "en"
+    ],
+    [
+      " v",
+      "ill"
+    ],
+    [
+      " vill",
+      "age"
+    ],
+    [
+      "am",
+      "a"
+    ],
+    [
+      "t",
+      "om"
+    ],
+    [
+      "c",
+      "ough"
+    ],
+    [
+      " n",
+      "a"
+    ],
+    [
+      " chah",
+      "te"
+    ],
+    [
+      "en",
+      "e"
+    ],
+    [
+      "ac",
+      "h"
+    ],
+    [
+      " f",
+      "r"
+    ],
+    [
+      " fr",
+      "om"
+    ],
+    [
+      "ट",
+      "म"
+    ],
+    [
+      "n",
+      "a"
+    ],
+    [
+      "c",
+      "om"
+    ],
+    [
+      "A",
+      "apk"
+    ],
+    [
+      "o",
+      "d"
+    ],
+    [
+      " are",
+      "a"
+    ],
+    [
+      " aapk",
+      "o"
+    ],
+    [
+      "f",
+      "or"
+    ],
+    [
+      "a",
+      "an"
+    ],
+    [
+      " k",
+      "e"
+    ],
+    [
+      "4",
+      "2"
+    ],
+    [
+      "i",
+      "st"
+    ],
+    [
+      " p",
+      "ro"
+    ],
+    [
+      " w",
+      "ith"
+    ],
+    [
+      "ri",
+      "mar"
+    ],
+    [
+      "rimar",
+      "y"
+    ],
+    [
+      "om",
+      "m"
+    ],
+    [
+      "omm",
+      "un"
+    ],
+    [
+      "ommun",
+      "ity"
+    ],
+    [
+      "k",
+      "al"
+    ],
+    [
+      " o",
+      "f"
+    ],
+    [
+      " सक",
+      "त"
+    ],
+    [
+      " p",
+      "ar"
+    ],
+    [
+      "a",
+      "v"
+    ],
+    [
+      " ",
+      "0"
+    ],
+    [
+      "3",
+      "0"
+    ],
+    [
+      " P",
+      "M"
+    ],
+    [
+      "s",
+      "ar"
+    ],
+    [
+      " ",
+      "h"
+    ],
+    [
+      " a",
+      "ap"
+    ],
+    [
+      "b",
+      "adan"
+    ],
+    [
+      " ",
+      "M"
+    ],
+    [
+      "ANSWER_",
+      "NO"
+    ],
+    [
+      " ",
+      "भ"
+    ],
+    [
+      "ANSWER_",
+      "Y"
+    ],
+    [
+      "ANSWER_Y",
+      "ES"
+    ],
+    [
+      "RE",
+      "QUES"
+    ],
+    [
+      "REQUES",
+      "T"
+    ],
+    [
+      "REQUEST",
+      "_"
+    ],
+    [
+      "REQUEST_",
+      "RE"
+    ],
+    [
+      "REQUEST_RE",
+      "PE"
+    ],
+    [
+      "REQUEST_REPE",
+      "A"
+    ],
+    [
+      "REQUEST_REPEA",
+      "T"
+    ],
+    [
+      " P",
+      "rimary"
+    ],
+    [
+      "s",
+      "on"
+    ],
+    [
+      " C",
+      "ould"
+    ],
+    [
+      " C",
+      "ommunity"
+    ],
+    [
+      "U",
+      "N"
+    ],
+    [
+      "UN",
+      "K"
+    ],
+    [
+      "UNK",
+      "NO"
+    ],
+    [
+      "UNKNO",
+      "W"
+    ],
+    [
+      "UNKNOW",
+      "N"
+    ],
+    [
+      " a",
+      "v"
+    ],
+    [
+      " av",
+      "ail"
+    ],
+    [
+      " avail",
+      "a"
+    ],
+    [
+      " availa",
+      "ble"
+    ],
+    [
+      " ",
+      "sym"
+    ],
+    [
+      " sym",
+      "p"
+    ],
+    [
+      " symp",
+      "tom"
+    ],
+    [
+      " symptom",
+      "s"
+    ],
+    [
+      "i",
+      "v"
+    ],
+    [
+      "av",
+      "ita"
+    ],
+    [
+      " P",
+      "lease"
+    ],
+    [
+      "i",
+      "f"
+    ],
+    [
+      "C",
+      "H"
+    ],
+    [
+      "CH",
+      "AN"
+    ],
+    [
+      "CHAN",
+      "GE"
+    ],
+    [
+      "CHANGE",
+      "_"
+    ],
+    [
+      "CHANGE_",
+      "A"
+    ],
+    [
+      "CHANGE_A",
+      "P"
+    ],
+    [
+      "CHANGE_AP",
+      "P"
+    ],
+    [
+      "CHANGE_APP",
+      "O"
+    ],
+    [
+      "CHANGE_APPO",
+      "IN"
+    ],
+    [
+      "CHANGE_APPOIN",
+      "T"
+    ],
+    [
+      "CHANGE_APPOINT",
+      "M"
+    ],
+    [
+      "CHANGE_APPOINTM",
+      "ENT"
+    ],
+    [
+      "CHANGE_APPOINTMENT",
+      "_"
+    ],
+    [
+      "CHANGE_APPOINTMENT_",
+      "TYPE"
+    ],
+    [
+      "F",
+      "O"
+    ],
+    [
+      "FO",
+      "L"
+    ],
+    [
+      "FOL",
+      "LO"
+    ],
+    [
+      "FOLLO",
+      "W"
+    ],
+    [
+      "FOLLOW",
+      "_"
+    ],
+    [
+      "FOLLOW_",
+      "U"
+    ],
+    [
+      "FOLLOW_U",
+      "P"
+    ],
+    [
+      " c",
+      "he"
+    ],
+    [
+      " W",
+      "hi"
+    ],
+    [
+      " Whi",
+      "ch"
+    ],
+    [
+      "C",
+      "AN"
+    ],
+    [
+      "CAN",
+      "C"
+    ],
+    [
+      "CANC",
+      "E"
+    ],
+    [
+      "CANCE",
+      "L"
+    ],
+    [
+      "CANCEL",
+      "_"
+    ],
+    [
+      "CANCEL_",
+      "BOOKING"
+    ],
+    [
+      "EN",
+      "D"
+    ],
+    [
+      "END",
+      "ED"
+    ],
+    [
+      " m",
+      "ain"
+    ],
+    [
+      "oo",
+      "s"
+    ],
+    [
+      "st",
+      "om"
+    ],
+    [
+      "stom",
+      "ach"
+    ],
+    [
+      "th",
+      "er"
+    ],
+    [
+      " ",
+      "T"
+    ],
+    [
+      " te",
+      "le"
+    ],
+    [
+      "ola",
+      "pur"
+    ],
+    [
+      " C",
+      "iv"
+    ],
+    [
+      " Civ",
+      "il"
+    ],
+    [
+      " e",
+      "x"
+    ],
+    [
+      "GE",
+      "N"
+    ],
+    [
+      "GEN",
+      "D"
+    ],
+    [
+      "GEND",
+      "ER"
+    ],
+    [
+      "e",
+      "f"
+    ],
+    [
+      " p",
+      "hone"
+    ],
+    [
+      "n",
+      "il"
+    ],
+    [
+      "od",
+      "y"
+    ],
+    [
+      " y",
+      "e"
+    ],
+    [
+      " ra",
+      "ha"
+    ],
+    [
+      "R",
+      "ah"
+    ],
+    [
+      "Rah",
+      "ul"
+    ],
+    [
+      "स",
+      "म"
+    ],
+    [
+      "सम",
+      "झ"
+    ],
+    [
+      "u",
+      "j"
+    ],
+    [
+      " an",
+      "y"
+    ],
+    [
+      "आ",
+      "प"
+    ],
+    [
+      "आप",
+      "क"
+    ],
+    [
+      " ex",
+      "per"
+    ],
+    [
+      " exper",
+      "i"
+    ],
+    [
+      " experi",
+      "en"
+    ],
+    [
+      " experien",
+      "c"
+    ],
+    [
+      " experienc",
+      "ing"
+    ],
+    [
+      " त",
+      "कल"
+    ],
+    [
+      "c",
+      "ha"
+    ],
+    [
+      " li",
+      "ke"
+    ],
+    [
+      " health",
+      "care"
+    ],
+    [
+      " c",
+      "entre"
+    ],
+    [
+      " b",
+      "ol"
+    ],
+    [
+      "त",
+      "न"
+    ],
+    [
+      "y",
+      "e"
+    ],
+    [
+      "ay",
+      "a"
+    ],
+    [
+      "lin",
+      "e"
+    ],
+    [
+      " प",
+      "स"
+    ],
+    [
+      "क",
+      "र"
+    ],
+    [
+      "per",
+      "son"
+    ],
+    [
+      "at",
+      "h"
+    ],
+    [
+      " s",
+      "a"
+    ],
+    [
+      "ad",
+      "ac"
+    ],
+    [
+      "adac",
+      "he"
+    ],
+    [
+      "ou",
+      "nd"
+    ],
+    [
+      " ha",
+      "d"
+    ],
+    [
+      "K",
+      "avita"
+    ],
+    [
+      " ",
+      "care"
+    ],
+    [
+      "k",
+      "l"
+    ],
+    [
+      "kl",
+      "uj"
+    ],
+    [
+      " t",
+      "hat"
+    ],
+    [
+      "ह",
+      "त"
+    ],
+    [
+      " s",
+      "ama"
+    ],
+    [
+      " द",
+      "र"
+    ],
+    [
+      " b",
+      "a"
+    ],
+    [
+      "ar",
+      "r"
+    ],
+    [
+      " call",
+      "ing"
+    ],
+    [
+      "a",
+      "he"
+    ],
+    [
+      "ahe",
+      "sh"
+    ],
+    [
+      " ha",
+      "f"
+    ],
+    [
+      " haf",
+      "te"
+    ],
+    [
+      "are",
+      "e"
+    ],
+    [
+      "aree",
+      "z"
+    ],
+    [
+      "u",
+      "p"
+    ],
+    [
+      " kar",
+      "na"
+    ],
+    [
+      "at",
+      "e"
+    ],
+    [
+      " re",
+      "com"
+    ],
+    [
+      " recom",
+      "me"
+    ],
+    [
+      " recomme",
+      "nd"
+    ],
+    [
+      " ",
+      "age"
+    ],
+    [
+      "3",
+      "8"
+    ],
+    [
+      " कर",
+      "न"
+    ],
+    [
+      "c",
+      "he"
+    ],
+    [
+      "न",
+      "क"
+    ],
+    [
+      "han",
+      "ya"
+    ],
+    [
+      "hanya",
+      "w"
+    ],
+    [
+      "hanyaw",
+      "ad"
+    ],
+    [
+      " f",
+      "ound"
+    ],
+    [
+      "A",
+      "nil"
+    ],
+    [
+      "d",
+      "ay"
+    ],
+    [
+      " t",
+      "om"
+    ],
+    [
+      " tom",
+      "or"
+    ],
+    [
+      " tomor",
+      "ro"
+    ],
+    [
+      " tomorro",
+      "w"
+    ],
+    [
+      "an",
+      "t"
+    ],
+    [
+      " ",
+      "1"
+    ],
+    [
+      "0",
+      "0"
+    ],
+    [
+      " A",
+      "M"
+    ],
+    [
+      " ha",
+      "s"
+    ],
+    [
+      "b",
+      "ody"
+    ],
+    [
+      " W",
+      "hat"
+    ],
+    [
+      "ek",
+      "ha"
+    ],
+    [
+      "l",
+      "y"
+    ],
+    [
+      " म",
+      "ह"
+    ],
+    [
+      "ज",
+      "द"
+    ],
+    [
+      " ",
+      "ढ"
+    ],
+    [
+      "ढ",
+      "न"
+    ],
+    [
+      "lo",
+      "w"
+    ],
+    [
+      " ",
+      "arr"
+    ],
+    [
+      " arr",
+      "an"
+    ],
+    [
+      " arran",
+      "ge"
+    ],
+    [
+      " loc",
+      "al"
+    ],
+    [
+      " su",
+      "b"
+    ],
+    [
+      "p",
+      "e"
+    ],
+    [
+      " w",
+      "e"
+    ],
+    [
+      " me",
+      "h"
+    ],
+    [
+      " meh",
+      "s"
+    ],
+    [
+      " mehs",
+      "oos"
+    ],
+    [
+      "ह",
+      "र"
+    ],
+    [
+      " g",
+      "a"
+    ],
+    [
+      " ga",
+      "on"
+    ],
+    [
+      "D",
+      "hanyawad"
+    ],
+    [
+      "ant",
+      "o"
+    ],
+    [
+      "anto",
+      "sh"
+    ],
+    [
+      "aan",
+      "ch"
+    ],
+    [
+      "k",
+      "ar"
+    ],
+    [
+      " ",
+      "and"
+    ],
+    [
+      "ar",
+      "mal"
+    ],
+    [
+      "armal",
+      "a"
+    ],
+    [
+      " n",
+      "ote"
+    ],
+    [
+      " na",
+      "am"
+    ],
+    [
+      " j",
+      "ak"
+    ],
+    [
+      "s",
+      "ince"
+    ],
+    [
+      "N",
+      "ote"
+    ],
+    [
+      "Note",
+      "d"
+    ],
+    [
+      " ह",
+      "म"
+    ],
+    [
+      "ri",
+      "ct"
+    ],
+    [
+      " w",
+      "h"
+    ],
+    [
+      "sy",
+      "a"
+    ],
+    [
+      "ver",
+      "e"
+    ],
+    [
+      "in",
+      "e"
+    ],
+    [
+      "cha",
+      "ar"
+    ],
+    [
+      " t",
+      "ak"
+    ],
+    [
+      " tak",
+      "le"
+    ],
+    [
+      " takle",
+      "ef"
+    ],
+    [
+      "ho",
+      "t"
+    ],
+    [
+      "A",
+      "kluj"
+    ],
+    [
+      " h",
+      "u"
+    ],
+    [
+      " ba",
+      "at"
+    ],
+    [
+      "w",
+      "a"
+    ],
+    [
+      " ne",
+      "are"
+    ],
+    [
+      " neare",
+      "st"
+    ],
+    [
+      " a",
+      "b"
+    ],
+    [
+      " ab",
+      "ou"
+    ],
+    [
+      " abou",
+      "t"
+    ],
+    [
+      "u",
+      "e"
+    ],
+    [
+      " ka",
+      "un"
+    ],
+    [
+      " ",
+      "Ramesh"
+    ],
+    [
+      " k",
+      "it"
+    ],
+    [
+      " kit",
+      "ne"
+    ],
+    [
+      " A",
+      "re"
+    ],
+    [
+      "s",
+      "ha"
+    ],
+    [
+      " k",
+      "am"
+    ],
+    [
+      " sama",
+      "sya"
+    ],
+    [
+      " se",
+      "vere"
+    ],
+    [
+      "न",
+      "जद"
+    ],
+    [
+      "ह",
+      "ल"
+    ],
+    [
+      "p",
+      "aanch"
+    ],
+    [
+      "ol",
+      "low"
+    ],
+    [
+      " li",
+      "ye"
+    ],
+    [
+      " क",
+      "ल"
+    ],
+    [
+      " T",
+      "o"
+    ],
+    [
+      " loc",
+      "ate"
+    ],
+    [
+      " local",
+      "ity"
+    ],
+    [
+      "a",
+      "j"
+    ],
+    [
+      " sub",
+      "ah"
+    ],
+    [
+      " to",
+      "w"
+    ],
+    [
+      " tow",
+      "n"
+    ],
+    [
+      " can",
+      "c"
+    ],
+    [
+      " canc",
+      "el"
+    ],
+    [
+      " k",
+      "al"
+    ],
+    [
+      " ",
+      "Sunita"
+    ],
+    [
+      " क",
+      "स"
+    ],
+    [
+      " श",
+      "हर"
+    ],
+    [
+      "M",
+      "ahesh"
+    ],
+    [
+      " A",
+      "ap"
+    ],
+    [
+      "om",
+      "it"
+    ],
+    [
+      "omit",
+      "ing"
+    ],
+    [
+      "Y",
+      "our"
+    ],
+    [
+      " आ",
+      "य"
+    ],
+    [
+      " g",
+      "aya"
+    ],
+    [
+      "W",
+      "e"
+    ],
+    [
+      " s",
+      "ar"
+    ],
+    [
+      " me",
+      "d"
+    ],
+    [
+      " med",
+      "ic"
+    ],
+    [
+      " medic",
+      "al"
+    ],
+    [
+      " न",
+      "ह"
+    ],
+    [
+      "अ",
+      "प"
+    ],
+    [
+      " tele",
+      "p"
+    ],
+    [
+      " telep",
+      "hone"
+    ],
+    [
+      "D",
+      "ist"
+    ],
+    [
+      "Dist",
+      "rict"
+    ],
+    [
+      " na",
+      "hi"
+    ],
+    [
+      " ल",
+      "क"
+    ],
+    [
+      "ष",
+      "ण"
+    ],
+    [
+      "3",
+      "5"
+    ],
+    [
+      " ",
+      "male"
+    ],
+    [
+      " fe",
+      "male"
+    ],
+    [
+      "ult",
+      "i"
+    ],
+    [
+      " b",
+      "re"
+    ],
+    [
+      " bre",
+      "ath"
+    ],
+    [
+      "z",
+      "z"
+    ],
+    [
+      "zz",
+      "ine"
+    ],
+    [
+      "zzine",
+      "ss"
+    ],
+    [
+      " ब",
+      "ह"
+    ],
+    [
+      " re",
+      "g"
+    ],
+    [
+      " reg",
+      "ist"
+    ],
+    [
+      " l",
+      "ak"
+    ],
+    [
+      " lak",
+      "sh"
+    ],
+    [
+      " laksh",
+      "an"
+    ],
+    [
+      " che",
+      "c"
+    ],
+    [
+      " chec",
+      "k"
+    ],
+    [
+      " प",
+      "क"
+    ],
+    [
+      " ye",
+      "st"
+    ],
+    [
+      " yest",
+      "er"
+    ],
+    [
+      " yester",
+      "day"
+    ],
+    [
+      "che",
+      "d"
+    ],
+    [
+      "e",
+      "h"
+    ],
+    [
+      " fe",
+      "ver"
+    ],
+    [
+      "M",
+      "ain"
+    ],
+    [
+      "he",
+      "adache"
+    ],
+    [
+      " f",
+      "ollow"
+    ],
+    [
+      "o",
+      "w"
+    ],
+    [
+      "si",
+      "st"
+    ],
+    [
+      "o",
+      "re"
+    ],
+    [
+      " a",
+      "s"
+    ],
+    [
+      " se",
+      "ene"
+    ],
+    [
+      "o",
+      "ther"
+    ],
+    [
+      "o",
+      "i"
+    ],
+    [
+      "K",
+      "armala"
+    ],
+    [
+      "S",
+      "antosh"
+    ],
+    [
+      "m",
+      "b"
+    ],
+    [
+      "mb",
+      "er"
+    ],
+    [
+      " d",
+      "is"
+    ],
+    [
+      "ou",
+      "s"
+    ],
+    [
+      " k",
+      "hansi"
+    ],
+    [
+      " ग",
+      "ई"
+    ],
+    [
+      "p",
+      "line"
+    ],
+    [
+      " ",
+      "on"
+    ],
+    [
+      " ne",
+      "ar"
+    ],
+    [
+      "st",
+      "e"
+    ],
+    [
+      "S",
+      "olapur"
+    ],
+    [
+      " S",
+      "olapur"
+    ],
+    [
+      " pro",
+      "ce"
+    ],
+    [
+      "er",
+      "e"
+    ],
+    [
+      " con",
+      "t"
+    ],
+    [
+      "or",
+      "i"
+    ],
+    [
+      " s",
+      "ince"
+    ],
+    [
+      "ne",
+      "ss"
+    ],
+    [
+      "le",
+      "d"
+    ],
+    [
+      " p",
+      "et"
+    ],
+    [
+      "Y",
+      "eh"
+    ],
+    [
+      " ka",
+      "b"
+    ],
+    [
+      " ",
+      "if"
+    ],
+    [
+      " t",
+      "h"
+    ],
+    [
+      "k",
+      "kar"
+    ],
+    [
+      "ac",
+      "k"
+    ],
+    [
+      " ra",
+      "hi"
+    ],
+    [
+      " b",
+      "ukhar"
+    ],
+    [
+      " k",
+      "ya"
+    ],
+    [
+      " di",
+      "f"
+    ],
+    [
+      " wh",
+      "en"
+    ],
+    [
+      " ",
+      "L"
+    ],
+    [
+      "Aapk",
+      "e"
+    ],
+    [
+      "l",
+      "l"
+    ],
+    [
+      "ri",
+      "ya"
+    ],
+    [
+      "A",
+      "sha"
+    ],
+    [
+      " ",
+      "Baramati"
+    ],
+    [
+      " kar",
+      "ke"
+    ],
+    [
+      " क",
+      "न"
+    ],
+    [
+      "फ",
+      "र"
+    ],
+    [
+      " s",
+      "ched"
+    ],
+    [
+      " sched",
+      "u"
+    ],
+    [
+      " ",
+      "i"
+    ],
+    [
+      "et",
+      "a"
+    ],
+    [
+      " o",
+      "ther"
+    ],
+    [
+      " dis",
+      "com"
+    ],
+    [
+      " discom",
+      "for"
+    ],
+    [
+      " discomfor",
+      "t"
+    ],
+    [
+      "य",
+      "क"
+    ],
+    [
+      " do",
+      "b"
+    ],
+    [
+      " dob",
+      "ar"
+    ],
+    [
+      " dobar",
+      "a"
+    ],
+    [
+      " s",
+      "har"
+    ],
+    [
+      " shar",
+      "ing"
+    ],
+    [
+      "म",
+      "स"
+    ],
+    [
+      " उ",
+      "च"
+    ],
+    [
+      " book",
+      "ing"
+    ],
+    [
+      "a",
+      "wa"
+    ],
+    [
+      " ho",
+      "on"
+    ],
+    [
+      "i",
+      "on"
+    ],
+    [
+      " sh",
+      "ur"
+    ],
+    [
+      " shur",
+      "u"
+    ],
+    [
+      " as",
+      "sist"
+    ],
+    [
+      " di",
+      "zziness"
+    ],
+    [
+      "C",
+      "ould"
+    ],
+    [
+      " ",
+      "धन"
+    ],
+    [
+      " che",
+      "st"
+    ],
+    [
+      "if",
+      "y"
+    ],
+    [
+      "o",
+      "h"
+    ],
+    [
+      "oh",
+      "ol"
+    ],
+    [
+      " hu",
+      "m"
+    ],
+    [
+      "ur",
+      "esh"
+    ],
+    [
+      " ",
+      "z"
+    ],
+    [
+      "H",
+      "el"
+    ],
+    [
+      " he",
+      "l"
+    ],
+    [
+      " m",
+      "or"
+    ],
+    [
+      " mor",
+      "n"
+    ],
+    [
+      " morn",
+      "ing"
+    ],
+    [
+      " s",
+      "ak"
+    ],
+    [
+      " k",
+      "are"
+    ],
+    [
+      " kare",
+      "in"
+    ],
+    [
+      " re",
+      "q"
+    ],
+    [
+      " aapk",
+      "a"
+    ],
+    [
+      " ki",
+      "ya"
+    ],
+    [
+      "V",
+      "i"
+    ],
+    [
+      "Vi",
+      "j"
+    ],
+    [
+      "Vij",
+      "ay"
+    ],
+    [
+      "Aapk",
+      "a"
+    ],
+    [
+      " M",
+      "areez"
+    ],
+    [
+      " u",
+      "mar"
+    ],
+    [
+      " sa",
+      "al"
+    ],
+    [
+      " उ",
+      "म"
+    ],
+    [
+      " व",
+      "र"
+    ],
+    [
+      "p",
+      "or"
+    ],
+    [
+      " u",
+      "s"
+    ],
+    [
+      "प",
+      "र"
+    ],
+    [
+      " र",
+      "ख"
+    ],
+    [
+      " ",
+      "lo"
+    ],
+    [
+      "v",
+      "i"
+    ],
+    [
+      " ",
+      "hi"
+    ],
+    [
+      "ह",
+      "म"
+    ],
+    [
+      "स",
+      "ल"
+    ],
+    [
+      "श",
+      "न"
+    ],
+    [
+      " m",
+      "areez"
+    ],
+    [
+      " sh",
+      "u"
+    ],
+    [
+      " shu",
+      "b"
+    ],
+    [
+      " shub",
+      "h"
+    ],
+    [
+      " e",
+      "ith"
+    ],
+    [
+      " eith",
+      "er"
+    ],
+    [
+      " of",
+      "f"
+    ],
+    [
+      " off",
+      "line"
+    ],
+    [
+      "K",
+      "ya"
+    ],
+    [
+      " jak",
+      "ar"
+    ],
+    [
+      " di",
+      "k"
+    ],
+    [
+      " dik",
+      "han"
+    ],
+    [
+      " dikhan",
+      "a"
+    ],
+    [
+      "B",
+      "ase"
+    ],
+    [
+      "Base",
+      "d"
+    ],
+    [
+      " clinic",
+      "al"
+    ],
+    [
+      " e",
+      "v"
+    ],
+    [
+      " ev",
+      "al"
+    ],
+    [
+      " eval",
+      "u"
+    ],
+    [
+      " evalu",
+      "ation"
+    ],
+    [
+      " recommend",
+      "ed"
+    ],
+    [
+      "य",
+      "त"
+    ],
+    [
+      " ye",
+      "ar"
+    ],
+    [
+      " year",
+      "s"
+    ],
+    [
+      " व",
+      "ह"
+    ],
+    [
+      "ल",
+      "न"
+    ],
+    [
+      " proce",
+      "ed"
+    ],
+    [
+      "Thank",
+      "s"
+    ],
+    [
+      " a",
+      "ay"
+    ],
+    [
+      " aay",
+      "u"
+    ],
+    [
+      " स",
+      "ल"
+    ],
+    [
+      "c",
+      "o"
+    ],
+    [
+      "A",
+      "c"
+    ],
+    [
+      "Ac",
+      "c"
+    ],
+    [
+      "Acc",
+      "or"
+    ],
+    [
+      "Accor",
+      "d"
+    ],
+    [
+      "Accord",
+      "ing"
+    ],
+    [
+      " t",
+      "ri"
+    ],
+    [
+      " tri",
+      "age"
+    ],
+    [
+      " recommend",
+      "ation"
+    ],
+    [
+      " recommendation",
+      "s"
+    ],
+    [
+      " sh",
+      "ould"
+    ],
+    [
+      " tele",
+      "c"
+    ],
+    [
+      " telec",
+      "on"
+    ],
+    [
+      " telecon",
+      "sult"
+    ],
+    [
+      " teleconsult",
+      "ation"
+    ],
+    [
+      " v",
+      "omiting"
+    ],
+    [
+      "W",
+      "ould"
+    ],
+    [
+      "o",
+      "t"
+    ],
+    [
+      "f",
+      "il"
+    ],
+    [
+      "fil",
+      "e"
+    ],
+    [
+      " k",
+      "ripya"
+    ],
+    [
+      " cancel",
+      "led"
+    ],
+    [
+      " ne",
+      "ed"
+    ],
+    [
+      "N",
+      "ama"
+    ],
+    [
+      "Nama",
+      "ste"
+    ],
+    [
+      " b",
+      "ack"
+    ],
+    [
+      " regist",
+      "er"
+    ],
+    [
+      "le",
+      "ar"
+    ],
+    [
+      "5",
+      "0"
+    ],
+    [
+      " lakshan",
+      "o"
+    ],
+    [
+      " a",
+      "ad"
+    ],
+    [
+      " aad",
+      "har"
+    ],
+    [
+      " u",
+      "ch"
+    ],
+    [
+      " uch",
+      "it"
+    ],
+    [
+      " rahe",
+      "g"
+    ],
+    [
+      " raheg",
+      "a"
+    ],
+    [
+      " ya",
+      "han"
+    ],
+    [
+      " l",
+      "en"
+    ],
+    [
+      " len",
+      "a"
+    ],
+    [
+      " dif",
+      "f"
+    ],
+    [
+      " diff",
+      "ic"
+    ],
+    [
+      " b",
+      "adan"
+    ],
+    [
+      " kam",
+      "z"
+    ],
+    [
+      " kamz",
+      "ori"
+    ],
+    [
+      " te",
+      "z"
+    ],
+    [
+      " c",
+      "hot"
+    ],
+    [
+      " 0",
+      "3"
+    ],
+    [
+      " 1",
+      "0"
+    ],
+    [
+      " 0",
+      "2"
+    ],
+    [
+      " S",
+      "ha"
+    ],
+    [
+      " Sha",
+      "ll"
+    ],
+    [
+      "h",
+      "uk"
+    ],
+    [
+      "R",
+      "ekha"
+    ],
+    [
+      "a",
+      "aj"
+    ],
+    [
+      " 1",
+      "1"
+    ],
+    [
+      " ब",
+      "ज"
+    ],
+    [
+      " ",
+      "इ"
+    ],
+    [
+      " इ",
+      "स"
+    ],
+    [
+      " schedu",
+      "le"
+    ],
+    [
+      "G",
+      "e"
+    ],
+    [
+      "Ge",
+      "eta"
+    ],
+    [
+      " req",
+      "ue"
+    ],
+    [
+      " reque",
+      "st"
+    ],
+    [
+      " we",
+      "ek"
+    ],
+    [
+      " T",
+      "ak"
+    ],
+    [
+      " Tak",
+      "e"
+    ],
+    [
+      " ",
+      "3"
+    ],
+    [
+      "Main",
+      "e"
+    ],
+    [
+      " d",
+      "ekha"
+    ],
+    [
+      " i",
+      "se"
+    ],
+    [
+      " do",
+      "on"
+    ],
+    [
+      " 0",
+      "4"
+    ],
+    [
+      "et",
+      "ail"
+    ],
+    [
+      "etail",
+      "s"
+    ],
+    [
+      " ",
+      "2"
+    ],
+    [
+      "at",
+      "a"
+    ],
+    [
+      " re",
+      "por"
+    ],
+    [
+      "Hel",
+      "lo"
+    ],
+    [
+      "ग",
+      "त"
+    ],
+    [
+      " s",
+      "pe"
+    ],
+    [
+      "a",
+      "b"
+    ],
+    [
+      " ",
+      "ulti"
+    ],
+    [
+      " a",
+      "m"
+    ],
+    [
+      " w",
+      "hat"
+    ],
+    [
+      "K",
+      "ripya"
+    ],
+    [
+      " मह",
+      "स"
+    ],
+    [
+      " स",
+      "ह"
+    ],
+    [
+      " pro",
+      "ble"
+    ],
+    [
+      " proble",
+      "m"
+    ],
+    [
+      " ",
+      "al"
+    ],
+    [
+      " k",
+      "oi"
+    ],
+    [
+      " ",
+      "ek"
+    ],
+    [
+      " hel",
+      "pline"
+    ],
+    [
+      " he",
+      "adache"
+    ],
+    [
+      " main",
+      "e"
+    ],
+    [
+      " fe",
+      "el"
+    ],
+    [
+      " feel",
+      "ing"
+    ],
+    [
+      " L",
+      "et"
+    ],
+    [
+      "in",
+      "d"
+    ],
+    [
+      " Ho",
+      "w"
+    ],
+    [
+      " ",
+      "le"
+    ],
+    [
+      "S",
+      "huk"
+    ],
+    [
+      "Shuk",
+      "riya"
+    ],
+    [
+      " त",
+      "य"
+    ],
+    [
+      "स",
+      "र"
+    ],
+    [
+      " confirm",
+      "ation"
+    ],
+    [
+      "d",
+      "a"
+    ],
+    [
+      " loc",
+      "ation"
+    ],
+    [
+      " p",
+      "er"
+    ],
+    [
+      "B",
+      "ef"
+    ],
+    [
+      "Bef",
+      "ore"
+    ],
+    [
+      " th",
+      "ere"
+    ],
+    [
+      " hi",
+      "gh"
+    ],
+    [
+      " conf",
+      "u"
+    ],
+    [
+      " confu",
+      "si"
+    ],
+    [
+      " confusi",
+      "on"
+    ],
+    [
+      " breath",
+      "le"
+    ],
+    [
+      " breathle",
+      "ss"
+    ],
+    [
+      " breathless",
+      "ness"
+    ],
+    [
+      " g",
+      "ood"
+    ],
+    [
+      " च",
+      "क"
+    ],
+    [
+      " ",
+      "छ"
+    ],
+    [
+      "प",
+      "न"
+    ],
+    [
+      " ल",
+      "ग"
+    ],
+    [
+      " उ",
+      "ल"
+    ],
+    [
+      " s",
+      "aan"
+    ],
+    [
+      " saan",
+      "s"
+    ],
+    [
+      " l",
+      "ene"
+    ],
+    [
+      " re",
+      "pe"
+    ],
+    [
+      " repe",
+      "at"
+    ],
+    [
+      " c",
+      "lear"
+    ],
+    [
+      "j",
+      "h"
+    ],
+    [
+      " jak",
+      "d"
+    ],
+    [
+      " jakd",
+      "an"
+    ],
+    [
+      " t",
+      "i"
+    ],
+    [
+      " ti",
+      "me"
+    ],
+    [
+      " an",
+      "other"
+    ],
+    [
+      " d",
+      "etails"
+    ],
+    [
+      " ap",
+      "na"
+    ],
+    [
+      " diffic",
+      "ult"
+    ],
+    [
+      " difficult",
+      "y"
+    ],
+    [
+      " breath",
+      "ing"
+    ],
+    [
+      " ",
+      "int"
+    ],
+    [
+      " int",
+      "en"
+    ],
+    [
+      " inten",
+      "se"
+    ],
+    [
+      " cont",
+      "in"
+    ],
+    [
+      " contin",
+      "u"
+    ],
+    [
+      " continu",
+      "ous"
+    ],
+    [
+      "T",
+      "o"
+    ],
+    [
+      "c",
+      "hot"
+    ],
+    [
+      "ri",
+      "gh"
+    ],
+    [
+      "righ",
+      "t"
+    ],
+    [
+      "e",
+      "s"
+    ],
+    [
+      " ब",
+      "द"
+    ],
+    [
+      " बद",
+      "ल"
+    ],
+    [
+      " d",
+      "oos"
+    ],
+    [
+      " doos",
+      "ra"
+    ],
+    [
+      " n",
+      "ot"
+    ],
+    [
+      "j",
+      "ur"
+    ],
+    [
+      "jur",
+      "y"
+    ],
+    [
+      " सम",
+      "झ"
+    ],
+    [
+      " s",
+      "tom"
+    ],
+    [
+      " stom",
+      "ach"
+    ],
+    [
+      " prefer",
+      "en"
+    ],
+    [
+      " preferen",
+      "ce"
+    ],
+    [
+      " c",
+      "ough"
+    ],
+    [
+      " kar",
+      "ne"
+    ],
+    [
+      " m",
+      "od"
+    ],
+    [
+      "M",
+      "ohol"
+    ],
+    [
+      " f",
+      "am"
+    ],
+    [
+      " fam",
+      "il"
+    ],
+    [
+      " famil",
+      "y"
+    ],
+    [
+      " me",
+      "mber"
+    ],
+    [
+      " repor",
+      "te"
+    ],
+    [
+      " reporte",
+      "d"
+    ],
+    [
+      " u",
+      "p"
+    ],
+    [
+      " d",
+      "ek"
+    ],
+    [
+      " dek",
+      "h"
+    ],
+    [
+      " lo",
+      "n"
+    ],
+    [
+      " lon",
+      "g"
+    ],
+    [
+      " su",
+      "f"
+    ],
+    [
+      " suf",
+      "fer"
+    ],
+    [
+      " suffer",
+      "ing"
+    ],
+    [
+      " क",
+      "ब"
+    ],
+    [
+      " क",
+      "ई"
+    ],
+    [
+      "न",
+      "मस"
+    ],
+    [
+      "k",
+      "am"
+    ],
+    [
+      "kam",
+      "ar"
+    ],
+    [
+      " kam",
+      "ar"
+    ],
+    [
+      "ur",
+      "al"
+    ],
+    [
+      "H",
+      "ow"
+    ],
+    [
+      " m",
+      "an"
+    ],
+    [
+      " man",
+      "y"
+    ],
+    [
+      " h",
+      "our"
+    ],
+    [
+      " hour",
+      "s"
+    ],
+    [
+      " m",
+      "ore"
+    ],
+    [
+      "Aapk",
+      "o"
+    ],
+    [
+      " ",
+      "Yeh"
+    ],
+    [
+      " hu",
+      "i"
+    ],
+    [
+      "इ",
+      "ए"
+    ],
+    [
+      "cha",
+      "kkar"
+    ],
+    [
+      " cha",
+      "kkar"
+    ],
+    [
+      " con",
+      "ne"
+    ],
+    [
+      " conne",
+      "ct"
+    ],
+    [
+      "se",
+      "ene"
+    ],
+    [
+      " क",
+      "म"
+    ],
+    [
+      " कम",
+      "ज"
+    ],
+    [
+      "i",
+      "d"
+    ],
+    [
+      " ",
+      "औ"
+    ],
+    [
+      " औ",
+      "र"
+    ],
+    [
+      " spe",
+      "c"
+    ],
+    [
+      " spec",
+      "ify"
+    ],
+    [
+      "S",
+      "ince"
+    ],
+    [
+      " b",
+      "other"
+    ],
+    [
+      " bother",
+      "ing"
+    ],
+    [
+      " n",
+      "u"
+    ],
+    [
+      " nu",
+      "mber"
+    ],
+    [
+      " g",
+      "han"
+    ],
+    [
+      " ghan",
+      "te"
+    ],
+    [
+      " t",
+      "a"
+    ],
+    [
+      " ta",
+      "ak"
+    ],
+    [
+      " taak",
+      "i"
+    ],
+    [
+      " is",
+      "ke"
+    ],
+    [
+      " al",
+      "awa"
+    ],
+    [
+      " a",
+      "aj"
+    ],
+    [
+      " te",
+      "en"
+    ],
+    [
+      "n",
+      "i"
+    ],
+    [
+      " s",
+      "am"
+    ],
+    [
+      " sam",
+      "ay"
+    ],
+    [
+      " ho",
+      "spital"
+    ],
+    [
+      " in",
+      "jury"
+    ],
+    [
+      "S",
+      "uresh"
+    ],
+    [
+      " A",
+      "apk"
+    ],
+    [
+      " g",
+      "ay"
+    ],
+    [
+      " gay",
+      "i"
+    ],
+    [
+      " z",
+      "ar"
+    ],
+    [
+      "o",
+      "or"
+    ],
+    [
+      " b",
+      "ody"
+    ],
+    [
+      " S",
+      "antosh"
+    ],
+    [
+      "P",
+      "lease"
+    ],
+    [
+      " call",
+      "er"
+    ],
+    [
+      " w",
+      "ho"
+    ],
+    [
+      " ",
+      "ill"
+    ],
+    [
+      "v",
+      "omiting"
+    ],
+    [
+      " f",
+      "ind"
+    ],
+    [
+      " रख",
+      "न"
+    ],
+    [
+      " S",
+      "uresh"
+    ],
+    [
+      " le",
+      "t"
+    ],
+    [
+      " re",
+      "vi"
+    ],
+    [
+      " revi",
+      "e"
+    ],
+    [
+      " revie",
+      "w"
+    ],
+    [
+      " pre",
+      "vi"
+    ],
+    [
+      " previ",
+      "ous"
+    ],
+    [
+      " z",
+      "uk"
+    ],
+    [
+      " zuk",
+      "ha"
+    ],
+    [
+      " zukha",
+      "m"
+    ],
+    [
+      " र",
+      "द"
+    ],
+    [
+      " to",
+      "day"
+    ],
+    [
+      " M",
+      "ay"
+    ],
+    [
+      " k",
+      "n"
+    ],
+    [
+      " kn",
+      "ow"
+    ],
+    [
+      " प",
+      "ह"
+    ],
+    [
+      " slot",
+      "s"
+    ],
+    [
+      "re",
+      "at"
+    ],
+    [
+      " a",
+      "awa"
+    ],
+    [
+      " aawa",
+      "z"
+    ],
+    [
+      " the",
+      "ek"
+    ],
+    [
+      " t",
+      "ho"
+    ],
+    [
+      " tho",
+      "da"
+    ],
+    [
+      " cont",
+      "ac"
+    ],
+    [
+      " contac",
+      "t"
+    ],
+    [
+      " ",
+      "R"
+    ],
+    [
+      " R",
+      "ural"
+    ],
+    [
+      " C",
+      "are"
+    ],
+    [
+      " ",
+      "Your"
+    ],
+    [
+      " W",
+      "i"
+    ],
+    [
+      " Wi",
+      "sh"
+    ],
+    [
+      " Wish",
+      "ing"
+    ],
+    [
+      " re",
+      "co"
+    ],
+    [
+      " reco",
+      "ver"
+    ],
+    [
+      " recover",
+      "y"
+    ],
+    [
+      " f",
+      "ul"
+    ],
+    [
+      " ful",
+      "l"
+    ],
+    [
+      "v",
+      "ing"
+    ],
+    [
+      "w",
+      "e"
+    ],
+    [
+      "we",
+      "ak"
+    ],
+    [
+      "weak",
+      "ness"
+    ],
+    [
+      "P",
+      "ro"
+    ],
+    [
+      "Pro",
+      "file"
+    ],
+    [
+      " c",
+      "om"
+    ],
+    [
+      " com",
+      "p"
+    ],
+    [
+      " comp",
+      "le"
+    ],
+    [
+      " comple",
+      "te"
+    ],
+    [
+      " a",
+      "g"
+    ],
+    [
+      " ag",
+      "ain"
+    ],
+    [
+      " wh",
+      "ene"
+    ],
+    [
+      " whene",
+      "ver"
+    ],
+    [
+      " k",
+      "har"
+    ],
+    [
+      " khar",
+      "ab"
+    ],
+    [
+      " आ",
+      "इए"
+    ],
+    [
+      " assist",
+      "an"
+    ],
+    [
+      " assistan",
+      "ce"
+    ],
+    [
+      " su",
+      "c"
+    ],
+    [
+      " suc",
+      "ce"
+    ],
+    [
+      " succe",
+      "ss"
+    ],
+    [
+      " success",
+      "f"
+    ],
+    [
+      " successf",
+      "ul"
+    ],
+    [
+      " successful",
+      "ly"
+    ],
+    [
+      " t",
+      "ha"
+    ],
+    [
+      " tha",
+      "k"
+    ],
+    [
+      " thak",
+      "aan"
+    ],
+    [
+      "W",
+      "el"
+    ],
+    [
+      "Wel",
+      "co"
+    ],
+    [
+      "Welco",
+      "me"
+    ],
+    [
+      " ",
+      "Rahul"
+    ],
+    [
+      " ",
+      "Ganesh"
+    ],
+    [
+      "स",
+      "क"
+    ],
+    [
+      " उ",
+      "नक"
+    ],
+    [
+      "र",
+      "ण"
+    ],
+    [
+      " s",
+      "w"
+    ],
+    [
+      " sw",
+      "it"
+    ],
+    [
+      " ",
+      "("
+    ],
+    [
+      "A",
+      "nita"
+    ],
+    [
+      "g",
+      "at"
+    ],
+    [
+      "र",
+      "क"
+    ],
+    [
+      "प",
+      "ष"
+    ],
+    [
+      "a",
+      "st"
+    ],
+    [
+      " sama",
+      "jh"
+    ],
+    [
+      " p",
+      "aya"
+    ],
+    [
+      " ap",
+      "ne"
+    ],
+    [
+      " ",
+      "ख"
+    ],
+    [
+      " A",
+      "nil"
+    ],
+    [
+      " I",
+      "s"
+    ],
+    [
+      "o",
+      "do"
+    ],
+    [
+      "L",
+      "ata"
+    ],
+    [
+      " pro",
+      "file"
+    ],
+    [
+      " c",
+      "or"
+    ],
+    [
+      " cor",
+      "re"
+    ],
+    [
+      " corre",
+      "ct"
+    ],
+    [
+      " correct",
+      "ly"
+    ],
+    [
+      " न",
+      "मस"
+    ],
+    [
+      " ",
+      "Vijay"
+    ],
+    [
+      " आ",
+      "व"
+    ],
+    [
+      " c",
+      "l"
+    ],
+    [
+      " cl",
+      "ar"
+    ],
+    [
+      " clar",
+      "ify"
+    ],
+    [
+      "er",
+      "n"
+    ],
+    [
+      " regist",
+      "r"
+    ],
+    [
+      " registr",
+      "ation"
+    ],
+    [
+      " sak",
+      "ein"
+    ],
+    [
+      " su",
+      "j"
+    ],
+    [
+      " suj",
+      "an"
+    ],
+    [
+      " ",
+      "right"
+    ],
+    [
+      " w",
+      "ill"
+    ],
+    [
+      " sh",
+      "are"
+    ],
+    [
+      " per",
+      "son"
+    ],
+    [
+      " need",
+      "ing"
+    ],
+    [
+      " th",
+      "and"
+    ],
+    [
+      " d",
+      "es"
+    ],
+    [
+      " des",
+      "c"
+    ],
+    [
+      " desc",
+      "ri"
+    ],
+    [
+      " descri",
+      "b"
+    ],
+    [
+      " describ",
+      "e"
+    ],
+    [
+      " ap",
+      "ni"
+    ],
+    [
+      " M",
+      "ahesh"
+    ],
+    [
+      " good",
+      "b"
+    ],
+    [
+      " goodb",
+      "ye"
+    ],
+    [
+      " up",
+      "d"
+    ],
+    [
+      " P",
+      "ooja"
+    ],
+    [
+      " check",
+      "up"
+    ],
+    [
+      " K",
+      "armala"
+    ],
+    [
+      " ",
+      "Shirpur"
+    ],
+    [
+      " A",
+      "sha"
+    ],
+    [
+      " ",
+      "Rekha"
+    ],
+    [
+      " ",
+      "Geeta"
+    ],
+    [
+      " j",
+      "a"
+    ],
+    [
+      " A",
+      "nita"
+    ],
+    [
+      " L",
+      "ata"
+    ],
+    [
+      " mod",
+      "e"
+    ],
+    [
+      "B",
+      "ook"
+    ],
+    [
+      "Book",
+      "ing"
+    ],
+    [
+      " K",
+      "avita"
+    ],
+    [
+      " b",
+      "ad"
+    ],
+    [
+      "ah",
+      "u"
+    ],
+    [
+      " A",
+      "kluj"
+    ],
+    [
+      " M",
+      "ohol"
+    ],
+    [
+      " ",
+      "our"
+    ],
+    [
+      " Aapk",
+      "o"
+    ],
+    [
+      " di",
+      "ya"
+    ],
+    [
+      "र",
+      "ल"
+    ],
+    [
+      "य",
+      "र"
+    ],
+    [
+      "इ",
+      "न"
+    ],
+    [
+      " सम",
+      "स"
+    ],
+    [
+      " zar",
+      "oor"
+    ],
+    [
+      " zaroor",
+      "at"
+    ],
+    [
+      "che",
+      "st"
+    ],
+    [
+      "d",
+      "i"
+    ],
+    [
+      "di",
+      "zziness"
+    ],
+    [
+      " ho",
+      "w"
+    ],
+    [
+      "ha",
+      "ath"
+    ],
+    [
+      " ha",
+      "ath"
+    ],
+    [
+      " g",
+      "u"
+    ],
+    [
+      " gu",
+      "id"
+    ],
+    [
+      " guid",
+      "e"
+    ],
+    [
+      " ",
+      "Namaste"
+    ],
+    [
+      " A",
+      "p"
+    ],
+    [
+      " M",
+      "ain"
+    ],
+    [
+      " sak",
+      "te"
+    ],
+    [
+      " upd",
+      "at"
+    ],
+    [
+      " updat",
+      "ed"
+    ],
+    [
+      " ne",
+      "x"
+    ],
+    [
+      " nex",
+      "t"
+    ],
+    [
+      " o",
+      "p"
+    ],
+    [
+      " op",
+      "en"
+    ],
+    [
+      "F",
+      "or"
+    ],
+    [
+      " hi",
+      "st"
+    ],
+    [
+      " hist",
+      "or"
+    ],
+    [
+      " histor",
+      "y"
+    ],
+    [
+      " ",
+      "ध"
+    ],
+    [
+      "c",
+      "entre"
+    ],
+    [
+      " न",
+      "जद"
+    ],
+    [
+      "ख",
+      "न"
+    ],
+    [
+      "क",
+      "अप"
+    ],
+    [
+      "छ",
+      "ल"
+    ],
+    [
+      "ख",
+      "कर"
+    ],
+    [
+      " in",
+      "ste"
+    ],
+    [
+      " inste",
+      "ad"
+    ],
+    [
+      "G",
+      "reat"
+    ],
+    [
+      " proceed",
+      "ing"
+    ],
+    [
+      " n",
+      "ow"
+    ],
+    [
+      "Aapk",
+      "i"
+    ],
+    [
+      " a",
+      "a"
+    ],
+    [
+      " sak",
+      "i"
+    ],
+    [
+      " sa",
+      "a"
+    ],
+    [
+      " saa",
+      "f"
+    ],
+    [
+      " d",
+      "he"
+    ],
+    [
+      " dhe",
+      "ere"
+    ],
+    [
+      " contact",
+      "ing"
+    ],
+    [
+      " H",
+      "el"
+    ],
+    [
+      " Hel",
+      "pline"
+    ],
+    [
+      " confir",
+      "me"
+    ],
+    [
+      " confirme",
+      "d"
+    ],
+    [
+      " spe",
+      "ed"
+    ],
+    [
+      " speed",
+      "y"
+    ],
+    [
+      " स",
+      "द"
+    ],
+    [
+      " a",
+      "age"
+    ],
+    [
+      " p",
+      "ra"
+    ],
+    [
+      " pra",
+      "k"
+    ],
+    [
+      " prak",
+      "riya"
+    ],
+    [
+      " p",
+      "o"
+    ],
+    [
+      " po",
+      "ori"
+    ],
+    [
+      " hel",
+      "p"
+    ],
+    [
+      " i",
+      "m"
+    ],
+    [
+      " im",
+      "p"
+    ],
+    [
+      " imp",
+      "ro"
+    ],
+    [
+      " impro",
+      "ving"
+    ],
+    [
+      " per",
+      "sist"
+    ],
+    [
+      " persist",
+      "ing"
+    ],
+    [
+      "o",
+      "se"
+    ],
+    [
+      " m",
+      "ot"
+    ],
+    [
+      " mot",
+      "ion"
+    ],
+    [
+      " motion",
+      "s"
+    ],
+    [
+      "G",
+      "ood"
+    ],
+    [
+      " h",
+      "ere"
+    ],
+    [
+      " schedu",
+      "led"
+    ],
+    [
+      " request",
+      "ed"
+    ],
+    [
+      "स",
+      "ह"
+    ],
+    [
+      " pro",
+      "g"
+    ],
+    [
+      " prog",
+      "re"
+    ],
+    [
+      " progre",
+      "ss"
+    ],
+    [
+      " re",
+      "sp"
+    ],
+    [
+      " resp",
+      "on"
+    ],
+    [
+      " respon",
+      "se"
+    ],
+    [
+      " l",
+      "it"
+    ],
+    [
+      " lit",
+      "t"
+    ],
+    [
+      " litt",
+      "le"
+    ],
+    [
+      " lo",
+      "u"
+    ],
+    [
+      " lou",
+      "d"
+    ],
+    [
+      " loud",
+      "er"
+    ],
+    [
+      " clear",
+      "er"
+    ],
+    [
+      "S",
+      "ama"
+    ],
+    [
+      "Sama",
+      "jh"
+    ],
+    [
+      " k",
+      "is"
+    ],
+    [
+      " kis",
+      "i"
+    ],
+    [
+      " swit",
+      "ch"
+    ],
+    [
+      " switch",
+      "ing"
+    ],
+    [
+      " arrange",
+      "d"
+    ],
+    [
+      " c",
+      "arr"
+    ],
+    [
+      " carr",
+      "y"
+    ],
+    [
+      " p",
+      "ri"
+    ],
+    [
+      " pri",
+      "or"
+    ],
+    [
+      " repor",
+      "t"
+    ],
+    [
+      " report",
+      "s"
+    ],
+    [
+      " is",
+      "s"
+    ],
+    [
+      " iss",
+      "ue"
+    ],
+    [
+      " issue",
+      "s"
+    ],
+    [
+      " ",
+      "N"
+    ],
+    [
+      " N",
+      "av"
+    ],
+    [
+      " Nav",
+      "i"
+    ],
+    [
+      " Navi",
+      "gat"
+    ],
+    [
+      " Navigat",
+      "or"
+    ],
+    [
+      " s",
+      "wa"
+    ],
+    [
+      " आ",
+      "ग"
+    ],
+    [
+      " dif",
+      "fer"
+    ],
+    [
+      " differ",
+      "ent"
+    ],
+    [
+      " ",
+      "facility"
+    ],
+    [
+      " near",
+      "b"
+    ],
+    [
+      " nearb",
+      "y"
+    ],
+    [
+      " m",
+      "is"
+    ],
+    [
+      " mis",
+      "se"
+    ],
+    [
+      " misse",
+      "d"
+    ],
+    [
+      " l",
+      "ast"
+    ],
+    [
+      " s",
+      "t"
+    ],
+    [
+      " st",
+      "ate"
+    ],
+    [
+      " state",
+      "ment"
+    ],
+    [
+      " j",
+      "u"
+    ],
+    [
+      " ju",
+      "st"
+    ],
+    [
+      " sa",
+      "id"
+    ],
+    [
+      "P",
+      "ard"
+    ],
+    [
+      "Pard",
+      "on"
+    ],
+    [
+      " connect",
+      "ion"
+    ],
+    [
+      " w",
+      "a"
+    ],
+    [
+      " wa",
+      "s"
+    ],
+    [
+      " ",
+      "un"
+    ],
+    [
+      " un",
+      "c"
+    ],
+    [
+      " unc",
+      "lear"
+    ],
+    [
+      " k",
+      "ind"
+    ],
+    [
+      " kind",
+      "ly"
+    ],
+    [
+      " s",
+      "ay"
+    ],
+    [
+      " C",
+      "on"
+    ],
+    [
+      " Con",
+      "f"
+    ],
+    [
+      " Conf",
+      "ir"
+    ],
+    [
+      " Confir",
+      "m"
+    ],
+    [
+      " Confirm",
+      "ing"
+    ],
+    [
+      " re",
+      "se"
+    ],
+    [
+      " rese",
+      "r"
+    ],
+    [
+      " reser",
+      "ving"
+    ],
+    [
+      "ch",
+      "ill"
+    ],
+    [
+      "chill",
+      "s"
+    ],
+    [
+      " s",
+      "p"
+    ],
+    [
+      " sp",
+      "a"
+    ],
+    [
+      " spa",
+      "sh"
+    ],
+    [
+      " spash",
+      "t"
+    ],
+    [
+      " उ",
+      "पय"
+    ],
+    [
+      " ",
+      "District"
+    ],
+    [
+      " c",
+      "ommunity"
+    ],
+    [
+      "j",
+      "odo"
+    ],
+    [
+      " j",
+      "odo"
+    ],
+    [
+      " कर",
+      "क"
+    ],
+    [
+      " स",
+      "फ"
+    ],
+    [
+      " सफ",
+      "ल"
+    ],
+    [
+      " सफल",
+      "त"
+    ],
+    [
+      "व",
+      "क"
+    ],
+    [
+      "D",
+      "one"
+    ],
+    [
+      " mod",
+      "if"
+    ],
+    [
+      " modif",
+      "i"
+    ],
+    [
+      " modifi",
+      "ed"
+    ],
+    [
+      "b",
+      "ack"
+    ],
+    [
+      " s",
+      "un"
+    ],
+    [
+      " bol",
+      "ein"
+    ],
+    [
+      " आ",
+      "ई"
+    ],
+    [
+      " con",
+      "ge"
+    ],
+    [
+      " conge",
+      "st"
+    ],
+    [
+      " congest",
+      "ion"
+    ],
+    [
+      " con",
+      "c"
+    ],
+    [
+      " conc",
+      "ern"
+    ],
+    [
+      "N",
+      "o"
+    ],
+    [
+      " ",
+      "all"
+    ],
+    [
+      " W",
+      "e"
+    ],
+    [
+      " c",
+      "h"
+    ],
+    [
+      " ch",
+      "oo"
+    ],
+    [
+      " choo",
+      "se"
+    ],
+    [
+      " al",
+      "t"
+    ],
+    [
+      " alt",
+      "ern"
+    ],
+    [
+      " altern",
+      "ati"
+    ],
+    [
+      " alternati",
+      "ve"
+    ],
+    [
+      "A",
+      "l"
+    ],
+    [
+      "Al",
+      "right"
+    ],
+    [
+      " su",
+      "it"
+    ],
+    [
+      " suit",
+      "s"
+    ],
+    [
+      " b",
+      "et"
+    ],
+    [
+      " bet",
+      "t"
+    ],
+    [
+      " bett",
+      "er"
+    ],
+    [
+      "C",
+      "er"
+    ],
+    [
+      "Cer",
+      "t"
+    ],
+    [
+      "Cert",
+      "ain"
+    ],
+    [
+      "Certain",
+      "ly"
+    ],
+    [
+      " swit",
+      "ched"
+    ],
+    [
+      " diffic",
+      "ulti"
+    ],
+    [
+      " difficulti",
+      "es"
+    ],
+    [
+      " proce",
+      "ss"
+    ],
+    [
+      " process",
+      "ing"
+    ],
+    [
+      " a",
+      "w"
+    ],
+    [
+      " aw",
+      "ay"
+    ],
+    [
+      " अ",
+      "भ"
+    ],
+    [
+      " बदल",
+      "कर"
+    ],
+    [
+      "आ",
+      "व"
+    ],
+    [
+      " क",
+      "ट"
+    ],
+    [
+      " कट",
+      "न"
+    ],
+    [
+      " अ",
+      "ब"
+    ],
+    [
+      "K",
+      "oi"
+    ],
+    [
+      " dekh",
+      "na"
+    ],
+    [
+      " chah",
+      "en"
+    ],
+    [
+      " chahen",
+      "ge"
+    ],
+    [
+      " t",
+      "reat"
+    ],
+    [
+      " treat",
+      "ing"
+    ],
+    [
+      " p",
+      "h"
+    ],
+    [
+      " ph",
+      "y"
+    ],
+    [
+      " phy",
+      "si"
+    ],
+    [
+      " physi",
+      "c"
+    ],
+    [
+      " physic",
+      "i"
+    ],
+    [
+      " physici",
+      "an"
+    ],
+    [
+      "te",
+      "z"
+    ],
+    [
+      " s",
+      "ur"
+    ],
+    [
+      " sur",
+      "e"
+    ],
+    [
+      " u",
+      "nderstood"
+    ],
+    [
+      " me",
+      "nt"
+    ],
+    [
+      " ment",
+      "ion"
+    ],
+    [
+      " t",
+      "r"
+    ],
+    [
+      " tr",
+      "ou"
+    ],
+    [
+      " trou",
+      "ble"
+    ],
+    [
+      " c",
+      "ould"
+    ],
+    [
+      " he",
+      "ar"
+    ],
+    [
+      " clear",
+      "ly"
+    ],
+    [
+      " d",
+      "ue"
+    ],
+    [
+      " back",
+      "g"
+    ],
+    [
+      " backg",
+      "r"
+    ],
+    [
+      " backgr",
+      "ound"
+    ],
+    [
+      " n",
+      "oi"
+    ],
+    [
+      " noi",
+      "se"
+    ],
+    [
+      "V",
+      "er"
+    ],
+    [
+      "Ver",
+      "y"
+    ],
+    [
+      " w",
+      "ell"
+    ],
+    [
+      " loc",
+      "k"
+    ],
+    [
+      " lock",
+      "ing"
+    ],
+    [
+      " c",
+      "ho"
+    ],
+    [
+      " cho",
+      "se"
+    ],
+    [
+      " chose",
+      "n"
+    ],
+    [
+      " अ",
+      "ग"
+    ],
+    [
+      " अग",
+      "ल"
+    ],
+    [
+      " di",
+      "st"
+    ],
+    [
+      " dist",
+      "rict"
+    ],
+    [
+      "L",
+      "ine"
+    ],
+    [
+      " ba",
+      "ar"
+    ],
+    [
+      " f",
+      "ir"
+    ],
+    [
+      "h",
+      "and"
+    ],
+    [
+      " h",
+      "and"
+    ],
+    [
+      " ज",
+      "र"
+    ],
+    [
+      "र",
+      "त"
+    ],
+    [
+      " di",
+      "d"
+    ],
+    [
+      " ",
+      "q"
+    ],
+    [
+      " q",
+      "u"
+    ],
+    [
+      " qu",
+      "it"
+    ],
+    [
+      " quit",
+      "e"
+    ],
+    [
+      " u",
+      "nderst"
+    ],
+    [
+      " underst",
+      "and"
+    ],
+    [
+      "da",
+      "st"
+    ],
+    [
+      " d",
+      "ast"
+    ],
+    [
+      " p",
+      "rimary"
+    ],
+    [
+      " ",
+      "ठ"
+    ],
+    [
+      "s",
+      "w"
+    ],
+    [
+      "sw",
+      "ell"
+    ],
+    [
+      "swell",
+      "ing"
+    ],
+    [
+      "अ",
+      "न"
+    ],
+    [
+      " ",
+      "ए"
+    ],
+    [
+      " ए",
+      "क"
+    ],
+    [
+      " क",
+      "ह"
+    ],
+    [
+      "म",
+      "न"
+    ],
+    [
+      " कर",
+      "त"
+    ],
+    [
+      "B",
+      "ahu"
+    ],
+    [
+      "Bahu",
+      "t"
+    ],
+    [
+      " bad",
+      "hi"
+    ],
+    [
+      " badhi",
+      "ya"
+    ],
+    [
+      " d",
+      "eta"
+    ],
+    [
+      "A",
+      "ll"
+    ],
+    [
+      " register",
+      "ed"
+    ],
+    [
+      " me",
+      "ss"
+    ],
+    [
+      " mess",
+      "age"
+    ],
+    [
+      " se",
+      "nt"
+    ],
+    [
+      " S",
+      "t"
+    ],
+    [
+      " St",
+      "ay"
+    ],
+    [
+      " sa",
+      "fe"
+    ],
+    [
+      "low",
+      "er"
+    ],
+    [
+      "f",
+      "ati"
+    ],
+    [
+      "fati",
+      "g"
+    ],
+    [
+      "fatig",
+      "ue"
+    ],
+    [
+      " ",
+      "F"
+    ],
+    [
+      " F",
+      "e"
+    ],
+    [
+      " Fe",
+      "el"
+    ],
+    [
+      " f",
+      "re"
+    ],
+    [
+      " fre",
+      "e"
+    ],
+    [
+      " need",
+      "ed"
+    ],
+    [
+      " b",
+      "i"
+    ],
+    [
+      " bi",
+      "mar"
+    ],
+    [
+      " bimar",
+      "i"
+    ],
+    [
+      "M",
+      "uj"
+    ],
+    [
+      "Muj",
+      "he"
+    ],
+    [
+      " a",
+      "aya"
+    ],
+    [
+      " c",
+      "ur"
+    ],
+    [
+      " cur",
+      "r"
+    ],
+    [
+      " curr",
+      "ent"
+    ],
+    [
+      "र",
+      "स"
+    ],
+    [
+      " ज",
+      "ब"
+    ],
+    [
+      " आव",
+      "श"
+    ],
+    [
+      "यक",
+      "त"
+    ],
+    [
+      "ट",
+      "व"
+    ],
+    [
+      "टव",
+      "र"
+    ],
+    [
+      " व",
+      "ज"
+    ],
+    [
+      " वज",
+      "ह"
+    ],
+    [
+      " ",
+      "थ"
+    ],
+    [
+      "स",
+      "भ"
+    ],
+    [
+      "ए",
+      "ग"
+    ],
+    [
+      " book",
+      "ed"
+    ],
+    [
+      " le",
+      "te"
+    ],
+    [
+      "ब",
+      "ह"
+    ],
+    [
+      " अ",
+      "च"
+    ],
+    [
+      "c",
+      "ol"
+    ],
+    [
+      "col",
+      "d"
+    ],
+    [
+      " p",
+      "ur"
+    ],
+    [
+      " pur",
+      "an"
+    ],
+    [
+      " puran",
+      "i"
+    ],
+    [
+      " j",
+      "aanch"
+    ],
+    [
+      " dekh",
+      "kar"
+    ],
+    [
+      " kar",
+      "wa"
+    ],
+    [
+      " d",
+      "e"
+    ],
+    [
+      " de",
+      "te"
+    ],
+    [
+      "F",
+      "ollow"
+    ],
+    [
+      " p",
+      "eh"
+    ],
+    [
+      " peh",
+      "le"
+    ],
+    [
+      " be",
+      "h"
+    ],
+    [
+      " beh",
+      "t"
+    ],
+    [
+      " beht",
+      "ar"
+    ],
+    [
+      " c",
+      "han"
+    ],
+    [
+      " chan",
+      "ge"
+    ],
+    [
+      "Hel",
+      "pline"
+    ],
+    [
+      " d",
+      "hanyawad"
+    ],
+    [
+      " Aapk",
+      "i"
+    ],
+    [
+      " Ap",
+      "na"
+    ],
+    [
+      " k",
+      "ha"
+    ],
+    [
+      " kha",
+      "y"
+    ],
+    [
+      " khay",
+      "al"
+    ],
+    [
+      " ra",
+      "k"
+    ],
+    [
+      " rak",
+      "he"
+    ],
+    [
+      " rakhe",
+      "in"
+    ],
+    [
+      " p",
+      "ad"
+    ],
+    [
+      " pad",
+      "ne"
+    ],
+    [
+      "A",
+      "p"
+    ],
+    [
+      "Ap",
+      "pointment"
+    ],
+    [
+      " t",
+      "y"
+    ],
+    [
+      " ty",
+      "pe"
+    ],
+    [
+      " upd",
+      "ate"
+    ],
+    [
+      " A",
+      "g"
+    ],
+    [
+      " Ag",
+      "l"
+    ],
+    [
+      " Agl",
+      "a"
+    ],
+    [
+      " se",
+      "ar"
+    ],
+    [
+      " sear",
+      "ch"
+    ],
+    [
+      " c",
+      "huk"
+    ],
+    [
+      " chuk",
+      "i"
+    ],
+    [
+      " Health",
+      "care"
+    ],
+    [
+      " a",
+      "an"
+    ],
+    [
+      " aan",
+      "e"
+    ],
+    [
+      " sh",
+      "uk"
+    ],
+    [
+      " shuk",
+      "riya"
+    ],
+    [
+      "J",
+      "i"
+    ],
+    [
+      " b",
+      "il"
+    ],
+    [
+      " bil",
+      "k"
+    ],
+    [
+      " bilk",
+      "ul"
+    ],
+    [
+      " bad",
+      "al"
+    ],
+    [
+      " up",
+      "l"
+    ],
+    [
+      " upl",
+      "ab"
+    ],
+    [
+      " uplab",
+      "d"
+    ],
+    [
+      " uplabd",
+      "h"
+    ],
+    [
+      " ",
+      "J"
+    ],
+    [
+      " J",
+      "ab"
+    ],
+    [
+      " b",
+      "hi"
+    ],
+    [
+      " sa",
+      "f"
+    ],
+    [
+      " saf",
+      "al"
+    ],
+    [
+      " safal",
+      "t"
+    ],
+    [
+      " safalt",
+      "ap"
+    ],
+    [
+      " safaltap",
+      "oor"
+    ],
+    [
+      " safaltapoor",
+      "v"
+    ],
+    [
+      " safaltapoorv",
+      "ak"
+    ],
+    [
+      " n",
+      "ir"
+    ],
+    [
+      " nir",
+      "d"
+    ],
+    [
+      " nird",
+      "har"
+    ],
+    [
+      " nirdhar",
+      "it"
+    ],
+    [
+      " p",
+      "ahu"
+    ],
+    [
+      " pahu",
+      "che"
+    ],
+    [
+      " pahuche",
+      "in"
+    ],
+    [
+      "D",
+      "etails"
+    ],
+    [
+      " S",
+      "MS"
+    ],
+    [
+      " zar",
+      "i"
+    ],
+    [
+      " zari",
+      "ye"
+    ],
+    [
+      " j",
+      "an"
+    ],
+    [
+      " jan",
+      "kar"
+    ],
+    [
+      " jankar",
+      "i"
+    ],
+    [
+      " b",
+      "he"
+    ],
+    [
+      " bhe",
+      "j"
+    ],
+    [
+      " j",
+      "ay"
+    ],
+    [
+      " jay",
+      "e"
+    ],
+    [
+      " jaye",
+      "g"
+    ],
+    [
+      " jayeg",
+      "i"
+    ],
+    [
+      " su",
+      "p"
+    ],
+    [
+      " sup",
+      "por"
+    ],
+    [
+      " suppor",
+      "t"
+    ],
+    [
+      "lo",
+      "ose"
+    ],
+    [
+      " lo",
+      "ose"
+    ],
+    [
+      " ",
+      "r"
+    ],
+    [
+      " r",
+      "ural"
+    ],
+    [
+      " req",
+      "u"
+    ],
+    [
+      " requ",
+      "i"
+    ],
+    [
+      " requi",
+      "re"
+    ],
+    [
+      " ex",
+      "p"
+    ],
+    [
+      " exp",
+      "l"
+    ],
+    [
+      " expl",
+      "ain"
+    ],
+    [
+      " आ",
+      "ज"
+    ],
+    [
+      " li",
+      "st"
+    ],
+    [
+      " list",
+      "en"
+    ],
+    [
+      " swa",
+      "gat"
+    ],
+    [
+      "j",
+      "oint"
+    ],
+    [
+      " j",
+      "oint"
+    ],
+    [
+      "S",
+      "wa"
+    ],
+    [
+      "Swa",
+      "gat"
+    ],
+    [
+      "se",
+      "vere"
+    ],
+    [
+      "G",
+      "re"
+    ],
+    [
+      "Gre",
+      "et"
+    ],
+    [
+      "Greet",
+      "ing"
+    ],
+    [
+      "Greeting",
+      "s"
+    ],
+    [
+      " w",
+      "ould"
+    ],
+    [
+      " dis",
+      "c"
+    ],
+    [
+      " disc",
+      "u"
+    ],
+    [
+      " discu",
+      "ss"
+    ],
+    [
+      " aapk",
+      "i"
+    ],
+    [
+      " Ap",
+      "ni"
+    ],
+    [
+      "in",
+      "jury"
+    ],
+    [
+      " sa",
+      "hi"
+    ],
+    [
+      " ",
+      "lower"
+    ],
+    [
+      " swa",
+      "st"
+    ],
+    [
+      " swast",
+      "h"
+    ],
+    [
+      " swasth",
+      "ya"
+    ],
+    [
+      " sa",
+      "ha"
+    ],
+    [
+      " saha",
+      "ya"
+    ],
+    [
+      " sahaya",
+      "k"
+    ],
+    [
+      " problem",
+      "s"
+    ],
+    [
+      " ",
+      "fac"
+    ],
+    [
+      " fac",
+      "ing"
+    ],
+    [
+      " k",
+      "h"
+    ],
+    [
+      " kh",
+      "ul"
+    ],
+    [
+      " khul",
+      "kar"
+    ],
+    [
+      " di",
+      "g"
+    ],
+    [
+      " dig",
+      "ital"
+    ],
+    [
+      " assist",
+      "ant"
+    ],
+    [
+      " c",
+      "o"
+    ],
+    [
+      " co",
+      "nd"
+    ],
+    [
+      " cond",
+      "it"
+    ],
+    [
+      " condit",
+      "ion"
+    ],
+    [
+      " s",
+      "o"
+    ],
+    [
+      " pro",
+      "per"
+    ],
+    [
+      " proper",
+      "ly"
+    ],
+    [
+      " par",
+      "iv"
+    ],
+    [
+      " pariv",
+      "ar"
+    ],
+    [
+      " s",
+      "ad"
+    ],
+    [
+      " sad",
+      "a"
+    ],
+    [
+      " sada",
+      "sya"
+    ],
+    [
+      " ba",
+      "are"
+    ],
+    [
+      " bat",
+      "a"
+    ]
+  ],
+  "target_vocab_size": 3072
+}

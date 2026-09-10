@@ -15,11 +15,18 @@ from backend.app.repositories.otp_repository import OTPRepository
 from backend.app.repositories.patient_repository import PatientRepository
 from backend.app.repositories.referral_repository import ReferralRepository
 from backend.app.repositories.scheme_repository import SchemeRepository
+from backend.app.repositories.consultation_repository import ConsultationRepository
+from backend.app.repositories.doctor_repository import DoctorRepository
+from backend.app.repositories.worker_repository import WorkerRepository
+from backend.app.repositories.screening_repository import ScreeningRepository
+from backend.app.repositories.voice_encounter_repository import VoiceEncounterRepository
 
 __all__ = [
     "AppointmentRepository",
     "AvailabilityRepository",
     "BaseRepository",
+    "ConsultationRepository",
+    "DoctorRepository",
     "FacilityRepository",
     "FollowUpRepository",
     "HealthJourneyRepository",
@@ -28,6 +35,9 @@ __all__ = [
     "PatientRepository",
     "ReferralRepository",
     "SchemeRepository",
+    "ScreeningRepository",
+    "WorkerRepository",
+    "VoiceEncounterRepository",
 ]
 
 

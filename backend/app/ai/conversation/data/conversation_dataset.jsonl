@@ -1,0 +1,609 @@
+{"text": "I have fever", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "en"}
+{"text": "I have a cough", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "en"}
+{"text": "I have fever and cough", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "language": "en"}
+{"text": "I've got fever and cough", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "language": "en"}
+{"text": "I've had fever and cough for three days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "en"}
+{"text": "I have had fever for three days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "3 days", "language": "en"}
+{"text": "My head is hurting badly", "intent": "REPORT_SYMPTOMS", "symptoms": ["headache"], "severity": "severe", "language": "en"}
+{"text": "I have severe headache", "intent": "REPORT_SYMPTOMS", "symptoms": ["headache"], "severity": "severe", "language": "en"}
+{"text": "My stomach hurts", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache"], "language": "en"}
+{"text": "I injured my leg", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "en"}
+{"text": "I fell down and hurt my hand", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "en"}
+{"text": "I have been coughing for three days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "duration": "3 days", "language": "en"}
+{"text": "I have body pain and fever since yesterday", "intent": "REPORT_SYMPTOMS", "symptoms": ["body ache", "fever"], "duration": "yesterday", "language": "en"}
+{"text": "I have sore throat and cold", "intent": "REPORT_SYMPTOMS", "symptoms": ["cold", "sore throat"], "language": "en"}
+{"text": "I am vomiting and have loose motions", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "language": "en"}
+{"text": "My knee is swollen after a fall", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "language": "en"}
+{"text": "I have back pain for two weeks", "intent": "REPORT_SYMPTOMS", "symptoms": ["back pain"], "duration": "2 weeks", "language": "en"}
+{"text": "High fever with chills and shivering", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "chills"], "severity": "severe", "language": "en"}
+{"text": "Persistent dry cough and mild fever", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "fever"], "severity": "mild", "language": "en"}
+{"text": "I feel dizzy and weak since morning", "intent": "REPORT_SYMPTOMS", "symptoms": ["dizziness", "weakness"], "duration": "morning", "language": "en"}
+{"text": "My eye is red and burning", "intent": "REPORT_SYMPTOMS", "symptoms": ["eye irritation"], "language": "en"}
+{"text": "Got a cut on my finger and bleeding", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "en"}
+{"text": "I have joint pain in both legs", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain"], "language": "en"}
+{"text": "Chest congestion and constant coughing", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "en"}
+{"text": "Ear pain since two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["ear pain"], "duration": "2 days", "language": "en"}
+{"text": "मुझे बुखार है", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "hi"}
+{"text": "मुझे खांसी है", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "hi"}
+{"text": "मुझे बुखार और खांसी है", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "language": "hi"}
+{"text": "मुझे तीन दिन से बुखार है", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "3 days", "language": "hi"}
+{"text": "मुझे बुखार और खांसी दोनों है", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "language": "hi"}
+{"text": "पेट में दर्द है", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache"], "language": "hi"}
+{"text": "सिर में बहुत तेज दर्द हो रहा है", "intent": "REPORT_SYMPTOMS", "symptoms": ["headache"], "severity": "severe", "language": "hi"}
+{"text": "मैं गिर गया और पैर में चोट लग गई", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "हाथ कट गया है खून बह रहा है", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "दो दिन से उल्टी और दस्त हो रहे हैं", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "hi"}
+{"text": "गले में खराश है और ठंड लग रही है", "intent": "REPORT_SYMPTOMS", "symptoms": ["sore throat", "chills"], "language": "hi"}
+{"text": "कल से बदन दर्द और तेज बुखार है", "intent": "REPORT_SYMPTOMS", "symptoms": ["body ache", "fever"], "duration": "yesterday", "severity": "severe", "language": "hi"}
+{"text": "घुटने में सूजन और दर्द है", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "swelling"], "language": "hi"}
+{"text": "चक्कर आ रहे हैं और कमजोरी लग रही है", "intent": "REPORT_SYMPTOMS", "symptoms": ["dizziness", "weakness"], "language": "hi"}
+{"text": "Mujhe bukhar hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "hi"}
+{"text": "Mujhe khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "hi"}
+{"text": "Mujhe bukhar aur khansi dono hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "language": "hi"}
+{"text": "Mujhe teen din se bukhar hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "3 days", "language": "hi"}
+{"text": "Mujhe teen din se bukhar aur khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "hi"}
+{"text": "Mujhe fever hai aur three days se cough bhi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "hi"}
+{"text": "Teen din se bukhar chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "3 days", "language": "hi"}
+{"text": "Teen din se fever chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "3 days", "language": "hi"}
+{"text": "Khansi bhi ho rahi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "hi"}
+{"text": "Pet mein dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache"], "language": "hi"}
+{"text": "Mera haath lag gaya", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "Main gir gaya aur pair mein chot lagi", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "bukhar chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "hi"}
+{"text": "bukhaar hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "hi"}
+{"text": "fever aa raha", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "language": "hi"}
+{"text": "khansi ho rahi", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "language": "hi"}
+{"text": "pet mein dard", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache"], "language": "hi"}
+{"text": "pair mein chot lagi", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "gir gaya pair mein lag gaya", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "Sir me bohot tez dard ho raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["headache"], "severity": "severe", "language": "hi"}
+{"text": "Do din se ulti aur dast ho rahe hain", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "hi"}
+{"text": "Gale me kharash hai aur thand lag rahi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["sore throat", "chills"], "language": "hi"}
+{"text": "Kal se badan dard aur tez bukhar hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["body ache", "fever"], "duration": "yesterday", "severity": "severe", "language": "hi"}
+{"text": "Ghutne me sujan aur dard hai girne ke baad", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "language": "hi"}
+{"text": "Chakkar aa rahe hain aur kamzori lag rahi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["dizziness", "weakness"], "language": "hi"}
+{"text": "Haath cut gaya hai khoon nikal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury"], "language": "hi"}
+{"text": "Bohot tej bukhar aur thand", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "chills"], "severity": "severe", "language": "hi"}
+{"text": "Knee me pain hai do din se", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain"], "duration": "2 days", "language": "hi"}
+{"text": "Pet kharab ho gaya hai ulti aa rahi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "language": "hi"}
+{"text": "Aankh lal ho gayi hai jalan ho rahi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["eye irritation"], "language": "hi"}
+{"text": "Pichle char din se khansi nahi ruk rahi", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough"], "duration": "4 days", "language": "hi"}
+{"text": "Subah se tabiyat theek nahi hai bukhar lag raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever"], "duration": "morning", "language": "hi"}
+{"text": "Three days", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "en"}
+{"text": "For three days", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "en"}
+{"text": "Since three days", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "en"}
+{"text": "Two days", "intent": "PROVIDE_DURATION", "duration": "2 days", "language": "en"}
+{"text": "Since yesterday", "intent": "PROVIDE_DURATION", "duration": "yesterday", "language": "en"}
+{"text": "For 4 days now", "intent": "PROVIDE_DURATION", "duration": "4 days", "language": "en"}
+{"text": "One week", "intent": "PROVIDE_DURATION", "duration": "1 week", "language": "en"}
+{"text": "About five days", "intent": "PROVIDE_DURATION", "duration": "5 days", "language": "en"}
+{"text": "Since this morning", "intent": "PROVIDE_DURATION", "duration": "morning", "language": "en"}
+{"text": "Just started today", "intent": "PROVIDE_DURATION", "duration": "today", "language": "en"}
+{"text": "Almost a week now", "intent": "PROVIDE_DURATION", "duration": "1 week", "language": "en"}
+{"text": "Last two days", "intent": "PROVIDE_DURATION", "duration": "2 days", "language": "en"}
+{"text": "Past four or five days", "intent": "PROVIDE_DURATION", "duration": "5 days", "language": "en"}
+{"text": "तीन दिन से", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "hi"}
+{"text": "दो दिन से", "intent": "PROVIDE_DURATION", "duration": "2 days", "language": "hi"}
+{"text": "कल से", "intent": "PROVIDE_DURATION", "duration": "yesterday", "language": "hi"}
+{"text": "एक हफ्ते से", "intent": "PROVIDE_DURATION", "duration": "1 week", "language": "hi"}
+{"text": "आज सुबह से", "intent": "PROVIDE_DURATION", "duration": "morning", "language": "hi"}
+{"text": "चार दिनों से", "intent": "PROVIDE_DURATION", "duration": "4 days", "language": "hi"}
+{"text": "पांच दिन हो गए", "intent": "PROVIDE_DURATION", "duration": "5 days", "language": "hi"}
+{"text": "Teen din se", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "hi"}
+{"text": "Do din se", "intent": "PROVIDE_DURATION", "duration": "2 days", "language": "hi"}
+{"text": "Kal se ho raha hai", "intent": "PROVIDE_DURATION", "duration": "yesterday", "language": "hi"}
+{"text": "Last 3 days se", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "hi"}
+{"text": "Pichle do din se", "intent": "PROVIDE_DURATION", "duration": "2 days", "language": "hi"}
+{"text": "One week ho gaya", "intent": "PROVIDE_DURATION", "duration": "1 week", "language": "hi"}
+{"text": "Aaj subah se ho raha hai", "intent": "PROVIDE_DURATION", "duration": "morning", "language": "hi"}
+{"text": "teen din se aisa hai", "intent": "PROVIDE_DURATION", "duration": "3 days", "language": "hi"}
+{"text": "Char din se", "intent": "PROVIDE_DURATION", "duration": "4 days", "language": "hi"}
+{"text": "Pichle paanch din se", "intent": "PROVIDE_DURATION", "duration": "5 days", "language": "hi"}
+{"text": "Lagbhag ek hafta ho gaya", "intent": "PROVIDE_DURATION", "duration": "1 week", "language": "hi"}
+{"text": "Bas kal raat se", "intent": "PROVIDE_DURATION", "duration": "yesterday", "language": "hi"}
+{"text": "It is very severe", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "en"}
+{"text": "It's mild pain", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "en"}
+{"text": "Moderate severity", "intent": "PROVIDE_SEVERITY", "severity": "moderate", "language": "en"}
+{"text": "Extremely bad and unbearable", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "en"}
+{"text": "Not too bad, manageable", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "en"}
+{"text": "High fever very intense", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "en"}
+{"text": "Slight discomfort only", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "en"}
+{"text": "बहुत तेज दर्द है", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "हल्का सा दर्द है", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "hi"}
+{"text": "बहुत ज्यादा तकलीफ हो रही है", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "सहन नहीं हो रहा", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "मध्यम है ज्यादा नहीं", "intent": "PROVIDE_SEVERITY", "severity": "moderate", "language": "hi"}
+{"text": "Bohot jyada hai", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "Halka bukhar hai", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "hi"}
+{"text": "Severe hai bohot", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "Thoda sa dard hai", "intent": "PROVIDE_SEVERITY", "severity": "mild", "language": "hi"}
+{"text": "Bohot tez pain hai", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "Normal hai zyada nahi", "intent": "PROVIDE_SEVERITY", "severity": "moderate", "language": "hi"}
+{"text": "Bardasht se bahar hai", "intent": "PROVIDE_SEVERITY", "severity": "severe", "language": "hi"}
+{"text": "Pandharpur", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "I live in Pandharpur", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "My locality is Malshiras", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "en"}
+{"text": "Malshiras", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "en"}
+{"text": "Akluj", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "en"}
+{"text": "I am in Akluj village", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "en"}
+{"text": "Solapur", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "en"}
+{"text": "I am calling from Solapur", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "en"}
+{"text": "Sangola", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "en"}
+{"text": "Kurduvadi town", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "en"}
+{"text": "Karmala", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "en"}
+{"text": "Mohol", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "en"}
+{"text": "Barshi", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "en"}
+{"text": "My village is near Pandharpur", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "पंढरपुर", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "मैं पंढरपुर में रहता हूँ", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "मेरा गांव मालशिरस है", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "मालशिरस", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "अकलूज", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "hi"}
+{"text": "सोलापुर", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "hi"}
+{"text": "सांगोला", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "hi"}
+{"text": "करमाला गांव", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "hi"}
+{"text": "Mera gaon Pandharpur hai", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "Pandharpur se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "Malshiras village", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "Main Malshiras me rehta hu", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "Hum Akluj ke paas rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "hi"}
+{"text": "Solapur shahar", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "hi"}
+{"text": "Kurduvadi gaon", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "hi"}
+{"text": "Mera gaon Sangola hai", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "hi"}
+{"text": "Mohol me", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "hi"}
+{"text": "Barshi me", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "hi"}
+{"text": "Yes", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Yeah", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Yes please", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Sure", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Okay", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Yes that's correct", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Correct", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Right", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Yes do that", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Yes I agree", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "Definitely yes", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "हाँ", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "हाँ जी", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "हाँ बिल्कुल", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "ठीक है", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "ज़रूर", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "हाँ कर दो", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "सही बात है", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "haan", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "haan ji", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Haan please", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Theek hai ji", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Haan bilkul", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Haan kar dijiye", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Sure kar do", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Haan theek hai", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "Sahi hai", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "No", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "Nope", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No, nothing else", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No nothing else", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No thanks", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "Not needed", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No I don't want that", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No other symptoms", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "Negative", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "No that's all", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "नहीं", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "नहीं जी", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "नहीं कुछ और नहीं", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "कुछ नहीं", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "नहीं चाहिए", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "नहीं बस इतना ही", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "nahi kuch nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Nahi ji", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Nahi kuch aur nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Kuch nahi bas itna hi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Nahi nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "No nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Aisa kuch nahi hai", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "Repeat that", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "Can you repeat please?", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "Say that again", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "I didn't understand", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "I didn't hear you properly", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "Could you repeat that once more?", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "Pardon please", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "फिर से बताओ", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "दोबारा बोलिए", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "समझ नहीं आया", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "सुनाई नहीं दिया", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "एक बार फिर से कहिए", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "phir se bolo", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "Phir se batao", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "Samajh nahi aaya", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "Dobara bolo please", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "Awaaz cut rahi hai dobara boliye", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "Ek aur baar repeat karo", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "I need help", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "Can you help me?", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "What should I do?", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "Help me please", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "I don't know what to do", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "Please guide me", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "मुझे मदद चाहिए", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "मेरी मदद करो", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "मुझे क्या करना चाहिए?", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "कृपया मार्गदर्शन करें", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "Help chahiye", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "Meri madad karo", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "Kya karun main batao", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "Please meri help kijiye", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "Actually, I don't want to book. Just tell me where I should go.", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Where is the nearest hospital?", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Tell me the hospital location", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Where should I go for treatment?", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Which clinic is open nearby?", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Give me the address of the PHC", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "Just tell me where to go", "intent": "FACILITY_INFORMATION", "language": "en"}
+{"text": "मुझे अस्पताल का स्थान बताओ", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "नजदीकी अस्पताल कहाँ है?", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "मुझे कहाँ जाना चाहिए?", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "स्वास्थ्य केंद्र का पता बताइए", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "Mujhe actually hospital ka location batao", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "Hospital kahan hai batao", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "Nearest dispensary kahan hai", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "Book nahi karna bas address bata do hospital ka", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "Mujhe kahan jana hoga clinic ka naam batao", "intent": "FACILITY_INFORMATION", "language": "hi"}
+{"text": "I need to see a doctor", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "en"}
+{"text": "I want to talk to a doctor", "intent": "BOOK_APPOINTMENT", "language": "en"}
+{"text": "I want a doctor on the phone", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "en"}
+{"text": "I want to talk to a doctor on the phone", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "en"}
+{"text": "I want to visit the hospital", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "en"}
+{"text": "Book me a doctor", "intent": "BOOK_APPOINTMENT", "language": "en"}
+{"text": "I want to book an appointment", "intent": "BOOK_APPOINTMENT", "language": "en"}
+{"text": "Book an offline appointment", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "en"}
+{"text": "Can I get a phone consultation?", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "en"}
+{"text": "I want an in-person clinic visit", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "en"}
+{"text": "Schedule a doctor consultation", "intent": "BOOK_APPOINTMENT", "language": "en"}
+{"text": "मुझे डॉक्टर से बात करनी है", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "डॉक्टर को फोन पे बात करना है", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "hi"}
+{"text": "अस्पताल जाना है", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "hi"}
+{"text": "अपॉइंटमेंट चाहिए", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "डॉक्टर की अपॉइंटमेंट बुक कर दीजिए", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "मुझे फोन पर डॉक्टर से परामर्श लेना है", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "hi"}
+{"text": "Mujhe doctor se baat karni hai", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "doctor ko phone pe baat karna hai", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "hi"}
+{"text": "Doctor ko phone pe baat karna hai", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "hi"}
+{"text": "hospital jaana hai", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "hi"}
+{"text": "Hospital jaana hai", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "hi"}
+{"text": "Appointment chahiye", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "Doctor se milna hai hospital me", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "hi"}
+{"text": "Phone consultation karwa do", "intent": "BOOK_APPOINTMENT", "appointment_type": "phone", "language": "hi"}
+{"text": "Doctor ka appointment book karo", "intent": "BOOK_APPOINTMENT", "language": "hi"}
+{"text": "Offline visit book karo", "intent": "BOOK_APPOINTMENT", "appointment_type": "offline", "language": "hi"}
+{"text": "Actually, I want to visit.", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "en"}
+{"text": "I changed my mind, I want phone consultation", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "phone", "language": "en"}
+{"text": "Change it to offline visit", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "en"}
+{"text": "Can I switch to phone instead of visit?", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "phone", "language": "en"}
+{"text": "I want to visit the clinic in person instead", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "en"}
+{"text": "फोन नहीं, मुझे अस्पताल जाकर दिखाना है", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "hi"}
+{"text": "फोन पर परामर्श में बदल दीजिए", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "phone", "language": "hi"}
+{"text": "मुझे खुद जाकर दिखाना है", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "hi"}
+{"text": "Actually clinic visit karna hai phone nahi", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "hi"}
+{"text": "Change karke phone consultation kar do", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "phone", "language": "hi"}
+{"text": "Clinic jana hai offline kar do", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "offline", "language": "hi"}
+{"text": "Phone pe baat karni hai switch karo", "intent": "CHANGE_APPOINTMENT_TYPE", "appointment_type": "phone", "language": "hi"}
+{"text": "Please confirm the booking", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "Confirm this appointment slot", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "Yes confirm my booking", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "Lock this time slot", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "Book this slot please", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "बुकिंग पक्की कर दीजिए", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "हाँ यह स्लॉट कन्फर्म करो", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "अपॉइंटमेंट पक्की कर दो", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "Booking confirm kar do", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "Haan slot confirm karo please", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "Appointment pakka kar do", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "Ye time book kar dijiye", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "Cancel my booking", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "I want to cancel the appointment", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "Don't book it, cancel", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "Drop this booking", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "बुकिंग रद्द कर दीजिए", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "अपॉइंटमेंट कैंसिल कर दो", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "मुझे बुकिंग नहीं करानी रद्द करो", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "Booking cancel kar do", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "Appointment cancel karna hai", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "Mat karo book cancel karo", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "I can't breathe properly", "intent": "EMERGENCY", "symptoms": ["breathing difficulty"], "emergency": true, "language": "en"}
+{"text": "My chest is hurting badly", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "en"}
+{"text": "Severe chest pain and sweating", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "en"}
+{"text": "This is an emergency", "intent": "EMERGENCY", "emergency": true, "language": "en"}
+{"text": "Patient is unconscious and not responding", "intent": "EMERGENCY", "symptoms": ["unconscious"], "emergency": true, "language": "en"}
+{"text": "Heavy bleeding and cannot stop it", "intent": "EMERGENCY", "symptoms": ["heavy bleeding"], "emergency": true, "language": "en"}
+{"text": "Severe head injury with blood loss", "intent": "EMERGENCY", "symptoms": ["head injury"], "emergency": true, "language": "en"}
+{"text": "Call an ambulance immediately", "intent": "EMERGENCY", "emergency": true, "language": "en"}
+{"text": "Difficulty in breathing chest tightness", "intent": "EMERGENCY", "symptoms": ["breathing difficulty", "chest pain"], "emergency": true, "language": "en"}
+{"text": "सांस लेने में दिक्कत हो रही है", "intent": "EMERGENCY", "symptoms": ["breathing difficulty"], "emergency": true, "language": "hi"}
+{"text": "सीने में बहुत दर्द है", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "यह आपातकाल है", "intent": "EMERGENCY", "emergency": true, "language": "hi"}
+{"text": "मरीज बेहोश हो गया है", "intent": "EMERGENCY", "symptoms": ["unconscious"], "emergency": true, "language": "hi"}
+{"text": "बहुत ज्यादा खून बह रहा है", "intent": "EMERGENCY", "symptoms": ["heavy bleeding"], "emergency": true, "language": "hi"}
+{"text": "एंबुलेंस भेजिए तुरंत", "intent": "EMERGENCY", "emergency": true, "language": "hi"}
+{"text": "saans lene mein dikkat ho rahi hai", "intent": "EMERGENCY", "symptoms": ["breathing difficulty"], "emergency": true, "language": "hi"}
+{"text": "Saans lene mein dikkat ho rahi hai", "intent": "EMERGENCY", "symptoms": ["breathing difficulty"], "emergency": true, "language": "hi"}
+{"text": "seene mein bahut दर्द hai", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "Seene mein bahut dard hai", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "Chhati me bohot tez dard ho raha hai", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "Saans nahi aa rahi bohot ghabrahat hai", "intent": "EMERGENCY", "symptoms": ["breathing difficulty"], "emergency": true, "language": "hi"}
+{"text": "Emergency hai patient behosh ho gaya", "intent": "EMERGENCY", "symptoms": ["unconscious"], "emergency": true, "language": "hi"}
+{"text": "Bohot khoon beh raha hai accident hua hai", "intent": "EMERGENCY", "symptoms": ["heavy bleeding", "injury"], "emergency": true, "language": "hi"}
+{"text": "Chest pain ho raha hai jaldi help chahiye", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "Goodbye", "intent": "FINISH", "language": "en"}
+{"text": "Thank you goodbye", "intent": "FINISH", "language": "en"}
+{"text": "Thanks that is all", "intent": "FINISH", "language": "en"}
+{"text": "Bye", "intent": "FINISH", "language": "en"}
+{"text": "Have a good day", "intent": "FINISH", "language": "en"}
+{"text": "नमस्ते", "intent": "FINISH", "language": "hi"}
+{"text": "धन्यवाद", "intent": "FINISH", "language": "hi"}
+{"text": "शुक्रिया बस इतना ही", "intent": "FINISH", "language": "hi"}
+{"text": "अलविदा", "intent": "FINISH", "language": "hi"}
+{"text": "Dhanyawad namaste", "intent": "FINISH", "language": "hi"}
+{"text": "Thank you bye", "intent": "FINISH", "language": "hi"}
+{"text": "Bas itna hi tha shukriya", "intent": "FINISH", "language": "hi"}
+{"text": "Namaste", "intent": "FINISH", "language": "hi"}
+{"text": "The sky is blue today", "intent": "UNKNOWN", "language": "en"}
+{"text": "What is the weather in Delhi?", "intent": "UNKNOWN", "language": "en"}
+{"text": "Play some Bollywood music", "intent": "UNKNOWN", "language": "en"}
+{"text": "Tell me a joke", "intent": "UNKNOWN", "language": "en"}
+{"text": "Who is the prime minister?", "intent": "UNKNOWN", "language": "en"}
+{"text": "Cricket score kya hai", "intent": "UNKNOWN", "language": "hi"}
+{"text": "Gaana chalao", "intent": "UNKNOWN", "language": "hi"}
+{"text": "Aaj mausam kaisa hai", "intent": "UNKNOWN", "language": "hi"}
+{"text": "asdfghjkl zxcvbnm", "intent": "UNKNOWN", "language": "en"}
+{"text": "kuch bhi random bol raha hu", "intent": "UNKNOWN", "language": "hi"}
+{"text": "Mujhe ek din se bukhar aur khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se bukhar aur khansi chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "1 day", "language": "hi"}
+{"text": "I have had fever and cough since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from fever and cough since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se bukhar aur khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "2 days", "language": "hi"}
+{"text": "do din se bukhar aur khansi chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "2 days", "language": "hi"}
+{"text": "I have had fever and cough for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from fever and cough for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se bukhar aur khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se bukhar aur khansi chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "hi"}
+{"text": "I have had fever and cough for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from fever and cough for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se bukhar aur khansi hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "4 days", "language": "hi"}
+{"text": "char din se bukhar aur khansi chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "4 days", "language": "hi"}
+{"text": "I have had fever and cough for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from fever and cough for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "cough"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se bukhar aur sir dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se bukhar aur sir dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "1 day", "language": "hi"}
+{"text": "I have had fever and headache since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from fever and headache since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se bukhar aur sir dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "2 days", "language": "hi"}
+{"text": "do din se bukhar aur sir dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "2 days", "language": "hi"}
+{"text": "I have had fever and headache for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from fever and headache for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se bukhar aur sir dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se bukhar aur sir dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "3 days", "language": "hi"}
+{"text": "I have had fever and headache for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from fever and headache for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se bukhar aur sir dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "4 days", "language": "hi"}
+{"text": "char din se bukhar aur sir dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "4 days", "language": "hi"}
+{"text": "I have had fever and headache for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from fever and headache for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["fever", "headache"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se khansi aur j जुकाम hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se khansi aur j जुकाम chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "1 day", "language": "hi"}
+{"text": "I have had cough and cold since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from cough and cold since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se khansi aur j जुकाम hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "2 days", "language": "hi"}
+{"text": "do din se khansi aur j जुकाम chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "2 days", "language": "hi"}
+{"text": "I have had cough and cold for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from cough and cold for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se khansi aur j जुकाम hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se khansi aur j जुकाम chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "3 days", "language": "hi"}
+{"text": "I have had cough and cold for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from cough and cold for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se khansi aur j जुकाम hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "4 days", "language": "hi"}
+{"text": "char din se khansi aur j जुकाम chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "4 days", "language": "hi"}
+{"text": "I have had cough and cold for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from cough and cold for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["cough", "cold"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se pet dard aur ulti hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se pet dard aur ulti chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "1 day", "language": "hi"}
+{"text": "I have had stomach pain and vomiting since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from stomach pain and vomiting since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se pet dard aur ulti hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "2 days", "language": "hi"}
+{"text": "do din se pet dard aur ulti chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "2 days", "language": "hi"}
+{"text": "I have had stomach pain and vomiting for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from stomach pain and vomiting for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se pet dard aur ulti hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se pet dard aur ulti chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "3 days", "language": "hi"}
+{"text": "I have had stomach pain and vomiting for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from stomach pain and vomiting for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se pet dard aur ulti hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "4 days", "language": "hi"}
+{"text": "char din se pet dard aur ulti chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "4 days", "language": "hi"}
+{"text": "I have had stomach pain and vomiting for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from stomach pain and vomiting for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["stomach ache", "vomiting"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se ulti aur dast hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se ulti aur dast chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "1 day", "language": "hi"}
+{"text": "I have had vomiting and loose motions since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from vomiting and loose motions since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se ulti aur dast hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "hi"}
+{"text": "do din se ulti aur dast chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "hi"}
+{"text": "I have had vomiting and loose motions for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from vomiting and loose motions for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se ulti aur dast hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se ulti aur dast chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "3 days", "language": "hi"}
+{"text": "I have had vomiting and loose motions for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from vomiting and loose motions for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se ulti aur dast hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "4 days", "language": "hi"}
+{"text": "char din se ulti aur dast chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "4 days", "language": "hi"}
+{"text": "I have had vomiting and loose motions for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from vomiting and loose motions for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["vomiting", "diarrhea"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se chot aur sujan hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se chot aur sujan chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "1 day", "language": "hi"}
+{"text": "I have had injury and swelling since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from injury and swelling since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se chot aur sujan hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "2 days", "language": "hi"}
+{"text": "do din se chot aur sujan chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "2 days", "language": "hi"}
+{"text": "I have had injury and swelling for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from injury and swelling for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se chot aur sujan hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se chot aur sujan chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "3 days", "language": "hi"}
+{"text": "I have had injury and swelling for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from injury and swelling for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se chot aur sujan hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "4 days", "language": "hi"}
+{"text": "char din se chot aur sujan chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "4 days", "language": "hi"}
+{"text": "I have had injury and swelling for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from injury and swelling for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["injury", "swelling"], "duration": "4 days", "language": "en"}
+{"text": "Mujhe ek din se jodon me dard aur badan dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "1 day", "language": "hi"}
+{"text": "ek din se jodon me dard aur badan dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "1 day", "language": "hi"}
+{"text": "I have had joint pain and body ache since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "1 day", "language": "en"}
+{"text": "Suffering from joint pain and body ache since one day", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "1 day", "language": "en"}
+{"text": "Mujhe do din se jodon me dard aur badan dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "2 days", "language": "hi"}
+{"text": "do din se jodon me dard aur badan dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "2 days", "language": "hi"}
+{"text": "I have had joint pain and body ache for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "2 days", "language": "en"}
+{"text": "Suffering from joint pain and body ache for two days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "2 days", "language": "en"}
+{"text": "Mujhe teen din se jodon me dard aur badan dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "3 days", "language": "hi"}
+{"text": "teen din se jodon me dard aur badan dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "3 days", "language": "hi"}
+{"text": "I have had joint pain and body ache for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "3 days", "language": "en"}
+{"text": "Suffering from joint pain and body ache for 3 days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "3 days", "language": "en"}
+{"text": "Mujhe char din se jodon me dard aur badan dard hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "4 days", "language": "hi"}
+{"text": "char din se jodon me dard aur badan dard chal raha hai", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "4 days", "language": "hi"}
+{"text": "I have had joint pain and body ache for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "4 days", "language": "en"}
+{"text": "Suffering from joint pain and body ache for four days", "intent": "REPORT_SYMPTOMS", "symptoms": ["joint pain", "body ache"], "duration": "4 days", "language": "en"}
+{"text": "Pandharpur", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "Mera gaon Pandharpur hai", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "Main Pandharpur se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "I live in Pandharpur", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "Hum Pandharpur me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "hi"}
+{"text": "Calling from Pandharpur village", "intent": "PROVIDE_LOCALITY", "locality": "Pandharpur", "language": "en"}
+{"text": "Malshiras", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "en"}
+{"text": "Mera gaon Malshiras hai", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "Main Malshiras se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "I live in Malshiras", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "en"}
+{"text": "Hum Malshiras me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "hi"}
+{"text": "Calling from Malshiras village", "intent": "PROVIDE_LOCALITY", "locality": "Malshiras", "language": "en"}
+{"text": "Akluj", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "en"}
+{"text": "Mera gaon Akluj hai", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "hi"}
+{"text": "Main Akluj se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "hi"}
+{"text": "I live in Akluj", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "en"}
+{"text": "Hum Akluj me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "hi"}
+{"text": "Calling from Akluj village", "intent": "PROVIDE_LOCALITY", "locality": "Akluj", "language": "en"}
+{"text": "Solapur", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "en"}
+{"text": "Mera gaon Solapur hai", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "hi"}
+{"text": "Main Solapur se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "hi"}
+{"text": "I live in Solapur", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "en"}
+{"text": "Hum Solapur me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "hi"}
+{"text": "Calling from Solapur village", "intent": "PROVIDE_LOCALITY", "locality": "Solapur", "language": "en"}
+{"text": "Sangola", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "en"}
+{"text": "Mera gaon Sangola hai", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "hi"}
+{"text": "Main Sangola se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "hi"}
+{"text": "I live in Sangola", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "en"}
+{"text": "Hum Sangola me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "hi"}
+{"text": "Calling from Sangola village", "intent": "PROVIDE_LOCALITY", "locality": "Sangola", "language": "en"}
+{"text": "Karmala", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "en"}
+{"text": "Mera gaon Karmala hai", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "hi"}
+{"text": "Main Karmala se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "hi"}
+{"text": "I live in Karmala", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "en"}
+{"text": "Hum Karmala me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "hi"}
+{"text": "Calling from Karmala village", "intent": "PROVIDE_LOCALITY", "locality": "Karmala", "language": "en"}
+{"text": "Kurduvadi", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "en"}
+{"text": "Mera gaon Kurduvadi hai", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "hi"}
+{"text": "Main Kurduvadi se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "hi"}
+{"text": "I live in Kurduvadi", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "en"}
+{"text": "Hum Kurduvadi me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "hi"}
+{"text": "Calling from Kurduvadi village", "intent": "PROVIDE_LOCALITY", "locality": "Kurduvadi", "language": "en"}
+{"text": "Mohol", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "en"}
+{"text": "Mera gaon Mohol hai", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "hi"}
+{"text": "Main Mohol se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "hi"}
+{"text": "I live in Mohol", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "en"}
+{"text": "Hum Mohol me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "hi"}
+{"text": "Calling from Mohol village", "intent": "PROVIDE_LOCALITY", "locality": "Mohol", "language": "en"}
+{"text": "Barshi", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "en"}
+{"text": "Mera gaon Barshi hai", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "hi"}
+{"text": "Main Barshi se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "hi"}
+{"text": "I live in Barshi", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "en"}
+{"text": "Hum Barshi me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "hi"}
+{"text": "Calling from Barshi village", "intent": "PROVIDE_LOCALITY", "locality": "Barshi", "language": "en"}
+{"text": "Mangalvedha", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "en"}
+{"text": "Mera gaon Mangalvedha hai", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "hi"}
+{"text": "Main Mangalvedha se bol raha hu", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "hi"}
+{"text": "I live in Mangalvedha", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "en"}
+{"text": "Hum Mangalvedha me rehte hain", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "hi"}
+{"text": "Calling from Mangalvedha village", "intent": "PROVIDE_LOCALITY", "locality": "Mangalvedha", "language": "en"}
+{"text": "Pandharpur me doctor se baat karni hai", "intent": "BOOK_APPOINTMENT", "locality": "Pandharpur", "language": "hi"}
+{"text": "I want to see a doctor in Pandharpur", "intent": "BOOK_APPOINTMENT", "locality": "Pandharpur", "language": "en"}
+{"text": "Malshiras me doctor se baat karni hai", "intent": "BOOK_APPOINTMENT", "locality": "Malshiras", "language": "hi"}
+{"text": "I want to see a doctor in Malshiras", "intent": "BOOK_APPOINTMENT", "locality": "Malshiras", "language": "en"}
+{"text": "Akluj me doctor se baat karni hai", "intent": "BOOK_APPOINTMENT", "locality": "Akluj", "language": "hi"}
+{"text": "I want to see a doctor in Akluj", "intent": "BOOK_APPOINTMENT", "locality": "Akluj", "language": "en"}
+{"text": "Solapur me doctor se baat karni hai", "intent": "BOOK_APPOINTMENT", "locality": "Solapur", "language": "hi"}
+{"text": "I want to see a doctor in Solapur", "intent": "BOOK_APPOINTMENT", "locality": "Solapur", "language": "en"}
+{"text": "haan kar dijiye", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "ji haan", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "haan ji confirm karo", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "theek hai book karo", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "haan slot lock karo", "intent": "ANSWER_YES", "confirmation": true, "language": "hi"}
+{"text": "yes confirm please", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "yes lock the appointment", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "yeah book it", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "okay go ahead", "intent": "ANSWER_YES", "confirmation": true, "language": "en"}
+{"text": "nahi nahi rehne do", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "kuch nahi chahiye", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "nahi aur koi takleef nahi hai", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "nahi bilkul nahi", "intent": "ANSWER_NO", "confirmation": false, "language": "hi"}
+{"text": "no that is all", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "no don't book", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "no other symptoms to report", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "nope nothing", "intent": "ANSWER_NO", "confirmation": false, "language": "en"}
+{"text": "Severe chest pain radiating to left arm", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "en"}
+{"text": "Seene me bohot jalan aur tez dard ho raha hai", "intent": "EMERGENCY", "symptoms": ["chest pain"], "emergency": true, "language": "hi"}
+{"text": "Patient behosh pada hai uth nahi raha", "intent": "EMERGENCY", "symptoms": ["unconscious"], "emergency": true, "language": "hi"}
+{"text": "Severe head trauma with non-stop bleeding", "intent": "EMERGENCY", "symptoms": ["head injury", "heavy bleeding"], "emergency": true, "language": "en"}
+{"text": "Chhati me dard aur saans lene me behad dikkat", "intent": "EMERGENCY", "symptoms": ["chest pain", "breathing difficulty"], "emergency": true, "language": "hi"}
+{"text": "Bohot blood loss ho raha hai jaldi gaadi bhejo", "intent": "EMERGENCY", "symptoms": ["heavy bleeding"], "emergency": true, "language": "hi"}
+{"text": "Sudden collapse and breathless", "intent": "EMERGENCY", "symptoms": ["breathing difficulty", "unconscious"], "emergency": true, "language": "en"}
+{"text": "can you say that once more", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "say that again please", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "phir se kahiye", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "ek baar phir bolo", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "samajh nahi paaya dobara bolo", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "phir se batao kya kaha", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "repeat please", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "dobara batao", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "pardon please repeat", "intent": "REQUEST_REPEAT", "language": "en"}
+{"text": "awaaz nahi aayi ek baar aur bolo", "intent": "REQUEST_REPEAT", "language": "hi"}
+{"text": "mujhe samajh nahi aa raha kya karun", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "kripya guide kijiye", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "kripya madad karein", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "please guide what should I do", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "guide me on next steps", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "I need assistance", "intent": "REQUEST_HELP", "language": "en"}
+{"text": "madad ki jarurat hai", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "kuch samajh nahi aa raha help me", "intent": "REQUEST_HELP", "language": "hi"}
+{"text": "haan confirm kar dijiye", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "booking pakki kar do", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "slot lock kar dijiye", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "is time pe book karo", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "yes please confirm", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "confirm the slot", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "lock this booking", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "haan is samay par book kar do", "intent": "CONFIRM_BOOKING", "language": "hi"}
+{"text": "yes lock this appointment", "intent": "CONFIRM_BOOKING", "language": "en"}
+{"text": "booking cancel karni hai", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "appointment radd karo", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "mujhe book nahi karna cancel kar do", "intent": "CANCEL_BOOKING", "language": "hi"}
+{"text": "cancel this appointment", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "drop the booking", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "mujhe nahi karwani booking", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "cancel it please", "intent": "CANCEL_BOOKING", "language": "en"}
+{"text": "who won the match yesterday", "intent": "UNKNOWN", "language": "en"}
+{"text": "tum kaun ho", "intent": "UNKNOWN", "language": "hi"}
+{"text": "what is artificial intelligence", "intent": "UNKNOWN", "language": "en"}
+{"text": "order some food", "intent": "UNKNOWN", "language": "en"}
+{"text": "kitne baje hain time batao", "intent": "UNKNOWN", "language": "hi"}
+{"text": "hello who is this", "intent": "UNKNOWN", "language": "en"}
+{"text": "ghoomne kahan jayein", "intent": "UNKNOWN", "language": "hi"}
+{"text": "today is very sunny", "intent": "UNKNOWN", "language": "en"}
+{"text": "play a movie for me", "intent": "UNKNOWN", "language": "en"}
+{"text": "random chatter blabla", "intent": "UNKNOWN", "language": "en"}

@@ -41,6 +41,10 @@ from backend.app.schemas.scheme import (
     GovernmentSchemeResponse,
     RelevantSchemeResponse,
 )
+from backend.app.schemas.consultation import (
+    ConsultationCreate,
+    ConsultationResponse,
+)
 
 __all__ = [
     "AppointmentCreate",
@@ -50,6 +54,8 @@ __all__ = [
     "AuthenticatedPatient",
     "AuthTokenResponse",
     "AvailabilitySlotResponse",
+    "ConsultationCreate",
+    "ConsultationResponse",
     "FacilityResponse",
     "FacilityServiceResponse",
     "FollowUpCreate",

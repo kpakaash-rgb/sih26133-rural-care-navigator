@@ -1,0 +1,22 @@
+{
+  "model_architecture": "Decoder-only Causal Transformer (NanoGPT-style)",
+  "d_model": 160,
+  "n_layer": 4,
+  "n_head": 4,
+  "d_ff": 640,
+  "max_seq_len": 128,
+  "dataset_example_count": 1200,
+  "train_example_count": 1020,
+  "validation_example_count": 180,
+  "vocabulary_size": 1907,
+  "parameter_count": 1560480,
+  "train_loss": 0.217,
+  "validation_loss": 0.252,
+  "perplexity": 1.29,
+  "number_of_epochs": 35,
+  "training_duration": "1022.63s",
+  "training_duration_seconds": 1022.63,
+  "model_file_size_mb": 6.22,
+  "hardware_used": "CPU (PyTorch - Intel/AMD x86_64)",
+  "timestamp": "2026-09-10 11:40:33"
+}

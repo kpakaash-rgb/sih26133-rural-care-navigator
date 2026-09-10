@@ -6,6 +6,7 @@ import {
   ChevronDown, Minus, Plus, ShieldCheck, X,
   ClipboardList
 } from 'lucide-react'
+import { registerPatient } from '../../../services/api'
 import './RegisterPatientPage.css'
 
 /* ΓöÇΓöÇ Villages & Districts ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */
@@ -51,26 +52,48 @@ export default function RegisterPatientPage() {
     fullName: '', mobile: '', age: '', gender: '', village: '', district: '',
   })
   const [errors,  setErrors]  = useState({})
+  const [apiError, setApiError] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
-  const [patientId] = useState(() =>
+  const [registeredPatient, setRegisteredPatient] = useState(null)
+  const [patientId, setPatientId] = useState(() =>
     'P' + Math.floor(100000 + Math.random() * 900000)
   )
   const [copied, setCopied] = useState(false)
 
-  /* ΓöÇΓöÇ Helpers ΓöÇΓöÇ */
+  /* ── Helpers ── */
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
+    setApiError('')
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
     const errs = validateForm(form)
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
     setLoading(true)
-    setTimeout(() => { setLoading(false); setSuccess(true) }, 1200)
+    setApiError('')
+    try {
+      const created = await registerPatient({
+        full_name: form.fullName.trim(),
+        mobile: form.mobile.trim(),
+        age: Number(form.age),
+        gender: form.gender,
+        village: form.village,
+        district: form.district,
+      })
+      setRegisteredPatient(created)
+      if (created?.id) {
+        setPatientId(`P${String(created.id).padStart(6, '0')}`)
+      }
+      setSuccess(true)
+    } catch (err) {
+      setApiError(err.message || 'Failed to register patient with backend.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleCopyId() {
@@ -101,7 +124,7 @@ export default function RegisterPatientPage() {
         <span className="rp-new-badge">New Intake</span>
       </div>
 
-      {/* ΓöÇΓöÇ ABHA Banner ΓöÇΓöÇ */}
+      {/* ABHA Banner */}
       <div className="rp-abha-banner">
         <ShieldCheck size={16} style={{ flexShrink: 0, color: 'var(--color-primary)' }} />
         <p className="rp-abha-text">
@@ -109,7 +132,13 @@ export default function RegisterPatientPage() {
         </p>
       </div>
 
-      {/* ΓöÇΓöÇ Form ΓöÇΓöÇ */}
+      {apiError && (
+        <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '10px 14px', color: '#991b1b', fontSize: '13px', fontWeight: 600, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertCircle size={16} /> {apiError}
+        </div>
+      )}
+
+      {/* Form */}
       <form onSubmit={handleSubmit} noValidate>
         <div className="rp-form-card">
 
@@ -356,7 +385,7 @@ export default function RegisterPatientPage() {
             <button
               id="btn-start-screening"
               className="rp-start-btn"
-              onClick={() => navigate('/worker/screening')}
+              onClick={() => navigate('/worker/screening', { state: { patientId: registeredPatient?.id } })}
             >
               <ClipboardList size={18} />
               Start Screening

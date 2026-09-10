@@ -1,0 +1,4336 @@
+{
+  "token_to_id": {
+    "<|pad|>": 0,
+    "<|unk|>": 1,
+    "<|context|>": 2,
+    "<|response|>": 3,
+    "<|end|>": 4,
+    "\n": 5,
+    " ": 6,
+    "'": 7,
+    ",": 8,
+    "-": 9,
+    ".": 10,
+    "0": 11,
+    "1": 12,
+    "2": 13,
+    "3": 14,
+    "4": 15,
+    "5": 16,
+    "6": 17,
+    "7": 18,
+    "8": 19,
+    "9": 20,
+    ":": 21,
+    "?": 22,
+    "A": 23,
+    "B": 24,
+    "C": 25,
+    "D": 26,
+    "E": 27,
+    "F": 28,
+    "G": 29,
+    "H": 30,
+    "I": 31,
+    "J": 32,
+    "K": 33,
+    "L": 34,
+    "M": 35,
+    "N": 36,
+    "O": 37,
+    "P": 38,
+    "Q": 39,
+    "R": 40,
+    "S": 41,
+    "T": 42,
+    "U": 43,
+    "W": 44,
+    "Y": 45,
+    "_": 46,
+    "a": 47,
+    "b": 48,
+    "c": 49,
+    "d": 50,
+    "e": 51,
+    "f": 52,
+    "g": 53,
+    "h": 54,
+    "i": 55,
+    "j": 56,
+    "k": 57,
+    "l": 58,
+    "m": 59,
+    "n": 60,
+    "o": 61,
+    "p": 62,
+    "q": 63,
+    "r": 64,
+    "s": 65,
+    "t": 66,
+    "u": 67,
+    "v": 68,
+    "w": 69,
+    "x": 70,
+    "y": 71,
+    "z": 72,
+    "ँ": 73,
+    "ं": 74,
+    "अ": 75,
+    "आ": 76,
+    "इ": 77,
+    "ए": 78,
+    "क": 79,
+    "ग": 80,
+    "च": 81,
+    "झ": 82,
+    "ट": 83,
+    "ड": 84,
+    "ण": 85,
+    "त": 86,
+    "थ": 87,
+    "द": 88,
+    "न": 89,
+    "प": 90,
+    "फ": 91,
+    "ब": 92,
+    "म": 93,
+    "य": 94,
+    "र": 95,
+    "ल": 96,
+    "व": 97,
+    "श": 98,
+    "ष": 99,
+    "स": 100,
+    "ह": 101,
+    "ा": 102,
+    "ि": 103,
+    "ी": 104,
+    "ु": 105,
+    "ू": 106,
+    "ृ": 107,
+    "े": 108,
+    "ै": 109,
+    "ॉ": 110,
+    "ो": 111,
+    "्": 112,
+    "।": 113,
+    "ha": 114,
+    "ON": 115,
+    "NON": 116,
+    "NONE": 117,
+    "en": 118,
+    "ar": 119,
+    "in": 120,
+    "it": 121,
+    "an": 122,
+    "se": 123,
+    "er": 124,
+    "ur": 125,
+    "me": 126,
+    "are": 127,
+    "al": 128,
+    "ag": 129,
+    "ame": 130,
+    "age": 131,
+    "ou": 132,
+    "il": 133,
+    "ang": 134,
+    "ya": 135,
+    "ity": 136,
+    "ac": 137,
+    "lo": 138,
+    "der": 139,
+    "loc": 140,
+    "hi": 141,
+    "sy": 142,
+    "sym": 143,
+    "name": 144,
+    "care": 145,
+    "fac": 146,
+    "facil": 147,
+    "facility": 148,
+    "pha": 149,
+    "phase": 150,
+    "dur": 151,
+    "gen": 152,
+    "gender": 153,
+    "lang": 154,
+    "he": 155,
+    "ay": 156,
+    "you": 157,
+    "at": 158,
+    "han": 159,
+    "sh": 160,
+    "ap": 161,
+    "har": 162,
+    "te": 163,
+    "ing": 164,
+    "or": 165,
+    "day": 166,
+    "ent": 167,
+    "GE": 168,
+    "AGE": 169,
+    "ol": 170,
+    "re": 171,
+    "hai": 172,
+    "days": 173,
+    "fe": 174,
+    "din": 175,
+    "on": 176,
+    "ra": 177,
+    "TY": 178,
+    "uk": 179,
+    "ri": 180,
+    "mal": 181,
+    "ver": 182,
+    "ati": 183,
+    "un": 184,
+    "ki": 185,
+    "ain": 186,
+    "ee": 187,
+    "om": 188,
+    "dar": 189,
+    "dard": 190,
+    "is": 191,
+    "aap": 192,
+    "Than": 193,
+    "Thank": 194,
+    "ita": 195,
+    "am": 196,
+    "male": 197,
+    "pain": 198,
+    "ho": 199,
+    "ES": 200,
+    "ji": 201,
+    "esh": 202,
+    "ad": 203,
+    "ta": 204,
+    "fever": 205,
+    "buk": 206,
+    "bukhar": 207,
+    "pur": 208,
+    "st": 209,
+    "and": 210,
+    "TI": 211,
+    "bo": 212,
+    "mein": 213,
+    "kar": 214,
+    "hain": 215,
+    "ek": 216,
+    "the": 217,
+    "TION": 218,
+    "ic": 219,
+    "oul": 220,
+    "ould": 221,
+    "do": 222,
+    "aree": 223,
+    "areez": 224,
+    "LO": 225,
+    "CA": 226,
+    "Mal": 227,
+    "Mals": 228,
+    "Malshi": 229,
+    "Malshira": 230,
+    "Malshiras": 231,
+    "LOCA": 232,
+    "LOCAL": 233,
+    "LOCALI": 234,
+    "LOCALITY": 235,
+    "pati": 236,
+    "patient": 237,
+    "entre": 238,
+    "sa": 239,
+    "kit": 240,
+    "kitn": 241,
+    "Rame": 242,
+    "Ramesh": 243,
+    "sha": 244,
+    "aapk": 245,
+    "QU": 246,
+    "QUES": 247,
+    "ul": 248,
+    "cha": 249,
+    "rip": 250,
+    "ripya": 251,
+    "ein": 252,
+    "ene": 253,
+    "Kripya": 254,
+    "bat": 255,
+    "batay": 256,
+    "batayein": 257,
+    "kl": 258,
+    "SA": 259,
+    "SAF": 260,
+    "SAFE": 261,
+    "SAFETY": 262,
+    "SAFETY_": 263,
+    "SAFETY_QUES": 264,
+    "SAFETY_QUESTION": 265,
+    "SAFETY_QUESTIONS": 266,
+    "ka": 267,
+    "Sun": 268,
+    "Sunita": 269,
+    "Dhan": 270,
+    "Dhanya": 271,
+    "Dhanyaw": 272,
+    "Dhanyawad": 273,
+    "rahe": 274,
+    "Centre": 275,
+    "ga": 276,
+    "for": 277,
+    "alt": 278,
+    "alth": 279,
+    "Pand": 280,
+    "Pandhar": 281,
+    "Pandharpur": 282,
+    "if": 283,
+    "int": 284,
+    "aapko": 285,
+    "na": 286,
+    "hat": 287,
+    "ult": 288,
+    "teen": 289,
+    "aa": 290,
+    "sp": 291,
+    "Sang": 292,
+    "Sangol": 293,
+    "Sangola": 294,
+    "con": 295,
+    "He": 296,
+    "hav": 297,
+    "have": 298,
+    "mar": 299,
+    "female": 300,
+    "Health": 301,
+    "sar": 302,
+    "av": 303,
+    "vil": 304,
+    "Kya": 305,
+    "Could": 306,
+    "Gee": 307,
+    "Geeta": 308,
+    "per": 309,
+    "Kav": 310,
+    "Kavita": 311,
+    "Ma": 312,
+    "Mahe": 313,
+    "Mahesh": 314,
+    "Asha": 315,
+    "Sur": 316,
+    "Suresh": 317,
+    "Gan": 318,
+    "Ganesh": 319,
+    "ub": 320,
+    "lin": 321,
+    "hot": 322,
+    "Bar": 323,
+    "Baram": 324,
+    "Baramati": 325,
+    "che": 326,
+    "HC": 327,
+    "tel": 328,
+    "mareez": 329,
+    "bod": 330,
+    "body": 331,
+    "old": 332,
+    "sever": 333,
+    "severe": 334,
+    "ath": 335,
+    "vom": 336,
+    "vomit": 337,
+    "vomiting": 338,
+    "to": 339,
+    "tez": 340,
+    "ama": 341,
+    "ex": 342,
+    "enc": 343,
+    "riya": 344,
+    "spit": 345,
+    "spital": 346,
+    "Sh": 347,
+    "Shuk": 348,
+    "Shukriya": 349,
+    "ke": 350,
+    "What": 351,
+    "takl": 352,
+    "taklee": 353,
+    "takleef": 354,
+    "exper": 355,
+    "experi": 356,
+    "experienc": 357,
+    "experiencing": 358,
+    "any": 359,
+    "linic": 360,
+    "gaon": 361,
+    "vill": 362,
+    "village": 363,
+    "kitne": 364,
+    "had": 365,
+    "EN": 366,
+    "PHC": 367,
+    "uj": 368,
+    "tell": 369,
+    "dif": 370,
+    "diff": 371,
+    "ENT": 372,
+    "ED": 373,
+    "Ho": 374,
+    "how": 375,
+    "diffic": 376,
+    "difficult": 377,
+    "ch": 378,
+    "Thanks": 379,
+    "Are": 380,
+    "difficulty": 381,
+    "bre": 382,
+    "breath": 383,
+    "breathing": 384,
+    "inten": 385,
+    "intense": 386,
+    "chest": 387,
+    "cont": 388,
+    "contin": 389,
+    "continu": 390,
+    "continuou": 391,
+    "continuous": 392,
+    "TR": 393,
+    "TRI": 394,
+    "TRIAGE": 395,
+    "TRIAGE_": 396,
+    "TRIAGE_P": 397,
+    "TRIAGE_PR": 398,
+    "TRIAGE_PRES": 399,
+    "TRIAGE_PRESENT": 400,
+    "TRIAGE_PRESENTED": 401,
+    "gh": 402,
+    "aapki": 403,
+    "aay": 404,
+    "aayu": 405,
+    "kitni": 406,
+    "Mareez": 407,
+    "umar": 408,
+    "saal": 409,
+    "saan": 410,
+    "saans": 411,
+    "lene": 412,
+    "bohot": 413,
+    "seene": 414,
+    "chak": 415,
+    "chakkar": 416,
+    "our": 417,
+    "ling": 418,
+    "par": 419,
+    "Aap": 420,
+    "aur": 421,
+    "your": 422,
+    "ce": 423,
+    "khan": 424,
+    "fr": 425,
+    "from": 426,
+    "Mo": 427,
+    "Moh": 428,
+    "Mohol": 429,
+    "Shi": 430,
+    "Shir": 431,
+    "Shirpur": 432,
+    "omm": 433,
+    "Akl": 434,
+    "Akluj": 435,
+    "Kar": 436,
+    "Karmal": 437,
+    "Karmala": 438,
+    "sin": 439,
+    "since": 440,
+    "clinic": 441,
+    "ye": 442,
+    "ba": 443,
+    "derst": 444,
+    "vis": 445,
+    "visit": 446,
+    "Sub": 447,
+    "oint": 448,
+    "cal": 449,
+    "Hospital": 450,
+    "calling": 451,
+    "chah": 452,
+    "chahte": 453,
+    "karna": 454,
+    "cou": 455,
+    "cough": 456,
+    "ne": 457,
+    "ab": 458,
+    "thi": 459,
+    "this": 460,
+    "ct": 461,
+    "The": 462,
+    "Theek": 463,
+    "haf": 464,
+    "apna": 465,
+    "wee": 466,
+    "week": 467,
+    "bol": 468,
+    "underst": 469,
+    "understand": 470,
+    "si": 471,
+    "rimar": 472,
+    "rimary": 473,
+    "kal": 474,
+    "app": 475,
+    "appoint": 476,
+    "appointm": 477,
+    "appointment": 478,
+    "khansi": 479,
+    "ommun": 480,
+    "ommunity": 481,
+    "local": 482,
+    "amas": 483,
+    "that": 484,
+    "AM": 485,
+    "Primary": 486,
+    "kaun": 487,
+    "kam": 488,
+    "amaj": 489,
+    "amajh": 490,
+    "gaya": 491,
+    "42": 492,
+    "le": 493,
+    "Community": 494,
+    "shahar": 495,
+    "Samajh": 496,
+    "samas": 497,
+    "samasya": 498,
+    "kas": 499,
+    "kasba": 500,
+    "ation": 501,
+    "de": 502,
+    "shar": 503,
+    "sharing": 504,
+    "spe": 505,
+    "spec": 506,
+    "specif": 507,
+    "specify": 508,
+    "locality": 509,
+    "Whi": 510,
+    "Which": 511,
+    "tow": 512,
+    "town": 513,
+    "area": 514,
+    "cons": 515,
+    "consult": 516,
+    "Would": 517,
+    "no": 518,
+    "li": 519,
+    "shan": 520,
+    "pe": 521,
+    "NAM": 522,
+    "NAME": 523,
+    "55": 524,
+    "clinical": 525,
+    "sub": 526,
+    "pet": 527,
+    "ak": 528,
+    "Sol": 529,
+    "Solap": 530,
+    "Solapur": 531,
+    "Ci": 532,
+    "Civil": 533,
+    "ase": 534,
+    "out": 535,
+    "Main": 536,
+    "ah": 537,
+    "DU": 538,
+    "DUR": 539,
+    "DURA": 540,
+    "DURATION": 541,
+    "about": 542,
+    "lag": 543,
+    "lagb": 544,
+    "lagbha": 545,
+    "lagbhag": 546,
+    "hafte": 547,
+    "boo": 548,
+    "mor": 549,
+    "morn": 550,
+    "morning": 551,
+    "yest": 552,
+    "yester": 553,
+    "yesterday": 554,
+    "aaj": 555,
+    "subah": 556,
+    "ist": 557,
+    "fer": 558,
+    "Maine": 559,
+    "book": 560,
+    "pers": 561,
+    "person": 562,
+    "ach": 563,
+    "nee": 564,
+    "ding": 565,
+    "we": 566,
+    "bac": 567,
+    "back": 568,
+    "NG": 569,
+    "kamar": 570,
+    "head": 571,
+    "headac": 572,
+    "headache": 573,
+    "stom": 574,
+    "stomach": 575,
+    "chot": 576,
+    "istri": 577,
+    "istrict": 578,
+    "hand": 579,
+    "inj": 580,
+    "injur": 581,
+    "injury": 582,
+    "tom": 583,
+    "ui": 584,
+    "hospital": 585,
+    "note": 586,
+    "doct": 587,
+    "doctor": 588,
+    "di": 589,
+    "pre": 590,
+    "prefer": 591,
+    "District": 592,
+    "symp": 593,
+    "symptom": 594,
+    "symptoms": 595,
+    "ro": 596,
+    "lak": 597,
+    "lakshan": 598,
+    "pa": 599,
+    "ph": 600,
+    "phon": 601,
+    "phone": 602,
+    "baat": 603,
+    "38": 604,
+    "es": 605,
+    "consultation": 606,
+    "dikhan": 607,
+    "dikhana": 608,
+    "be": 609,
+    "45": 610,
+    "naam": 611,
+    "oo": 612,
+    "health": 613,
+    "near": 614,
+    "nearb": 615,
+    "nearby": 616,
+    "ched": 617,
+    "tele": 618,
+    "Aapke": 619,
+    "paya": 620,
+    "RE": 621,
+    "50": 622,
+    "ghu": 623,
+    "ghut": 624,
+    "ghutne": 625,
+    "hafta": 626,
+    "Clinic": 627,
+    "Clinical": 628,
+    "jan": 629,
+    "jankar": 630,
+    "jankari": 631,
+    "anu": 632,
+    "anusar": 633,
+    "chahi": 634,
+    "chahiye": 635,
+    "ss": 636,
+    "Base": 637,
+    "Based": 638,
+    "ev": 639,
+    "eval": 640,
+    "evalu": 641,
+    "evaluation": 642,
+    "rec": 643,
+    "recomm": 644,
+    "recommen": 645,
+    "recommende": 646,
+    "recommended": 647,
+    "id": 648,
+    "ident": 649,
+    "identif": 650,
+    "identifi": 651,
+    "identifie": 652,
+    "identified": 653,
+    "like": 654,
+    "sched": 655,
+    "schedul": 656,
+    "schedule": 657,
+    "24": 658,
+    "knee": 659,
+    "CHC": 660,
+    "Ac": 661,
+    "Acc": 662,
+    "Accor": 663,
+    "According": 664,
+    "gui": 665,
+    "guide": 666,
+    "guidelin": 667,
+    "guidelines": 668,
+    "should": 669,
+    "teleconsultation": 670,
+    "32": 671,
+    "19": 672,
+    "lakshano": 673,
+    "aad": 674,
+    "aadhar": 675,
+    "uch": 676,
+    "uchit": 677,
+    "rahega": 678,
+    "aapke": 679,
+    "paa": 680,
+    "paas": 681,
+    "yahan": 682,
+    "68": 683,
+    "56": 684,
+    "been": 685,
+    "pro": 686,
+    "liya": 687,
+    "pare": 688,
+    "pareshan": 689,
+    "pareshani": 690,
+    "prob": 691,
+    "proble": 692,
+    "problem": 693,
+    "lease": 694,
+    "How": 695,
+    "low": 696,
+    "ori": 697,
+    "bad": 698,
+    "GRE": 699,
+    "GREE": 700,
+    "GREETI": 701,
+    "GREETING": 702,
+    "jo": 703,
+    "jodo": 704,
+    "kamz": 705,
+    "kamzori": 706,
+    "ood": 707,
+    "centre": 708,
+    "zuk": 709,
+    "zukha": 710,
+    "zukham": 711,
+    "haath": 712,
+    "suj": 713,
+    "sujan": 714,
+    "badan": 715,
+    "swe": 716,
+    "swel": 717,
+    "swelling": 718,
+    "chil": 719,
+    "chill": 720,
+    "chills": 721,
+    "lower": 722,
+    "tej": 723,
+    "thand": 724,
+    "BO": 725,
+    "BOO": 726,
+    "BOOK": 727,
+    "BOOKI": 728,
+    "BOOKING": 729,
+    "joint": 730,
+    "weak": 731,
+    "weakne": 732,
+    "weakness": 733,
+    "cold": 734,
+    "khar": 735,
+    "kharab": 736,
+    "ulti": 737,
+    "med": 738,
+    "medic": 739,
+    "medical": 740,
+    "sam": 741,
+    "samay": 742,
+    "Un": 743,
+    "Underst": 744,
+    "Understood": 745,
+    "BOOKING_": 746,
+    "slo": 747,
+    "slot": 748,
+    "ir": 749,
+    "rahi": 750,
+    "please": 751,
+    "now": 752,
+    "su": 753,
+    "has": 754,
+    "conf": 755,
+    "confir": 756,
+    "confirm": 757,
+    "Aapk": 758,
+    "Aapko": 759,
+    "shub": 760,
+    "shubh": 761,
+    "No": 762,
+    "Note": 763,
+    "Noted": 764,
+    "May": 765,
+    "know": 766,
+    "of": 767,
+    "needing": 768,
+    "adv": 769,
+    "advic": 770,
+    "advice": 771,
+    "BOOKING_C": 772,
+    "BOOKING_CON": 773,
+    "BOOKING_CONF": 774,
+    "BOOKING_CONFI": 775,
+    "BOOKING_CONFIR": 776,
+    "BOOKING_CONFIRM": 777,
+    "An": 778,
+    "Anil": 779,
+    "29": 780,
+    "main": 781,
+    "yeh": 782,
+    "kab": 783,
+    "shur": 784,
+    "shuru": 785,
+    "hui": 786,
+    "Ye": 787,
+    "Yeh": 788,
+    "many": 789,
+    "hour": 790,
+    "hours": 791,
+    "suf": 792,
+    "suffer": 793,
+    "suffering": 794,
+    "lon": 795,
+    "long": 796,
+    "go": 797,
+    "going": 798,
+    "आप": 799,
+    "PE": 800,
+    "dek": 801,
+    "AN": 802,
+    "wit": 803,
+    "आपक": 804,
+    "ise": 805,
+    "oun": 806,
+    "ound": 807,
+    "ava": 808,
+    "avail": 809,
+    "availab": 810,
+    "available": 811,
+    "Please": 812,
+    "ja": 813,
+    "healthcare": 814,
+    "with": 815,
+    "district": 816,
+    "TYPE": 817,
+    "dekha": 818,
+    "karke": 819,
+    "doon": 820,
+    "ANS": 821,
+    "ANSW": 822,
+    "ANSWE": 823,
+    "ANSWER": 824,
+    "ANSWER_": 825,
+    "NO": 826,
+    "community": 827,
+    "found": 828,
+    "tomor": 829,
+    "tomorro": 830,
+    "tomorrow": 831,
+    "30": 832,
+    "Sha": 833,
+    "Shal": 834,
+    "Shall": 835,
+    "Poo": 836,
+    "Pooja": 837,
+    "27": 838,
+    "PM": 839,
+    "up": 840,
+    "primary": 841,
+    "Namas": 842,
+    "Namaste": 843,
+    "wa": 844,
+    "hoon": 845,
+    "ass": 846,
+    "assist": 847,
+    "मस": 848,
+    "बत": 849,
+    "qu": 850,
+    "Hel": 851,
+    "Hello": 852,
+    "ly": 853,
+    "dob": 854,
+    "dobar": 855,
+    "dobara": 856,
+    "can": 857,
+    "aapka": 858,
+    "kya": 859,
+    "her": 860,
+    "what": 861,
+    "BOOKING_TYPE": 862,
+    "34": 863,
+    "11": 864,
+    "15": 865,
+    "ANSWER_NO": 866,
+    "ti": 867,
+    "time": 868,
+    "10": 869,
+    "UN": 870,
+    "UNK": 871,
+    "UNKNO": 872,
+    "UNKNOW": 873,
+    "UNKNOWN": 874,
+    "not": 875,
+    "des": 876,
+    "desc": 877,
+    "descri": 878,
+    "describe": 879,
+    "CH": 880,
+    "CHAN": 881,
+    "CHANGE": 882,
+    "CHANGE_": 883,
+    "CHANGE_A": 884,
+    "CHANGE_AP": 885,
+    "CHANGE_APP": 886,
+    "CHANGE_APPO": 887,
+    "CHANGE_APPOI": 888,
+    "CHANGE_APPOIN": 889,
+    "CHANGE_APPOINT": 890,
+    "CHANGE_APPOINTM": 891,
+    "CHANGE_APPOINTMENT": 892,
+    "CHANGE_APPOINTMENT_": 893,
+    "CHANGE_APPOINTMENT_TYPE": 894,
+    "preferenc": 895,
+    "preference": 896,
+    "04": 897,
+    "नमस": 898,
+    "सह": 899,
+    "पय": 900,
+    "पर": 901,
+    "liye": 902,
+    "dekh": 903,
+    "raha": 904,
+    "FO": 905,
+    "FOL": 906,
+    "FOLLO": 907,
+    "FOLLOW": 908,
+    "FOLLOW_": 909,
+    "FOLLOW_U": 910,
+    "FOLLOW_UP": 911,
+    "anch": 912,
+    "fol": 913,
+    "follow": 914,
+    "hu": 915,
+    "hum": 916,
+    "chec": 917,
+    "check": 918,
+    "arr": 919,
+    "arrang": 920,
+    "arrange": 921,
+    "CAN": 922,
+    "CANC": 923,
+    "CANCE": 924,
+    "CANCEL": 925,
+    "CANCEL_": 926,
+    "CANCEL_BOOKING": 927,
+    "Your": 928,
+    "booking": 929,
+    "requ": 930,
+    "reque": 931,
+    "request": 932,
+    "cance": 933,
+    "cancel": 934,
+    "apne": 935,
+    "sak": 936,
+    "today": 937,
+    "02": 938,
+    "00": 939,
+    "END": 940,
+    "ENDED": 941,
+    "San": 942,
+    "Santo": 943,
+    "Santosh": 944,
+    "oor": 945,
+    "REQUES": 946,
+    "REQUEST": 947,
+    "REQUEST_": 948,
+    "REQUEST_RE": 949,
+    "REQUEST_REPE": 950,
+    "REQUEST_REPEA": 951,
+    "REQUEST_REPEAT": 952,
+    "nahi": 953,
+    "ANSWER_Y": 954,
+    "ANSWER_YES": 955,
+    "kisi": 956
+  },
+  "merges": [
+    [
+      "h",
+      "a"
+    ],
+    [
+      "O",
+      "N"
+    ],
+    [
+      "N",
+      "ON"
+    ],
+    [
+      "NON",
+      "E"
+    ],
+    [
+      "e",
+      "n"
+    ],
+    [
+      "a",
+      "r"
+    ],
+    [
+      "i",
+      "n"
+    ],
+    [
+      "i",
+      "t"
+    ],
+    [
+      "a",
+      "n"
+    ],
+    [
+      "s",
+      "e"
+    ],
+    [
+      "e",
+      "r"
+    ],
+    [
+      "u",
+      "r"
+    ],
+    [
+      "m",
+      "e"
+    ],
+    [
+      "ar",
+      "e"
+    ],
+    [
+      "a",
+      "l"
+    ],
+    [
+      "a",
+      "g"
+    ],
+    [
+      "a",
+      "me"
+    ],
+    [
+      "ag",
+      "e"
+    ],
+    [
+      "o",
+      "u"
+    ],
+    [
+      "i",
+      "l"
+    ],
+    [
+      "an",
+      "g"
+    ],
+    [
+      "y",
+      "a"
+    ],
+    [
+      "it",
+      "y"
+    ],
+    [
+      "a",
+      "c"
+    ],
+    [
+      "l",
+      "o"
+    ],
+    [
+      "d",
+      "er"
+    ],
+    [
+      "lo",
+      "c"
+    ],
+    [
+      "h",
+      "i"
+    ],
+    [
+      "s",
+      "y"
+    ],
+    [
+      "sy",
+      "m"
+    ],
+    [
+      "n",
+      "ame"
+    ],
+    [
+      "c",
+      "are"
+    ],
+    [
+      "f",
+      "ac"
+    ],
+    [
+      "fac",
+      "il"
+    ],
+    [
+      "facil",
+      "ity"
+    ],
+    [
+      "p",
+      "ha"
+    ],
+    [
+      "pha",
+      "se"
+    ],
+    [
+      "d",
+      "ur"
+    ],
+    [
+      "g",
+      "en"
+    ],
+    [
+      "gen",
+      "der"
+    ],
+    [
+      "l",
+      "ang"
+    ],
+    [
+      "h",
+      "e"
+    ],
+    [
+      "a",
+      "y"
+    ],
+    [
+      "y",
+      "ou"
+    ],
+    [
+      "a",
+      "t"
+    ],
+    [
+      "ha",
+      "n"
+    ],
+    [
+      "s",
+      "h"
+    ],
+    [
+      "a",
+      "p"
+    ],
+    [
+      "ha",
+      "r"
+    ],
+    [
+      "t",
+      "e"
+    ],
+    [
+      "in",
+      "g"
+    ],
+    [
+      "o",
+      "r"
+    ],
+    [
+      "d",
+      "ay"
+    ],
+    [
+      "en",
+      "t"
+    ],
+    [
+      "G",
+      "E"
+    ],
+    [
+      "A",
+      "GE"
+    ],
+    [
+      "o",
+      "l"
+    ],
+    [
+      "r",
+      "e"
+    ],
+    [
+      "ha",
+      "i"
+    ],
+    [
+      "day",
+      "s"
+    ],
+    [
+      "f",
+      "e"
+    ],
+    [
+      "d",
+      "in"
+    ],
+    [
+      "o",
+      "n"
+    ],
+    [
+      "r",
+      "a"
+    ],
+    [
+      "T",
+      "Y"
+    ],
+    [
+      "u",
+      "k"
+    ],
+    [
+      "r",
+      "i"
+    ],
+    [
+      "m",
+      "al"
+    ],
+    [
+      "v",
+      "er"
+    ],
+    [
+      "at",
+      "i"
+    ],
+    [
+      "u",
+      "n"
+    ],
+    [
+      "k",
+      "i"
+    ],
+    [
+      "a",
+      "in"
+    ],
+    [
+      "e",
+      "e"
+    ],
+    [
+      "o",
+      "m"
+    ],
+    [
+      "d",
+      "ar"
+    ],
+    [
+      "dar",
+      "d"
+    ],
+    [
+      "i",
+      "s"
+    ],
+    [
+      "a",
+      "ap"
+    ],
+    [
+      "T",
+      "han"
+    ],
+    [
+      "Than",
+      "k"
+    ],
+    [
+      "it",
+      "a"
+    ],
+    [
+      "a",
+      "m"
+    ],
+    [
+      "mal",
+      "e"
+    ],
+    [
+      "p",
+      "ain"
+    ],
+    [
+      "h",
+      "o"
+    ],
+    [
+      "E",
+      "S"
+    ],
+    [
+      "j",
+      "i"
+    ],
+    [
+      "e",
+      "sh"
+    ],
+    [
+      "a",
+      "d"
+    ],
+    [
+      "t",
+      "a"
+    ],
+    [
+      "fe",
+      "ver"
+    ],
+    [
+      "b",
+      "uk"
+    ],
+    [
+      "buk",
+      "har"
+    ],
+    [
+      "p",
+      "ur"
+    ],
+    [
+      "s",
+      "t"
+    ],
+    [
+      "an",
+      "d"
+    ],
+    [
+      "T",
+      "I"
+    ],
+    [
+      "b",
+      "o"
+    ],
+    [
+      "me",
+      "in"
+    ],
+    [
+      "k",
+      "ar"
+    ],
+    [
+      "ha",
+      "in"
+    ],
+    [
+      "e",
+      "k"
+    ],
+    [
+      "t",
+      "he"
+    ],
+    [
+      "TI",
+      "ON"
+    ],
+    [
+      "i",
+      "c"
+    ],
+    [
+      "ou",
+      "l"
+    ],
+    [
+      "oul",
+      "d"
+    ],
+    [
+      "d",
+      "o"
+    ],
+    [
+      "are",
+      "e"
+    ],
+    [
+      "aree",
+      "z"
+    ],
+    [
+      "L",
+      "O"
+    ],
+    [
+      "C",
+      "A"
+    ],
+    [
+      "M",
+      "al"
+    ],
+    [
+      "Mal",
+      "s"
+    ],
+    [
+      "Mals",
+      "hi"
+    ],
+    [
+      "Malshi",
+      "ra"
+    ],
+    [
+      "Malshira",
+      "s"
+    ],
+    [
+      "LO",
+      "CA"
+    ],
+    [
+      "LOCA",
+      "L"
+    ],
+    [
+      "LOCAL",
+      "I"
+    ],
+    [
+      "LOCALI",
+      "TY"
+    ],
+    [
+      "p",
+      "ati"
+    ],
+    [
+      "pati",
+      "ent"
+    ],
+    [
+      "ent",
+      "re"
+    ],
+    [
+      "s",
+      "a"
+    ],
+    [
+      "k",
+      "it"
+    ],
+    [
+      "kit",
+      "n"
+    ],
+    [
+      "R",
+      "ame"
+    ],
+    [
+      "Rame",
+      "sh"
+    ],
+    [
+      "s",
+      "ha"
+    ],
+    [
+      "aap",
+      "k"
+    ],
+    [
+      "Q",
+      "U"
+    ],
+    [
+      "QU",
+      "ES"
+    ],
+    [
+      "u",
+      "l"
+    ],
+    [
+      "c",
+      "ha"
+    ],
+    [
+      "ri",
+      "p"
+    ],
+    [
+      "rip",
+      "ya"
+    ],
+    [
+      "e",
+      "in"
+    ],
+    [
+      "en",
+      "e"
+    ],
+    [
+      "K",
+      "ripya"
+    ],
+    [
+      "b",
+      "at"
+    ],
+    [
+      "bat",
+      "ay"
+    ],
+    [
+      "batay",
+      "ein"
+    ],
+    [
+      "k",
+      "l"
+    ],
+    [
+      "S",
+      "A"
+    ],
+    [
+      "SA",
+      "F"
+    ],
+    [
+      "SAF",
+      "E"
+    ],
+    [
+      "SAFE",
+      "TY"
+    ],
+    [
+      "SAFETY",
+      "_"
+    ],
+    [
+      "SAFETY_",
+      "QUES"
+    ],
+    [
+      "SAFETY_QUES",
+      "TION"
+    ],
+    [
+      "SAFETY_QUESTION",
+      "S"
+    ],
+    [
+      "k",
+      "a"
+    ],
+    [
+      "S",
+      "un"
+    ],
+    [
+      "Sun",
+      "ita"
+    ],
+    [
+      "D",
+      "han"
+    ],
+    [
+      "Dhan",
+      "ya"
+    ],
+    [
+      "Dhanya",
+      "w"
+    ],
+    [
+      "Dhanyaw",
+      "ad"
+    ],
+    [
+      "ra",
+      "he"
+    ],
+    [
+      "C",
+      "entre"
+    ],
+    [
+      "g",
+      "a"
+    ],
+    [
+      "f",
+      "or"
+    ],
+    [
+      "al",
+      "t"
+    ],
+    [
+      "alt",
+      "h"
+    ],
+    [
+      "P",
+      "and"
+    ],
+    [
+      "Pand",
+      "har"
+    ],
+    [
+      "Pandhar",
+      "pur"
+    ],
+    [
+      "i",
+      "f"
+    ],
+    [
+      "in",
+      "t"
+    ],
+    [
+      "aapk",
+      "o"
+    ],
+    [
+      "n",
+      "a"
+    ],
+    [
+      "ha",
+      "t"
+    ],
+    [
+      "ul",
+      "t"
+    ],
+    [
+      "te",
+      "en"
+    ],
+    [
+      "a",
+      "a"
+    ],
+    [
+      "s",
+      "p"
+    ],
+    [
+      "S",
+      "ang"
+    ],
+    [
+      "Sang",
+      "ol"
+    ],
+    [
+      "Sangol",
+      "a"
+    ],
+    [
+      "c",
+      "on"
+    ],
+    [
+      "H",
+      "e"
+    ],
+    [
+      "ha",
+      "v"
+    ],
+    [
+      "hav",
+      "e"
+    ],
+    [
+      "m",
+      "ar"
+    ],
+    [
+      "fe",
+      "male"
+    ],
+    [
+      "He",
+      "alth"
+    ],
+    [
+      "s",
+      "ar"
+    ],
+    [
+      "a",
+      "v"
+    ],
+    [
+      "v",
+      "il"
+    ],
+    [
+      "K",
+      "ya"
+    ],
+    [
+      "C",
+      "ould"
+    ],
+    [
+      "G",
+      "ee"
+    ],
+    [
+      "Gee",
+      "ta"
+    ],
+    [
+      "p",
+      "er"
+    ],
+    [
+      "K",
+      "av"
+    ],
+    [
+      "Kav",
+      "ita"
+    ],
+    [
+      "M",
+      "a"
+    ],
+    [
+      "Ma",
+      "he"
+    ],
+    [
+      "Mahe",
+      "sh"
+    ],
+    [
+      "A",
+      "sha"
+    ],
+    [
+      "S",
+      "ur"
+    ],
+    [
+      "Sur",
+      "esh"
+    ],
+    [
+      "G",
+      "an"
+    ],
+    [
+      "Gan",
+      "esh"
+    ],
+    [
+      "u",
+      "b"
+    ],
+    [
+      "l",
+      "in"
+    ],
+    [
+      "ho",
+      "t"
+    ],
+    [
+      "B",
+      "ar"
+    ],
+    [
+      "Bar",
+      "am"
+    ],
+    [
+      "Baram",
+      "ati"
+    ],
+    [
+      "c",
+      "he"
+    ],
+    [
+      "H",
+      "C"
+    ],
+    [
+      "te",
+      "l"
+    ],
+    [
+      "m",
+      "areez"
+    ],
+    [
+      "bo",
+      "d"
+    ],
+    [
+      "bod",
+      "y"
+    ],
+    [
+      "ol",
+      "d"
+    ],
+    [
+      "se",
+      "ver"
+    ],
+    [
+      "sever",
+      "e"
+    ],
+    [
+      "at",
+      "h"
+    ],
+    [
+      "v",
+      "om"
+    ],
+    [
+      "vom",
+      "it"
+    ],
+    [
+      "vomit",
+      "ing"
+    ],
+    [
+      "t",
+      "o"
+    ],
+    [
+      "te",
+      "z"
+    ],
+    [
+      "am",
+      "a"
+    ],
+    [
+      "e",
+      "x"
+    ],
+    [
+      "en",
+      "c"
+    ],
+    [
+      "ri",
+      "ya"
+    ],
+    [
+      "sp",
+      "it"
+    ],
+    [
+      "spit",
+      "al"
+    ],
+    [
+      "S",
+      "h"
+    ],
+    [
+      "Sh",
+      "uk"
+    ],
+    [
+      "Shuk",
+      "riya"
+    ],
+    [
+      "k",
+      "e"
+    ],
+    [
+      "W",
+      "hat"
+    ],
+    [
+      "ta",
+      "kl"
+    ],
+    [
+      "takl",
+      "ee"
+    ],
+    [
+      "taklee",
+      "f"
+    ],
+    [
+      "ex",
+      "per"
+    ],
+    [
+      "exper",
+      "i"
+    ],
+    [
+      "experi",
+      "enc"
+    ],
+    [
+      "experienc",
+      "ing"
+    ],
+    [
+      "an",
+      "y"
+    ],
+    [
+      "lin",
+      "ic"
+    ],
+    [
+      "ga",
+      "on"
+    ],
+    [
+      "vil",
+      "l"
+    ],
+    [
+      "vill",
+      "age"
+    ],
+    [
+      "kitn",
+      "e"
+    ],
+    [
+      "ha",
+      "d"
+    ],
+    [
+      "E",
+      "N"
+    ],
+    [
+      "P",
+      "HC"
+    ],
+    [
+      "u",
+      "j"
+    ],
+    [
+      "tel",
+      "l"
+    ],
+    [
+      "d",
+      "if"
+    ],
+    [
+      "dif",
+      "f"
+    ],
+    [
+      "EN",
+      "T"
+    ],
+    [
+      "E",
+      "D"
+    ],
+    [
+      "H",
+      "o"
+    ],
+    [
+      "ho",
+      "w"
+    ],
+    [
+      "diff",
+      "ic"
+    ],
+    [
+      "diffic",
+      "ult"
+    ],
+    [
+      "c",
+      "h"
+    ],
+    [
+      "Thank",
+      "s"
+    ],
+    [
+      "A",
+      "re"
+    ],
+    [
+      "difficult",
+      "y"
+    ],
+    [
+      "b",
+      "re"
+    ],
+    [
+      "bre",
+      "ath"
+    ],
+    [
+      "breath",
+      "ing"
+    ],
+    [
+      "int",
+      "en"
+    ],
+    [
+      "inten",
+      "se"
+    ],
+    [
+      "che",
+      "st"
+    ],
+    [
+      "con",
+      "t"
+    ],
+    [
+      "cont",
+      "in"
+    ],
+    [
+      "contin",
+      "u"
+    ],
+    [
+      "continu",
+      "ou"
+    ],
+    [
+      "continuou",
+      "s"
+    ],
+    [
+      "T",
+      "R"
+    ],
+    [
+      "TR",
+      "I"
+    ],
+    [
+      "TRI",
+      "AGE"
+    ],
+    [
+      "TRIAGE",
+      "_"
+    ],
+    [
+      "TRIAGE_",
+      "P"
+    ],
+    [
+      "TRIAGE_P",
+      "R"
+    ],
+    [
+      "TRIAGE_PR",
+      "ES"
+    ],
+    [
+      "TRIAGE_PRES",
+      "ENT"
+    ],
+    [
+      "TRIAGE_PRESENT",
+      "ED"
+    ],
+    [
+      "g",
+      "h"
+    ],
+    [
+      "aap",
+      "ki"
+    ],
+    [
+      "a",
+      "ay"
+    ],
+    [
+      "aay",
+      "u"
+    ],
+    [
+      "kitn",
+      "i"
+    ],
+    [
+      "M",
+      "areez"
+    ],
+    [
+      "u",
+      "mar"
+    ],
+    [
+      "sa",
+      "al"
+    ],
+    [
+      "sa",
+      "an"
+    ],
+    [
+      "saan",
+      "s"
+    ],
+    [
+      "l",
+      "ene"
+    ],
+    [
+      "bo",
+      "hot"
+    ],
+    [
+      "se",
+      "ene"
+    ],
+    [
+      "cha",
+      "k"
+    ],
+    [
+      "chak",
+      "kar"
+    ],
+    [
+      "o",
+      "ur"
+    ],
+    [
+      "l",
+      "ing"
+    ],
+    [
+      "p",
+      "ar"
+    ],
+    [
+      "A",
+      "ap"
+    ],
+    [
+      "a",
+      "ur"
+    ],
+    [
+      "y",
+      "our"
+    ],
+    [
+      "c",
+      "e"
+    ],
+    [
+      "k",
+      "han"
+    ],
+    [
+      "f",
+      "r"
+    ],
+    [
+      "fr",
+      "om"
+    ],
+    [
+      "M",
+      "o"
+    ],
+    [
+      "Mo",
+      "h"
+    ],
+    [
+      "Moh",
+      "ol"
+    ],
+    [
+      "S",
+      "hi"
+    ],
+    [
+      "Shi",
+      "r"
+    ],
+    [
+      "Shir",
+      "pur"
+    ],
+    [
+      "om",
+      "m"
+    ],
+    [
+      "A",
+      "kl"
+    ],
+    [
+      "Akl",
+      "uj"
+    ],
+    [
+      "K",
+      "ar"
+    ],
+    [
+      "Kar",
+      "mal"
+    ],
+    [
+      "Karmal",
+      "a"
+    ],
+    [
+      "s",
+      "in"
+    ],
+    [
+      "sin",
+      "ce"
+    ],
+    [
+      "c",
+      "linic"
+    ],
+    [
+      "y",
+      "e"
+    ],
+    [
+      "b",
+      "a"
+    ],
+    [
+      "der",
+      "st"
+    ],
+    [
+      "v",
+      "is"
+    ],
+    [
+      "vis",
+      "it"
+    ],
+    [
+      "S",
+      "ub"
+    ],
+    [
+      "o",
+      "int"
+    ],
+    [
+      "c",
+      "al"
+    ],
+    [
+      "Ho",
+      "spital"
+    ],
+    [
+      "cal",
+      "ling"
+    ],
+    [
+      "cha",
+      "h"
+    ],
+    [
+      "chah",
+      "te"
+    ],
+    [
+      "kar",
+      "na"
+    ],
+    [
+      "c",
+      "ou"
+    ],
+    [
+      "cou",
+      "gh"
+    ],
+    [
+      "n",
+      "e"
+    ],
+    [
+      "a",
+      "b"
+    ],
+    [
+      "t",
+      "hi"
+    ],
+    [
+      "thi",
+      "s"
+    ],
+    [
+      "c",
+      "t"
+    ],
+    [
+      "T",
+      "he"
+    ],
+    [
+      "The",
+      "ek"
+    ],
+    [
+      "ha",
+      "f"
+    ],
+    [
+      "ap",
+      "na"
+    ],
+    [
+      "w",
+      "ee"
+    ],
+    [
+      "wee",
+      "k"
+    ],
+    [
+      "b",
+      "ol"
+    ],
+    [
+      "un",
+      "derst"
+    ],
+    [
+      "underst",
+      "and"
+    ],
+    [
+      "s",
+      "i"
+    ],
+    [
+      "ri",
+      "mar"
+    ],
+    [
+      "rimar",
+      "y"
+    ],
+    [
+      "k",
+      "al"
+    ],
+    [
+      "ap",
+      "p"
+    ],
+    [
+      "app",
+      "oint"
+    ],
+    [
+      "appoint",
+      "m"
+    ],
+    [
+      "appointm",
+      "ent"
+    ],
+    [
+      "khan",
+      "si"
+    ],
+    [
+      "omm",
+      "un"
+    ],
+    [
+      "ommun",
+      "ity"
+    ],
+    [
+      "loc",
+      "al"
+    ],
+    [
+      "ama",
+      "s"
+    ],
+    [
+      "t",
+      "hat"
+    ],
+    [
+      "A",
+      "M"
+    ],
+    [
+      "P",
+      "rimary"
+    ],
+    [
+      "ka",
+      "un"
+    ],
+    [
+      "k",
+      "am"
+    ],
+    [
+      "ama",
+      "j"
+    ],
+    [
+      "amaj",
+      "h"
+    ],
+    [
+      "ga",
+      "ya"
+    ],
+    [
+      "4",
+      "2"
+    ],
+    [
+      "l",
+      "e"
+    ],
+    [
+      "C",
+      "ommunity"
+    ],
+    [
+      "sha",
+      "har"
+    ],
+    [
+      "S",
+      "amajh"
+    ],
+    [
+      "s",
+      "amas"
+    ],
+    [
+      "samas",
+      "ya"
+    ],
+    [
+      "ka",
+      "s"
+    ],
+    [
+      "kas",
+      "ba"
+    ],
+    [
+      "ati",
+      "on"
+    ],
+    [
+      "d",
+      "e"
+    ],
+    [
+      "s",
+      "har"
+    ],
+    [
+      "shar",
+      "ing"
+    ],
+    [
+      "sp",
+      "e"
+    ],
+    [
+      "spe",
+      "c"
+    ],
+    [
+      "spec",
+      "if"
+    ],
+    [
+      "specif",
+      "y"
+    ],
+    [
+      "local",
+      "ity"
+    ],
+    [
+      "W",
+      "hi"
+    ],
+    [
+      "Whi",
+      "ch"
+    ],
+    [
+      "to",
+      "w"
+    ],
+    [
+      "tow",
+      "n"
+    ],
+    [
+      "are",
+      "a"
+    ],
+    [
+      "con",
+      "s"
+    ],
+    [
+      "cons",
+      "ult"
+    ],
+    [
+      "W",
+      "ould"
+    ],
+    [
+      "n",
+      "o"
+    ],
+    [
+      "l",
+      "i"
+    ],
+    [
+      "s",
+      "han"
+    ],
+    [
+      "p",
+      "e"
+    ],
+    [
+      "N",
+      "AM"
+    ],
+    [
+      "NAM",
+      "E"
+    ],
+    [
+      "5",
+      "5"
+    ],
+    [
+      "clinic",
+      "al"
+    ],
+    [
+      "s",
+      "ub"
+    ],
+    [
+      "pe",
+      "t"
+    ],
+    [
+      "a",
+      "k"
+    ],
+    [
+      "S",
+      "ol"
+    ],
+    [
+      "Sol",
+      "ap"
+    ],
+    [
+      "Solap",
+      "ur"
+    ],
+    [
+      "C",
+      "i"
+    ],
+    [
+      "Ci",
+      "vil"
+    ],
+    [
+      "a",
+      "se"
+    ],
+    [
+      "ou",
+      "t"
+    ],
+    [
+      "M",
+      "ain"
+    ],
+    [
+      "a",
+      "h"
+    ],
+    [
+      "D",
+      "U"
+    ],
+    [
+      "DU",
+      "R"
+    ],
+    [
+      "DUR",
+      "A"
+    ],
+    [
+      "DURA",
+      "TION"
+    ],
+    [
+      "ab",
+      "out"
+    ],
+    [
+      "l",
+      "ag"
+    ],
+    [
+      "lag",
+      "b"
+    ],
+    [
+      "lagb",
+      "ha"
+    ],
+    [
+      "lagbha",
+      "g"
+    ],
+    [
+      "haf",
+      "te"
+    ],
+    [
+      "bo",
+      "o"
+    ],
+    [
+      "m",
+      "or"
+    ],
+    [
+      "mor",
+      "n"
+    ],
+    [
+      "morn",
+      "ing"
+    ],
+    [
+      "ye",
+      "st"
+    ],
+    [
+      "yest",
+      "er"
+    ],
+    [
+      "yester",
+      "day"
+    ],
+    [
+      "aa",
+      "j"
+    ],
+    [
+      "sub",
+      "ah"
+    ],
+    [
+      "is",
+      "t"
+    ],
+    [
+      "f",
+      "er"
+    ],
+    [
+      "Main",
+      "e"
+    ],
+    [
+      "boo",
+      "k"
+    ],
+    [
+      "per",
+      "s"
+    ],
+    [
+      "pers",
+      "on"
+    ],
+    [
+      "ac",
+      "h"
+    ],
+    [
+      "n",
+      "ee"
+    ],
+    [
+      "d",
+      "ing"
+    ],
+    [
+      "w",
+      "e"
+    ],
+    [
+      "b",
+      "ac"
+    ],
+    [
+      "bac",
+      "k"
+    ],
+    [
+      "N",
+      "G"
+    ],
+    [
+      "kam",
+      "ar"
+    ],
+    [
+      "he",
+      "ad"
+    ],
+    [
+      "head",
+      "ac"
+    ],
+    [
+      "headac",
+      "he"
+    ],
+    [
+      "st",
+      "om"
+    ],
+    [
+      "stom",
+      "ach"
+    ],
+    [
+      "c",
+      "hot"
+    ],
+    [
+      "ist",
+      "ri"
+    ],
+    [
+      "istri",
+      "ct"
+    ],
+    [
+      "han",
+      "d"
+    ],
+    [
+      "in",
+      "j"
+    ],
+    [
+      "inj",
+      "ur"
+    ],
+    [
+      "injur",
+      "y"
+    ],
+    [
+      "t",
+      "om"
+    ],
+    [
+      "u",
+      "i"
+    ],
+    [
+      "ho",
+      "spital"
+    ],
+    [
+      "no",
+      "te"
+    ],
+    [
+      "do",
+      "ct"
+    ],
+    [
+      "doct",
+      "or"
+    ],
+    [
+      "d",
+      "i"
+    ],
+    [
+      "p",
+      "re"
+    ],
+    [
+      "pre",
+      "fer"
+    ],
+    [
+      "D",
+      "istrict"
+    ],
+    [
+      "sym",
+      "p"
+    ],
+    [
+      "symp",
+      "tom"
+    ],
+    [
+      "symptom",
+      "s"
+    ],
+    [
+      "r",
+      "o"
+    ],
+    [
+      "l",
+      "ak"
+    ],
+    [
+      "lak",
+      "shan"
+    ],
+    [
+      "p",
+      "a"
+    ],
+    [
+      "p",
+      "h"
+    ],
+    [
+      "ph",
+      "on"
+    ],
+    [
+      "phon",
+      "e"
+    ],
+    [
+      "ba",
+      "at"
+    ],
+    [
+      "3",
+      "8"
+    ],
+    [
+      "e",
+      "s"
+    ],
+    [
+      "consult",
+      "ation"
+    ],
+    [
+      "di",
+      "khan"
+    ],
+    [
+      "dikhan",
+      "a"
+    ],
+    [
+      "b",
+      "e"
+    ],
+    [
+      "4",
+      "5"
+    ],
+    [
+      "na",
+      "am"
+    ],
+    [
+      "o",
+      "o"
+    ],
+    [
+      "he",
+      "alth"
+    ],
+    [
+      "ne",
+      "ar"
+    ],
+    [
+      "near",
+      "b"
+    ],
+    [
+      "nearb",
+      "y"
+    ],
+    [
+      "che",
+      "d"
+    ],
+    [
+      "tel",
+      "e"
+    ],
+    [
+      "Aap",
+      "ke"
+    ],
+    [
+      "pa",
+      "ya"
+    ],
+    [
+      "R",
+      "E"
+    ],
+    [
+      "5",
+      "0"
+    ],
+    [
+      "gh",
+      "u"
+    ],
+    [
+      "ghu",
+      "t"
+    ],
+    [
+      "ghut",
+      "ne"
+    ],
+    [
+      "haf",
+      "ta"
+    ],
+    [
+      "C",
+      "linic"
+    ],
+    [
+      "Clinic",
+      "al"
+    ],
+    [
+      "j",
+      "an"
+    ],
+    [
+      "jan",
+      "kar"
+    ],
+    [
+      "jankar",
+      "i"
+    ],
+    [
+      "an",
+      "u"
+    ],
+    [
+      "anu",
+      "sar"
+    ],
+    [
+      "cha",
+      "hi"
+    ],
+    [
+      "chahi",
+      "ye"
+    ],
+    [
+      "s",
+      "s"
+    ],
+    [
+      "B",
+      "ase"
+    ],
+    [
+      "Base",
+      "d"
+    ],
+    [
+      "e",
+      "v"
+    ],
+    [
+      "ev",
+      "al"
+    ],
+    [
+      "eval",
+      "u"
+    ],
+    [
+      "evalu",
+      "ation"
+    ],
+    [
+      "re",
+      "c"
+    ],
+    [
+      "rec",
+      "omm"
+    ],
+    [
+      "recomm",
+      "en"
+    ],
+    [
+      "recommen",
+      "de"
+    ],
+    [
+      "recommende",
+      "d"
+    ],
+    [
+      "i",
+      "d"
+    ],
+    [
+      "id",
+      "ent"
+    ],
+    [
+      "ident",
+      "if"
+    ],
+    [
+      "identif",
+      "i"
+    ],
+    [
+      "identifi",
+      "e"
+    ],
+    [
+      "identifie",
+      "d"
+    ],
+    [
+      "li",
+      "ke"
+    ],
+    [
+      "s",
+      "ched"
+    ],
+    [
+      "sched",
+      "ul"
+    ],
+    [
+      "schedul",
+      "e"
+    ],
+    [
+      "2",
+      "4"
+    ],
+    [
+      "k",
+      "nee"
+    ],
+    [
+      "C",
+      "HC"
+    ],
+    [
+      "A",
+      "c"
+    ],
+    [
+      "Ac",
+      "c"
+    ],
+    [
+      "Acc",
+      "or"
+    ],
+    [
+      "Accor",
+      "ding"
+    ],
+    [
+      "g",
+      "ui"
+    ],
+    [
+      "gui",
+      "de"
+    ],
+    [
+      "guide",
+      "lin"
+    ],
+    [
+      "guidelin",
+      "es"
+    ],
+    [
+      "sh",
+      "ould"
+    ],
+    [
+      "tele",
+      "consultation"
+    ],
+    [
+      "3",
+      "2"
+    ],
+    [
+      "1",
+      "9"
+    ],
+    [
+      "lakshan",
+      "o"
+    ],
+    [
+      "a",
+      "ad"
+    ],
+    [
+      "aad",
+      "har"
+    ],
+    [
+      "u",
+      "ch"
+    ],
+    [
+      "uch",
+      "it"
+    ],
+    [
+      "rahe",
+      "ga"
+    ],
+    [
+      "aapk",
+      "e"
+    ],
+    [
+      "p",
+      "aa"
+    ],
+    [
+      "paa",
+      "s"
+    ],
+    [
+      "ya",
+      "han"
+    ],
+    [
+      "6",
+      "8"
+    ],
+    [
+      "5",
+      "6"
+    ],
+    [
+      "be",
+      "en"
+    ],
+    [
+      "p",
+      "ro"
+    ],
+    [
+      "li",
+      "ya"
+    ],
+    [
+      "p",
+      "are"
+    ],
+    [
+      "pare",
+      "shan"
+    ],
+    [
+      "pareshan",
+      "i"
+    ],
+    [
+      "pro",
+      "b"
+    ],
+    [
+      "prob",
+      "le"
+    ],
+    [
+      "proble",
+      "m"
+    ],
+    [
+      "le",
+      "ase"
+    ],
+    [
+      "Ho",
+      "w"
+    ],
+    [
+      "lo",
+      "w"
+    ],
+    [
+      "or",
+      "i"
+    ],
+    [
+      "b",
+      "ad"
+    ],
+    [
+      "G",
+      "RE"
+    ],
+    [
+      "GRE",
+      "E"
+    ],
+    [
+      "GREE",
+      "TI"
+    ],
+    [
+      "GREETI",
+      "NG"
+    ],
+    [
+      "j",
+      "o"
+    ],
+    [
+      "jo",
+      "do"
+    ],
+    [
+      "kam",
+      "z"
+    ],
+    [
+      "kamz",
+      "ori"
+    ],
+    [
+      "oo",
+      "d"
+    ],
+    [
+      "c",
+      "entre"
+    ],
+    [
+      "z",
+      "uk"
+    ],
+    [
+      "zuk",
+      "ha"
+    ],
+    [
+      "zukha",
+      "m"
+    ],
+    [
+      "ha",
+      "ath"
+    ],
+    [
+      "s",
+      "uj"
+    ],
+    [
+      "suj",
+      "an"
+    ],
+    [
+      "bad",
+      "an"
+    ],
+    [
+      "s",
+      "we"
+    ],
+    [
+      "swe",
+      "l"
+    ],
+    [
+      "swel",
+      "ling"
+    ],
+    [
+      "ch",
+      "il"
+    ],
+    [
+      "chil",
+      "l"
+    ],
+    [
+      "chill",
+      "s"
+    ],
+    [
+      "low",
+      "er"
+    ],
+    [
+      "te",
+      "j"
+    ],
+    [
+      "t",
+      "hand"
+    ],
+    [
+      "B",
+      "O"
+    ],
+    [
+      "BO",
+      "O"
+    ],
+    [
+      "BOO",
+      "K"
+    ],
+    [
+      "BOOK",
+      "I"
+    ],
+    [
+      "BOOKI",
+      "NG"
+    ],
+    [
+      "j",
+      "oint"
+    ],
+    [
+      "we",
+      "ak"
+    ],
+    [
+      "weak",
+      "ne"
+    ],
+    [
+      "weakne",
+      "ss"
+    ],
+    [
+      "c",
+      "old"
+    ],
+    [
+      "k",
+      "har"
+    ],
+    [
+      "khar",
+      "ab"
+    ],
+    [
+      "ult",
+      "i"
+    ],
+    [
+      "me",
+      "d"
+    ],
+    [
+      "med",
+      "ic"
+    ],
+    [
+      "medic",
+      "al"
+    ],
+    [
+      "s",
+      "am"
+    ],
+    [
+      "sam",
+      "ay"
+    ],
+    [
+      "U",
+      "n"
+    ],
+    [
+      "Un",
+      "derst"
+    ],
+    [
+      "Underst",
+      "ood"
+    ],
+    [
+      "BOOKING",
+      "_"
+    ],
+    [
+      "s",
+      "lo"
+    ],
+    [
+      "slo",
+      "t"
+    ],
+    [
+      "i",
+      "r"
+    ],
+    [
+      "ra",
+      "hi"
+    ],
+    [
+      "p",
+      "lease"
+    ],
+    [
+      "no",
+      "w"
+    ],
+    [
+      "s",
+      "u"
+    ],
+    [
+      "ha",
+      "s"
+    ],
+    [
+      "con",
+      "f"
+    ],
+    [
+      "conf",
+      "ir"
+    ],
+    [
+      "confir",
+      "m"
+    ],
+    [
+      "Aap",
+      "k"
+    ],
+    [
+      "Aapk",
+      "o"
+    ],
+    [
+      "sh",
+      "ub"
+    ],
+    [
+      "shub",
+      "h"
+    ],
+    [
+      "N",
+      "o"
+    ],
+    [
+      "No",
+      "te"
+    ],
+    [
+      "Note",
+      "d"
+    ],
+    [
+      "M",
+      "ay"
+    ],
+    [
+      "k",
+      "now"
+    ],
+    [
+      "o",
+      "f"
+    ],
+    [
+      "nee",
+      "ding"
+    ],
+    [
+      "ad",
+      "v"
+    ],
+    [
+      "adv",
+      "ic"
+    ],
+    [
+      "advic",
+      "e"
+    ],
+    [
+      "BOOKING_",
+      "C"
+    ],
+    [
+      "BOOKING_C",
+      "ON"
+    ],
+    [
+      "BOOKING_CON",
+      "F"
+    ],
+    [
+      "BOOKING_CONF",
+      "I"
+    ],
+    [
+      "BOOKING_CONFI",
+      "R"
+    ],
+    [
+      "BOOKING_CONFIR",
+      "M"
+    ],
+    [
+      "A",
+      "n"
+    ],
+    [
+      "An",
+      "il"
+    ],
+    [
+      "2",
+      "9"
+    ],
+    [
+      "m",
+      "ain"
+    ],
+    [
+      "ye",
+      "h"
+    ],
+    [
+      "ka",
+      "b"
+    ],
+    [
+      "sh",
+      "ur"
+    ],
+    [
+      "shur",
+      "u"
+    ],
+    [
+      "h",
+      "ui"
+    ],
+    [
+      "Y",
+      "e"
+    ],
+    [
+      "Ye",
+      "h"
+    ],
+    [
+      "m",
+      "any"
+    ],
+    [
+      "ho",
+      "ur"
+    ],
+    [
+      "hour",
+      "s"
+    ],
+    [
+      "su",
+      "f"
+    ],
+    [
+      "suf",
+      "fer"
+    ],
+    [
+      "suffer",
+      "ing"
+    ],
+    [
+      "lo",
+      "n"
+    ],
+    [
+      "lon",
+      "g"
+    ],
+    [
+      "g",
+      "o"
+    ],
+    [
+      "go",
+      "ing"
+    ],
+    [
+      "आ",
+      "प"
+    ],
+    [
+      "P",
+      "E"
+    ],
+    [
+      "d",
+      "ek"
+    ],
+    [
+      "A",
+      "N"
+    ],
+    [
+      "w",
+      "it"
+    ],
+    [
+      "आप",
+      "क"
+    ],
+    [
+      "i",
+      "se"
+    ],
+    [
+      "ou",
+      "n"
+    ],
+    [
+      "oun",
+      "d"
+    ],
+    [
+      "av",
+      "a"
+    ],
+    [
+      "ava",
+      "il"
+    ],
+    [
+      "avail",
+      "ab"
+    ],
+    [
+      "availab",
+      "le"
+    ],
+    [
+      "P",
+      "lease"
+    ],
+    [
+      "j",
+      "a"
+    ],
+    [
+      "health",
+      "care"
+    ],
+    [
+      "wit",
+      "h"
+    ],
+    [
+      "d",
+      "istrict"
+    ],
+    [
+      "TY",
+      "PE"
+    ],
+    [
+      "dek",
+      "ha"
+    ],
+    [
+      "kar",
+      "ke"
+    ],
+    [
+      "do",
+      "on"
+    ],
+    [
+      "AN",
+      "S"
+    ],
+    [
+      "ANS",
+      "W"
+    ],
+    [
+      "ANSW",
+      "E"
+    ],
+    [
+      "ANSWE",
+      "R"
+    ],
+    [
+      "ANSWER",
+      "_"
+    ],
+    [
+      "N",
+      "O"
+    ],
+    [
+      "c",
+      "ommunity"
+    ],
+    [
+      "f",
+      "ound"
+    ],
+    [
+      "tom",
+      "or"
+    ],
+    [
+      "tomor",
+      "ro"
+    ],
+    [
+      "tomorro",
+      "w"
+    ],
+    [
+      "3",
+      "0"
+    ],
+    [
+      "S",
+      "ha"
+    ],
+    [
+      "Sha",
+      "l"
+    ],
+    [
+      "Shal",
+      "l"
+    ],
+    [
+      "P",
+      "oo"
+    ],
+    [
+      "Poo",
+      "ja"
+    ],
+    [
+      "2",
+      "7"
+    ],
+    [
+      "P",
+      "M"
+    ],
+    [
+      "u",
+      "p"
+    ],
+    [
+      "p",
+      "rimary"
+    ],
+    [
+      "N",
+      "amas"
+    ],
+    [
+      "Namas",
+      "te"
+    ],
+    [
+      "w",
+      "a"
+    ],
+    [
+      "ho",
+      "on"
+    ],
+    [
+      "a",
+      "ss"
+    ],
+    [
+      "ass",
+      "ist"
+    ],
+    [
+      "म",
+      "स"
+    ],
+    [
+      "ब",
+      "त"
+    ],
+    [
+      "q",
+      "u"
+    ],
+    [
+      "He",
+      "l"
+    ],
+    [
+      "Hel",
+      "lo"
+    ],
+    [
+      "l",
+      "y"
+    ],
+    [
+      "do",
+      "b"
+    ],
+    [
+      "dob",
+      "ar"
+    ],
+    [
+      "dobar",
+      "a"
+    ],
+    [
+      "c",
+      "an"
+    ],
+    [
+      "aapk",
+      "a"
+    ],
+    [
+      "k",
+      "ya"
+    ],
+    [
+      "h",
+      "er"
+    ],
+    [
+      "w",
+      "hat"
+    ],
+    [
+      "BOOKING_",
+      "TYPE"
+    ],
+    [
+      "3",
+      "4"
+    ],
+    [
+      "1",
+      "1"
+    ],
+    [
+      "1",
+      "5"
+    ],
+    [
+      "ANSWER_",
+      "NO"
+    ],
+    [
+      "t",
+      "i"
+    ],
+    [
+      "ti",
+      "me"
+    ],
+    [
+      "1",
+      "0"
+    ],
+    [
+      "U",
+      "N"
+    ],
+    [
+      "UN",
+      "K"
+    ],
+    [
+      "UNK",
+      "NO"
+    ],
+    [
+      "UNKNO",
+      "W"
+    ],
+    [
+      "UNKNOW",
+      "N"
+    ],
+    [
+      "no",
+      "t"
+    ],
+    [
+      "de",
+      "s"
+    ],
+    [
+      "des",
+      "c"
+    ],
+    [
+      "desc",
+      "ri"
+    ],
+    [
+      "descri",
+      "be"
+    ],
+    [
+      "C",
+      "H"
+    ],
+    [
+      "CH",
+      "AN"
+    ],
+    [
+      "CHAN",
+      "GE"
+    ],
+    [
+      "CHANGE",
+      "_"
+    ],
+    [
+      "CHANGE_",
+      "A"
+    ],
+    [
+      "CHANGE_A",
+      "P"
+    ],
+    [
+      "CHANGE_AP",
+      "P"
+    ],
+    [
+      "CHANGE_APP",
+      "O"
+    ],
+    [
+      "CHANGE_APPO",
+      "I"
+    ],
+    [
+      "CHANGE_APPOI",
+      "N"
+    ],
+    [
+      "CHANGE_APPOIN",
+      "T"
+    ],
+    [
+      "CHANGE_APPOINT",
+      "M"
+    ],
+    [
+      "CHANGE_APPOINTM",
+      "ENT"
+    ],
+    [
+      "CHANGE_APPOINTMENT",
+      "_"
+    ],
+    [
+      "CHANGE_APPOINTMENT_",
+      "TYPE"
+    ],
+    [
+      "prefer",
+      "enc"
+    ],
+    [
+      "preferenc",
+      "e"
+    ],
+    [
+      "0",
+      "4"
+    ],
+    [
+      "न",
+      "मस"
+    ],
+    [
+      "स",
+      "ह"
+    ],
+    [
+      "प",
+      "य"
+    ],
+    [
+      "प",
+      "र"
+    ],
+    [
+      "li",
+      "ye"
+    ],
+    [
+      "dek",
+      "h"
+    ],
+    [
+      "ra",
+      "ha"
+    ],
+    [
+      "F",
+      "O"
+    ],
+    [
+      "FO",
+      "L"
+    ],
+    [
+      "FOL",
+      "LO"
+    ],
+    [
+      "FOLLO",
+      "W"
+    ],
+    [
+      "FOLLOW",
+      "_"
+    ],
+    [
+      "FOLLOW_",
+      "U"
+    ],
+    [
+      "FOLLOW_U",
+      "P"
+    ],
+    [
+      "an",
+      "ch"
+    ],
+    [
+      "f",
+      "ol"
+    ],
+    [
+      "fol",
+      "low"
+    ],
+    [
+      "h",
+      "u"
+    ],
+    [
+      "hu",
+      "m"
+    ],
+    [
+      "che",
+      "c"
+    ],
+    [
+      "chec",
+      "k"
+    ],
+    [
+      "ar",
+      "r"
+    ],
+    [
+      "arr",
+      "ang"
+    ],
+    [
+      "arrang",
+      "e"
+    ],
+    [
+      "CA",
+      "N"
+    ],
+    [
+      "CAN",
+      "C"
+    ],
+    [
+      "CANC",
+      "E"
+    ],
+    [
+      "CANCE",
+      "L"
+    ],
+    [
+      "CANCEL",
+      "_"
+    ],
+    [
+      "CANCEL_",
+      "BOOKING"
+    ],
+    [
+      "Y",
+      "our"
+    ],
+    [
+      "book",
+      "ing"
+    ],
+    [
+      "re",
+      "qu"
+    ],
+    [
+      "requ",
+      "e"
+    ],
+    [
+      "reque",
+      "st"
+    ],
+    [
+      "can",
+      "ce"
+    ],
+    [
+      "cance",
+      "l"
+    ],
+    [
+      "ap",
+      "ne"
+    ],
+    [
+      "sa",
+      "k"
+    ],
+    [
+      "to",
+      "day"
+    ],
+    [
+      "0",
+      "2"
+    ],
+    [
+      "0",
+      "0"
+    ],
+    [
+      "EN",
+      "D"
+    ],
+    [
+      "END",
+      "ED"
+    ],
+    [
+      "S",
+      "an"
+    ],
+    [
+      "San",
+      "to"
+    ],
+    [
+      "Santo",
+      "sh"
+    ],
+    [
+      "o",
+      "or"
+    ],
+    [
+      "RE",
+      "QUES"
+    ],
+    [
+      "REQUES",
+      "T"
+    ],
+    [
+      "REQUEST",
+      "_"
+    ],
+    [
+      "REQUEST_",
+      "RE"
+    ],
+    [
+      "REQUEST_RE",
+      "PE"
+    ],
+    [
+      "REQUEST_REPE",
+      "A"
+    ],
+    [
+      "REQUEST_REPEA",
+      "T"
+    ],
+    [
+      "na",
+      "hi"
+    ],
+    [
+      "ANSWER_",
+      "Y"
+    ],
+    [
+      "ANSWER_Y",
+      "ES"
+    ],
+    [
+      "ki",
+      "si"
+    ]
+  ],
+  "target_vocab_size": 3072
+}

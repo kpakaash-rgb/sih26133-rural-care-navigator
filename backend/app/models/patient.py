@@ -34,7 +34,11 @@ class Patient(Base, TimestampMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     mobile: Mapped[str] = mapped_column(String(15), unique=True, index=True, nullable=False)
     full_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    age: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    gender: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
+    village: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     district: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    facility_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
     abha_number: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
     consent: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 

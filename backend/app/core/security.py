@@ -34,13 +34,20 @@ from backend.app.core.exceptions import AuthenticationError, AuthorizationError
 class TokenData:
     """Parsed data extracted from a validated JWT payload."""
 
-    def __init__(self, user_id: str, role: str, mobile: Optional[str] = None):
+    def __init__(
+        self,
+        user_id: str,
+        role: str,
+        mobile: Optional[str] = None,
+        facility_id: Optional[int] = None,
+    ):
         self.user_id = user_id
         self.role = role
         self.mobile = mobile
+        self.facility_id = facility_id
 
     def __repr__(self) -> str:
-        return f"<TokenData user_id={self.user_id} role={self.role}>"
+        return f"<TokenData user_id={self.user_id} role={self.role} facility_id={self.facility_id}>"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -123,10 +130,19 @@ def decode_access_token(token: str) -> TokenData:
     if not user_id or not role:
         raise AuthenticationError("Token payload is missing required claims")
 
+    facility_id_raw = payload.get("facility_id")
+    facility_id: Optional[int] = None
+    if facility_id_raw is not None:
+        try:
+            facility_id = int(facility_id_raw)
+        except (ValueError, TypeError):
+            facility_id = None
+
     return TokenData(
         user_id=user_id,
         role=role,
         mobile=payload.get("mobile"),
+        facility_id=facility_id,
     )
 
 
@@ -156,6 +172,29 @@ async def get_current_user(
         raise AuthenticationError("Authorization header is required")
 
     return decode_access_token(credentials.credentials)
+
+
+async def get_current_worker(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    """
+    Dependency that enforces valid authentication with the 'WORKER' role
+    and ensures facility context is present.
+    """
+    if current_user.role != "WORKER":
+        raise AuthorizationError("Access forbidden: Frontline Worker role required")
+    return current_user
+
+
+async def get_current_doctor(
+    current_user: TokenData = Depends(get_current_user),
+) -> TokenData:
+    """
+    Dependency that enforces valid authentication with the 'DOCTOR' role.
+    """
+    if current_user.role != "DOCTOR":
+        raise AuthorizationError("Access forbidden: Doctor role required")
+    return current_user
 
 
 def require_roles(allowed_roles: List[str]):
