@@ -99,37 +99,33 @@ export default function PatientApp() {
   const [bookingData, setBookingData] = useState(initialBookingState)
 
   const [registrationData, setRegistrationData] = useState(null)
+  const [loginData, setLoginData] = useState(null)
 
   // ---------------------------------------------------------
   // Navigation handler
   // ---------------------------------------------------------
 
   const handleNavigate = (screenId, data) => {
-    // Reset stale emergency state when starting a fresh symptom intake or navigating to independent flows
+    // Map bottom nav tab keys to actual screen constants
+    if (screenId === 'home') screenId = SCREENS.HOME
+    else if (screenId === 'services') screenId = SCREENS.HEALTHCARE
+    else if (screenId === 'journey') screenId = SCREENS.HEALTH_JOURNEY
+    else if (screenId === 'profile') screenId = SCREENS.ABHA
+
+    // Reset triage state only when starting fresh symptoms intake or going to unrelated root screens
     if (screenId === SCREENS.SYMPTOMS) {
       setTriageData(initialTriageState)
     } else if (
-      screenId === SCREENS.HOME ||
       screenId === SCREENS.WELCOME ||
       screenId === SCREENS.LOGIN ||
       screenId === SCREENS.REGISTRATION ||
       screenId === SCREENS.ONBOARDING ||
-      screenId === SCREENS.AVAILABILITY ||
-      screenId === SCREENS.BOOKING ||
-      screenId === SCREENS.APPOINTMENT_CONFIRMED ||
-      screenId === SCREENS.APPOINTMENTS ||
-      screenId === SCREENS.FOLLOW_UP ||
-      screenId === SCREENS.TRACK_REFERRAL ||
-      screenId === SCREENS.REFERRAL_CREATED ||
-      screenId === SCREENS.HEALTH_JOURNEY ||
       screenId === SCREENS.SCHEMES ||
-      screenId === SCREENS.SCHEME_DETAILS ||
       screenId === SCREENS.MOBILE_CLINIC ||
       screenId === SCREENS.ABHA
     ) {
       setTriageData(initialTriageState)
-    } else if (screenId === SCREENS.HEALTHCARE && !data?.triageData) {
-      // Independent entry to healthcare without triage payload resets emergency state
+    } else if (screenId === SCREENS.HEALTHCARE && !data?.triageData && !triageData.urgency) {
       setTriageData(initialTriageState)
     }
 
@@ -142,6 +138,9 @@ export default function PatientApp() {
       }
       if (data.referral) {
         setSelectedReferral(data.referral)
+      }
+      if (screenId === SCREENS.LOGIN) {
+        setLoginData(data)
       }
       if (screenId === SCREENS.REGISTRATION || screenId === SCREENS.ONBOARDING) {
         setRegistrationData(data)
@@ -160,6 +159,7 @@ export default function PatientApp() {
           emergency: Boolean(data.emergency),
           reportedSymptoms: data.reportedSymptoms ?? [],
           problemDescription: data.problemDescription ?? '',
+          duration_days: data.duration_days ?? data.durationDays ?? 1,
         })
       }
 
@@ -172,6 +172,7 @@ export default function PatientApp() {
           emergency: Boolean(data.triageData.emergency),
           reportedSymptoms: data.triageData.reportedSymptoms ?? [],
           problemDescription: data.triageData.problemDescription ?? '',
+          duration_days: data.triageData.duration_days ?? data.triageData.durationDays ?? 1,
         })
       }
 
@@ -206,29 +207,12 @@ export default function PatientApp() {
     <div className="app-container">
       {/* Role Switcher Bar on Welcome screen */}
       {currentScreen === SCREENS.WELCOME && (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '8px 16px',
-          background: '#F1F5F9',
-          borderBottom: '1px solid #E2E8F0',
-          fontSize: '0.8rem',
-          color: '#475569',
-        }}>
-          <span>Portal: <strong>Patient Services</strong></span>
+        <div className="patient-welcome-topbar">
+          <span className="patient-welcome-topbar-title">Patient Services</span>
           <button
             type="button"
             onClick={() => navigate('/')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#0A58CA',
-              fontWeight: 600,
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              padding: '2px 6px',
-            }}
+            className="patient-welcome-topbar-back"
           >
             ← Portal Home
           </button>
@@ -244,7 +228,7 @@ export default function PatientApp() {
       )}
 
       {currentScreen === SCREENS.LOGIN && (
-        <Login onNavigate={handleNavigate} />
+        <Login onNavigate={handleNavigate} loginData={loginData} />
       )}
 
       {currentScreen === SCREENS.ONBOARDING && (

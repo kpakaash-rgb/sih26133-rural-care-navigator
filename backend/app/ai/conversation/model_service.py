@@ -377,9 +377,18 @@ class LocalConversationModel:
                 confidence = max(confidence, 0.85)
 
         # Emergency override: if slots detect critical symptoms, ensure emergency is flagged
-        is_emergency = slots["emergency"] or (predicted_intent == "EMERGENCY")
-        if is_emergency:
-            predicted_intent = "EMERGENCY"
+        # But if the text has explicit negation and slots['emergency'] is False, do not force emergency
+        has_negation = bool(slots.get("confirmation") is False) or bool(
+            re.search(r"\b(?:no|nahi|nahin|not|nahi hai|nahi ahe|kuch nahi|koi nahi|none)\b", cleaned, re.IGNORECASE)
+        )
+        if has_negation and not slots["emergency"]:
+            is_emergency = False
+            if predicted_intent == "EMERGENCY":
+                predicted_intent = "ANSWER_NO" if slots.get("confirmation") is False else "REPORT_SYMPTOMS"
+        else:
+            is_emergency = slots["emergency"] or (predicted_intent == "EMERGENCY")
+            if is_emergency:
+                predicted_intent = "EMERGENCY"
 
         return {
             "intent": predicted_intent,

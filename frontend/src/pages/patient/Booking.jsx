@@ -2,14 +2,27 @@ import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
-import { bookAppointment } from '../../services/api'
+import { bookAppointment, isTokenExpired, clearPatientSession } from '../../services/api'
 import { useTranslation } from '../../i18n'
 
 export default function Booking({ onNavigate, bookingData }) {
   const { t } = useTranslation()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
   const [isConflict, setIsConflict] = useState(false)
+  const [isSessionExpired, setIsSessionExpired] = useState(() => {
+    const token = localStorage.getItem('access_token')
+    const expired = !token || isTokenExpired(token)
+    if (expired) {
+      clearPatientSession()
+    }
+    return expired
+  })
+  const [errorMessage, setErrorMessage] = useState(() => {
+    const token = localStorage.getItem('access_token')
+    return (!token || isTokenExpired(token))
+      ? (t('booking.sessionExpired') || 'Your session has expired. Please sign in again to continue.')
+      : ''
+  })
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -27,10 +40,20 @@ export default function Booking({ onNavigate, bookingData }) {
     }
   }
 
+  const handleSignInAgain = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.LOGIN, {
+        returnScreen: SCREENS.BOOKING,
+      })
+    }
+  }
+
   const handleConfirmAppointment = async () => {
     const token = localStorage.getItem('access_token')
-    if (!token) {
-      setErrorMessage('Please log in with your mobile number before booking an appointment.')
+    if (!token || isTokenExpired(token)) {
+      clearPatientSession()
+      setIsSessionExpired(true)
+      setErrorMessage(t('booking.sessionExpired') || 'Your session has expired. Please sign in again to continue.')
       return
     }
 
@@ -42,6 +65,7 @@ export default function Booking({ onNavigate, bookingData }) {
     setIsSubmitting(true)
     setErrorMessage('')
     setIsConflict(false)
+    setIsSessionExpired(false)
 
     try {
       const appointment = await bookAppointment({
@@ -60,6 +84,15 @@ export default function Booking({ onNavigate, bookingData }) {
       }
     } catch (err) {
       if (
+        err.status === 401 ||
+        err.message?.toLowerCase().includes('expired') ||
+        err.message?.toLowerCase().includes('unauthorized') ||
+        err.message?.toLowerCase().includes('authentication')
+      ) {
+        clearPatientSession()
+        setIsSessionExpired(true)
+        setErrorMessage(t('booking.sessionExpired') || 'Your session has expired. Please sign in again to continue.')
+      } else if (
         err.status === 409 ||
         err.message?.toLowerCase().includes('already') ||
         err.message?.toLowerCase().includes('conflict') ||
@@ -133,7 +166,7 @@ export default function Booking({ onNavigate, bookingData }) {
           </p>
         </section>
 
-        {/* Error / Conflict Alert Banner */}
+        {/* Error / Conflict / Session Expired Alert Banner */}
         {errorMessage && (
           <div
             role="alert"
@@ -142,16 +175,43 @@ export default function Booking({ onNavigate, bookingData }) {
               border: `1px solid ${isConflict ? '#fde68a' : '#f87171'}`,
               borderRadius: '6px',
               padding: '12px 14px',
-              margin: '0 16px 16px',
+              margin: '0 0 16px',
               color: isConflict ? '#92400e' : '#991b1b',
               fontSize: '13px',
               lineHeight: 1.4,
             }}
           >
             <p style={{ fontWeight: 600, margin: '0 0 6px' }}>
-              {isConflict ? 'Slot Unavailable' : t('common.error')}
+              {isConflict
+                ? 'Slot Unavailable'
+                : isSessionExpired
+                ? t('booking.sessionExpired') || 'Session Expired'
+                : t('common.error')}
             </p>
             <p style={{ margin: 0 }}>{errorMessage}</p>
+            {isSessionExpired && (
+              <button
+                type="button"
+                onClick={handleSignInAgain}
+                style={{
+                  marginTop: '10px',
+                  backgroundColor: '#004b87',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '8px 14px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <span>{t('booking.signInAgain') || 'Sign In Again'}</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            )}
             {isConflict && (
               <button
                 type="button"
@@ -174,10 +234,6 @@ export default function Booking({ onNavigate, bookingData }) {
           </div>
         )}
 
-        {/* Form Guide Label */}
-        <div className="booking-check-label-row">
-          <span className="booking-check-label">{t('booking.subtitle')}</span>
-        </div>
 
         {/* Appointment Details Summary Card */}
         <article className="booking-summary-card">
@@ -284,11 +340,11 @@ export default function Booking({ onNavigate, bookingData }) {
           <button
             type="button"
             className="booking-confirm-btn"
-            disabled={isSubmitting || isConflict}
+            disabled={isSubmitting || isConflict || isSessionExpired}
             onClick={handleConfirmAppointment}
             style={{
-              opacity: isSubmitting || isConflict ? 0.6 : 1,
-              cursor: isSubmitting ? 'wait' : isConflict ? 'not-allowed' : 'pointer',
+              opacity: isSubmitting || isConflict || isSessionExpired ? 0.6 : 1,
+              cursor: isSubmitting ? 'wait' : (isConflict || isSessionExpired) ? 'not-allowed' : 'pointer',
             }}
           >
             <span className="btn-glyph-circle-check" aria-hidden="true">

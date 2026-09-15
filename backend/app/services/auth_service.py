@@ -245,7 +245,7 @@ class AuthService:
             mobile=payload.mobile,
             full_name=payload.full_name.strip(),
             age=payload.age,
-            gender=payload.gender.strip().upper().replace(" ", "_"),
+            gender=payload.gender.strip().upper().replace(" ", "_") if payload.gender else None,
             village=payload.village.strip(),
             district=payload.district.strip(),
             preferred_language=(payload.preferred_language or "en").strip().lower(),

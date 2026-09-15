@@ -304,8 +304,17 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
             return action
 
         # 2. Emergency Check (Highest Acuity First)
+        # Check if caller has denied red flags (e.g. "No, no chest pain", "No breathing difficulty", "nahi koi dard nahi")
+        has_negation = (
+            re.search(r"\b(?:no|not|none|nahi|nahin|na|kuch nahi|koi nahi)\b", t_lower) is not None
+        )
         for rf in RED_FLAGS_LEXICON:
-            if rf in t_lower and not ("no " in t_lower or "nahi " in t_lower):
+            if rf in t_lower:
+                # If negation is present near or before the red flag, do not trigger false emergency
+                if has_negation:
+                    neg_match = re.search(rf"\b(?:no|not|nahi|nahin|na|without|free of)\s+(?:such\s+)?(?:severe\s+)?{re.escape(rf)}", t_lower)
+                    if neg_match or t_lower.startswith("no") or t_lower.startswith("nahi") or "no, no" in t_lower or "no chest pain" in t_lower:
+                        continue
                 action.intent = ConversationIntent.EMERGENCY
                 action.emergency = True
                 action.red_flags.append(rf)
@@ -397,9 +406,15 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
         for canonical, syns in SYMPTOM_LEXICON.items():
             for syn in syns:
                 if syn in t_lower:
-                    if canonical not in action.symptoms:
-                        action.symptoms.append(canonical)
-                    break
+                    # Check if symptom is negated in sentence (e.g. "no chest pain", "no breathing difficulty")
+                    is_negated = bool(
+                        re.search(rf"\b(?:no|not|without|nahi|nahin|na)\s+(?:such\s+)?(?:severe\s+)?{re.escape(syn)}", t_lower)
+                        or (t_lower.startswith("no") and any(w in t_lower for w in ("no,", "no.", "no ")))
+                    )
+                    if not is_negated:
+                        if canonical not in action.symptoms:
+                            action.symptoms.append(canonical)
+                        break
 
         # 11. Demographic & Intake Extraction
         action.patient_name = extract_name_from_text(
@@ -534,18 +549,18 @@ class FastBilingualConversationAgentProvider(ConversationAgentProvider):
         if memory.call_phase == "GREETING":
             if memory.is_existing_patient and memory.patient_name:
                 if is_hi:
-                    prompt = f"Namaste {memory.patient_name} ji, Rural Care Navigator mein aapka swagat hai. Kripya batayein aapko kya takleef ho rahi hai?"
+                    prompt = f"Namaste {memory.patient_name} ji, MYTHRI mein aapka swagat hai. Kripya batayein aapko kya takleef ho rahi hai?"
                 elif is_mr:
-                    prompt = f"Namaskar {memory.patient_name} ji, Rural Care Navigator madhe aaple swagat ahe. Krupaya sanga aaplyala kay tras hot ahe?"
+                    prompt = f"Namaskar {memory.patient_name} ji, MYTHRI madhe aaple swagat ahe. Krupaya sanga aaplyala kay tras hot ahe?"
                 else:
-                    prompt = f"Hello {memory.patient_name}, welcome back to Rural Care Navigator. Please describe what symptoms or health issue you have."
+                    prompt = f"Hello {memory.patient_name}, welcome back to MYTHRI. Please describe what symptoms or health issue you have."
             else:
                 if is_hi:
-                    prompt = "Rural Care Navigator mein aapka swagat hai. Kripya apna poora naam batayein?"
+                    prompt = "MYTHRI mein aapka swagat hai. Kripya apna poora naam batayein?"
                 elif is_mr:
-                    prompt = "Rural Care Navigator madhe aaple swagat ahe. Krupaya aple purna naav sanga?"
+                    prompt = "MYTHRI madhe aaple swagat ahe. Krupaya aple purna naav sanga?"
                 else:
-                    prompt = "Welcome to Rural Care Navigator. May I know your full name?"
+                    prompt = "Welcome to MYTHRI. May I know your full name?"
 
         elif memory.call_phase == "NAME":
             if is_hi:
@@ -786,6 +801,10 @@ class LocalModelConversationAgentProvider(ConversationAgentProvider):
         if fallback_action.emergency:
             action.emergency = True
             action.intent = ConversationIntent.EMERGENCY
+        elif not fallback_action.emergency and (fallback_action.confirmation is False or action.confirmation is False):
+            action.emergency = False
+            if action.intent == ConversationIntent.EMERGENCY:
+                action.intent = ConversationIntent.ANSWER_NO
 
         if enum_intent == ConversationIntent.UNKNOWN or confidence < 0.40:
             if fallback_action.intent != ConversationIntent.UNKNOWN:
@@ -1007,7 +1026,10 @@ class ConversationAgent:
         sess = ExotelVoiceSession()
         sess.patient_id = memory.patient_id
         sess.phone_number = memory.caller_phone or memory.phone_number or ""
+        sess.patient_name = memory.patient_name
+        sess.age = memory.age
         sess.location = memory.locality
+        sess.conversation_memory = memory
         sess.recommended_facility = memory.recommended_facility
         sess.selected_slot = memory.selected_slot
         sess.appointment_type = (memory.appointment_type or "offline").lower()
@@ -1119,47 +1141,31 @@ class ConversationAgent:
             # Caller indicated no other symptoms -> proceed to locality for facility determination
             memory.call_phase = "LOCALITY"
 
-        elif memory.locality and memory.symptoms and not memory.booking_intent:
-            # Locality and symptoms available -> execute triage & assign facility
-            self.run_medical_triage(memory)
-            self.find_facilities(memory, db=db)
-            memory.call_phase = "TRIAGE_PRESENTED"
-
         else:
             # Intake sequencing:
-            # If registered patient (or all demographics known), skip demographic questions and collect symptoms directly
-            is_known_patient = memory.is_existing_patient or (
-                bool(memory.patient_name) and memory.age is not None and bool(memory.locality)
-            )
-
-            if is_known_patient:
-                if not memory.symptoms:
-                    memory.call_phase = "SYMPTOMS"
-                elif not memory.duration:
-                    memory.call_phase = "DURATION"
-                elif not memory.safety_questions_asked:
-                    memory.call_phase = "SAFETY_QUESTIONS"
-                    memory.safety_questions_asked = True
+            if not memory.symptoms:
+                if not memory.patient_name and not memory.is_existing_patient:
+                    memory.call_phase = "NAME"
+                elif memory.age is None and not memory.is_existing_patient:
+                    memory.call_phase = "AGE"
+                elif not memory.locality and not memory.is_existing_patient:
+                    memory.call_phase = "LOCALITY"
                 else:
+                    memory.call_phase = "SYMPTOMS"
+            else:
+                # Symptoms are present:
+                # If caller provided locality (or completed safety questions), present triage
+                if memory.locality and (memory.safety_questions_asked or (action.symptoms and action.locality) or memory.call_phase in ("SAFETY_QUESTIONS", "LOCALITY") or bool(action.locality)):
                     self.run_medical_triage(memory)
                     self.find_facilities(memory, db=db)
                     memory.call_phase = "TRIAGE_PRESENTED"
-            else:
-                # New / unknown caller intake:
-                # NAME -> AGE -> LOCALITY -> SYMPTOMS -> DURATION -> SAFETY_QUESTIONS -> TRIAGE
-                if not memory.patient_name:
-                    memory.call_phase = "NAME"
-                elif memory.age is None:
-                    memory.call_phase = "AGE"
-                elif not memory.locality:
-                    memory.call_phase = "LOCALITY"
-                elif not memory.symptoms:
-                    memory.call_phase = "SYMPTOMS"
-                elif not memory.duration:
+                elif not memory.duration and not (action.symptoms and action.locality):
                     memory.call_phase = "DURATION"
-                elif not memory.safety_questions_asked:
+                elif not memory.safety_questions_asked and not (action.symptoms and action.locality):
                     memory.call_phase = "SAFETY_QUESTIONS"
                     memory.safety_questions_asked = True
+                elif not memory.locality:
+                    memory.call_phase = "LOCALITY"
                 else:
                     self.run_medical_triage(memory)
                     self.find_facilities(memory, db=db)

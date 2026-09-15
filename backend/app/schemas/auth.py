@@ -136,8 +136,8 @@ class PatientSelfRegisterRequest(BaseModel):
         description="Patient age in years (1-120)",
         examples=[35],
     )
-    gender: str = Field(
-        ...,
+    gender: Optional[str] = Field(
+        None,
         description="Patient gender (MALE, FEMALE, OTHER, or PREFER_NOT_TO_SAY)",
         examples=["MALE"],
     )

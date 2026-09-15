@@ -41,6 +41,7 @@ export default function HealthJourney({ onNavigate }) {
   const [selectedFilter, setSelectedFilter] = useState('ALL')
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [isSessionExpired, setIsSessionExpired] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -55,7 +56,17 @@ export default function HealthJourney({ onNavigate }) {
       })
       .catch((err) => {
         if (isMounted) {
-          setErrorMessage(err.message || 'Unable to load health journey timeline.')
+          if (
+            err.status === 401 ||
+            err.message?.toLowerCase().includes('expired') ||
+            err.message?.toLowerCase().includes('unauthorized') ||
+            err.message?.toLowerCase().includes('token')
+          ) {
+            setIsSessionExpired(true)
+            setErrorMessage('Your session has expired. Please sign in again to continue.')
+          } else {
+            setErrorMessage(err.message || 'Unable to load health journey timeline.')
+          }
           setIsLoading(false)
         }
       })
@@ -73,14 +84,23 @@ export default function HealthJourney({ onNavigate }) {
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
+    if (!onNavigate) return
     if (tabId === 'home' || tabId === SCREENS.HOME) {
-      if (onNavigate) {
-        onNavigate(SCREENS.HOME)
-      }
-    } else if (tabId === 'services') {
-      if (onNavigate) {
-        onNavigate(SCREENS.HEALTHCARE)
-      }
+      onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
+    }
+  }
+
+  const handleSignInAgain = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.LOGIN, { returnScreen: SCREENS.HEALTH_JOURNEY })
     }
   }
 
@@ -98,16 +118,16 @@ export default function HealthJourney({ onNavigate }) {
     nextStepTitle = 'Specialist Consultation'
     nextStepDesc = latestReferral.description || 'Your doctor referred you to a specialist. Please schedule this visit to continue care.'
     nextStepActionLabel = t('referral.title')
-    nextStepAction = () => onNavigate && onNavigate(SCREENS.AVAILABILITY)
+    nextStepAction = () => onNavigate && onNavigate(SCREENS.TRACK_REFERRAL, { referral: latestReferral })
   } else if (latestFollowUp) {
-    nextStepTitle = t('followUp.title')
-    nextStepDesc = latestFollowUp.description || 'You have an upcoming follow-up checkup scheduled.'
+    nextStepTitle = 'Health Follow-up'
+    nextStepDesc = latestFollowUp.description || 'Routine follow-up scheduled to check your health recovery.'
     nextStepActionLabel = t('followUp.title')
     nextStepAction = () => onNavigate && onNavigate(SCREENS.FOLLOW_UP)
   } else if (latestAppointment) {
-    nextStepTitle = t('appointments.title')
-    nextStepDesc = latestAppointment.description || 'Review your booked appointment details.'
-    nextStepActionLabel = t('home.myAppointments')
+    nextStepTitle = 'Upcoming Visit'
+    nextStepDesc = `${latestAppointment.facility_name || 'Healthcare Facility'} — ${latestAppointment.service_name || 'General Medicine'}`
+    nextStepActionLabel = t('nav.appointments')
     nextStepAction = () => onNavigate && onNavigate(SCREENS.APPOINTMENTS)
   }
 
@@ -165,24 +185,37 @@ export default function HealthJourney({ onNavigate }) {
           </button>
         </section>
 
-        {/* Event Type Filter Pills */}
-        <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '2px' }}>
+        {/* Event Type Filter Pills with smooth touch horizontal scroll and hidden scrollbar */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '8px',
+            overflowX: 'auto',
+            padding: '2px 0 6px',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch',
+            maxWidth: '100%',
+          }}
+        >
           {filterOptions.map((opt) => (
             <button
               key={opt.key}
               type="button"
               onClick={() => setSelectedFilter(opt.key)}
               style={{
-                padding: '5px 12px',
+                padding: '6px 14px',
                 borderRadius: '9999px',
                 border: selectedFilter === opt.key ? '1.5px solid #004b87' : '1px solid #cbd5e1',
                 backgroundColor: selectedFilter === opt.key ? '#004b87' : '#ffffff',
                 color: selectedFilter === opt.key ? '#ffffff' : '#475569',
-                fontSize: '12px',
+                fontSize: '12.5px',
                 fontWeight: 600,
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s ease',
+                flexShrink: 0,
+                minHeight: '34px',
               }}
             >
               {opt.label}
@@ -198,12 +231,34 @@ export default function HealthJourney({ onNavigate }) {
               backgroundColor: '#fef2f2',
               border: '1px solid #fecaca',
               borderRadius: '6px',
-              padding: '10px 14px',
+              padding: '12px 14px',
               color: '#991b1b',
               fontSize: '13.5px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
             }}
           >
-            {errorMessage}
+            <span>{errorMessage}</span>
+            {isSessionExpired && (
+              <button
+                type="button"
+                onClick={handleSignInAgain}
+                style={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: '#004b87',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Sign In Again →
+              </button>
+            )}
           </div>
         )}
 

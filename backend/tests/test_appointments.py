@@ -511,3 +511,111 @@ class TestDatabasePersistenceAndDoubleBooking:
         )
         assert res2.status_code == 409
         _assert_envelope(res2.json(), success=False)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 17. Token Expiration and Role-Based Authorization
+# ──────────────────────────────────────────────────────────────────────────────
+
+class TestTokenExpirationAndRoleAccess:
+    def test_booking_with_expired_token_returns_401(self, client, appointment_test_setup):
+        from datetime import timedelta
+        ctx = appointment_test_setup
+        expired_token = create_access_token(
+            subject=str(ctx["p1"].id),
+            role="PATIENT",
+            extra_claims={"mobile": ctx["p1"].mobile},
+            expires_delta=timedelta(seconds=-10),
+        )
+        payload = {
+            "facility_id": ctx["f1"].id,
+            "service_id": ctx["s1"].id,
+            "availability_slot_id": ctx["slot_available"].id,
+        }
+        response = client.post(
+            "/api/v1/appointments",
+            json=payload,
+            headers={"Authorization": f"Bearer {expired_token}"},
+        )
+        assert response.status_code == 401
+        assert "expired" in response.json()["message"].lower()
+
+    def test_booking_with_worker_token_returns_403(self, client, appointment_test_setup):
+        ctx = appointment_test_setup
+        worker_token = create_access_token(
+            subject="WORKER-1",
+            role="WORKER",
+            extra_claims={"facility_id": ctx["f1"].id},
+        )
+        payload = {
+            "facility_id": ctx["f1"].id,
+            "service_id": ctx["s1"].id,
+            "availability_slot_id": ctx["slot_available"].id,
+        }
+        response = client.post(
+            "/api/v1/appointments",
+            json=payload,
+            headers={"Authorization": f"Bearer {worker_token}"},
+        )
+        assert response.status_code == 403
+        assert "patient role required" in response.json()["message"].lower()
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 18. Doctor Appointment Visibility Flow
+# ──────────────────────────────────────────────────────────────────────────────
+
+class TestDoctorAppointmentVisibility:
+    def test_patient_booked_appointment_appears_on_doctor_dashboard(self, client, db_session, appointment_test_setup):
+        from backend.app.models.doctor import Doctor
+        ctx = appointment_test_setup
+
+        # Create doctor associated with facility 1
+        doc = Doctor(
+            doctor_id="DOC-99",
+            name="Dr. Anil Deshmukh",
+            mobile="9871112233",
+            facility_id=ctx["f1"].id,
+            specialization="General Medicine",
+        )
+        db_session.add(doc)
+        db_session.commit()
+        db_session.refresh(doc)
+
+        doc_token = create_access_token(
+            subject="DOC-99",
+            role="DOCTOR",
+            extra_claims={"facility_id": ctx["f1"].id},
+        )
+
+        # 1. Patient books appointment
+        payload = {
+            "facility_id": ctx["f1"].id,
+            "service_id": ctx["s1"].id,
+            "availability_slot_id": ctx["slot_available"].id,
+        }
+        patient_booking = client.post(
+            "/api/v1/appointments",
+            json=payload,
+            headers={"Authorization": f"Bearer {ctx['p1_token']}"},
+        )
+        assert patient_booking.status_code == 200
+        created_appt_id = patient_booking.json()["data"]["id"]
+
+        # 2. Patient can view in their appointments list
+        patient_appts = client.get(
+            "/api/v1/appointments",
+            headers={"Authorization": f"Bearer {ctx['p1_token']}"},
+        )
+        assert patient_appts.status_code == 200
+        patient_appt_ids = [a["id"] for a in patient_appts.json()["data"]]
+        assert created_appt_id in patient_appt_ids
+
+        # 3. Doctor for facility 1 sees the appointment in facility schedule
+        doc_appts = client.get(
+            "/api/v1/doctor/appointments",
+            headers={"Authorization": f"Bearer {doc_token}"},
+        )
+        assert doc_appts.status_code == 200
+        doc_appt_ids = [a["id"] for a in doc_appts.json()["data"]]
+        assert created_appt_id in doc_appt_ids

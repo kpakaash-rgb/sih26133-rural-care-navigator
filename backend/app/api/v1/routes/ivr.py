@@ -137,7 +137,7 @@ DTMF_SYMPTOM_MAP: Dict[str, List[str]] = {
 }
 
 MENU_PROMPT = (
-    "Welcome to Rural Care Navigator. Please select an option: "
+    "Welcome to MYTHRI. Please select an option: "
     "Press 1 for Fever, 2 for Cough, 3 for Pain, 4 for Stomach Problem, "
     "5 for Injury, or 0 for Emergency."
 )

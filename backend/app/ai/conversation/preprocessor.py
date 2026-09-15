@@ -103,24 +103,16 @@ class LocalSlotExtractor:
                 detected_syms.append("stomach problem")
             slots["symptoms"] = detected_syms
 
-        # Fallback keywords if learned model narrowly misses a compound symptom
-        if not slots["symptoms"]:
-            kw_map = {
-                "fever": ["fever", "bukhar", "bukhaar", "taap", "temperature"],
-                "cough": ["cough", "khansi", "khasi", "coughing"],
-                "pain": ["pain", "dard", "peeda", "dukh"],
-                "stomach problem": ["stomach problem", "pet dard", "pet me", "tummy", "stomach", "pet kharab"],
-                "headache": ["headache", "sir dard", "sar dard", "head pain"],
-                "injury": ["injury", "chot", "gir gaya", "cut", "wound", "fracture", "accident"],
-                "chest pain": ["chest pain", "seene me dard", "chhati me dard"],
-                "breathing difficulty": ["breath", "saans", "suffocation", "dam"],
-                "vomiting": ["vomit", "ulti"],
-                "diarrhea": ["diarrhea", "dast", "loose motion"],
-            }
-            for sym, triggers in kw_map.items():
-                if any(t in cleaned for t in triggers):
-                    if sym not in slots["symptoms"]:
-                        slots["symptoms"].append(sym)
+        # Filter out negated symptoms (e.g., "no chest pain", "no fever", "nahi hai")
+        has_neg = bool(re.search(r"\b(?:no|not|none|nahi|nahin|na|kuch nahi|koi nahi|without|free of)\b", cleaned))
+        if has_neg and slots["symptoms"]:
+            filtered_syms = []
+            for s in slots["symptoms"]:
+                neg_pat = rf"\b(?:no|not|nahi|nahin|na|without)\s+(?:such\s+)?(?:severe\s+)?{re.escape(s)}"
+                if re.search(neg_pat, cleaned) or cleaned.startswith("no,") or cleaned.startswith("no ") or cleaned.startswith("nahi ") or ("no " + s) in cleaned or ("nahi " + s) in cleaned:
+                    continue
+                filtered_syms.append(s)
+            slots["symptoms"] = filtered_syms
 
         # 2. Extract Duration
         dur_matches = re.search(
@@ -202,7 +194,15 @@ class LocalSlotExtractor:
             slots["confirmation"] = False
 
         # 7. Check Emergency Keywords
-        if any(w in cleaned for w in ["chest pain", "seene", "chhati", "saans", "breathe", "unconscious", "behosh", "emergency", "ambulance"]):
-            slots["emergency"] = True
+        has_negation = bool(re.search(r"\b(?:no|not|none|nahi|nahin|na|kuch nahi|koi nahi)\b", cleaned))
+        em_triggers = ["chest pain", "seene", "chhati", "saans", "breathe", "unconscious", "behosh", "emergency", "ambulance"]
+        for em in em_triggers:
+            if em in cleaned:
+                if has_negation:
+                    neg_match = re.search(rf"\b(?:no|not|nahi|nahin|na|without|free of)\s+(?:such\s+)?(?:severe\s+)?{re.escape(em)}", cleaned)
+                    if neg_match or cleaned.startswith("no") or cleaned.startswith("nahi") or "no, no" in cleaned or "no chest pain" in cleaned:
+                        continue
+                slots["emergency"] = True
+                break
 
         return slots

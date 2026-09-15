@@ -67,7 +67,7 @@ class IVRState(str, Enum):
 
 # Trilingual Prompts (English, Hindi, Marathi)
 EXOTEL_INITIAL_LANGUAGE_MENU: str = (
-    "Namaste. Rural Care Navigator mein aapka swagat hai. "
+    "Namaste. MYTHRI mein aapka swagat hai. "
     "For English, press 1. Hindi ke liye 2 dabayein. Marathi sathi 3 daba."
 )
 EXOTEL_GREETING_TEXT: str = EXOTEL_INITIAL_LANGUAGE_MENU

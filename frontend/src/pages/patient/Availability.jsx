@@ -199,10 +199,26 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
+    if (!onNavigate) return
     if (tabId === 'home' || tabId === SCREENS.HOME) {
-      if (onNavigate) {
-        onNavigate(SCREENS.HOME)
-      }
+      onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
+    }
+  }
+
+  const handleBack = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.FACILITY_DETAILS, {
+        facility: bookingData?.facilityObj || { id: facilityId, name: facilityName },
+        facilityId,
+      })
     }
   }
 
@@ -243,10 +259,12 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
 
   return (
     <div className="availability-screen-wrapper">
-      {/* Top Header with SOS */}
+      {/* Top Header with Back and SOS */}
       <Header
         title={t('common.appName')}
         showLogo
+        showBack
+        onBack={handleBack}
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
 

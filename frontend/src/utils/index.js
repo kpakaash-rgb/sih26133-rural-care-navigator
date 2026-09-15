@@ -38,7 +38,7 @@ export const formatQueueLastUpdated = (lastUpdatedString) => {
   if (diffMinutes > 120) {
     const hours = Math.floor(diffMinutes / 60)
     return {
-      text: `Queue information may be outdated (Updated ${hours} ${hours === 1 ? 'hour' : 'hours'} ago)`,
+      text: `Queue data may be outdated · Updated ${hours} ${hours === 1 ? 'hour' : 'hours'} ago`,
       isStale: true,
       diffMinutes,
     }

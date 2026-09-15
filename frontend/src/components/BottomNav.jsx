@@ -6,6 +6,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
   const navItems = [
     {
       id: 'home',
+      aliases: ['home', 'welcome'],
       label: t('nav.home'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -16,6 +17,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'services',
+      aliases: ['services', 'healthcare', 'facility_details', 'availability', 'booking', 'schemes', 'scheme_details', 'mobile_clinic'],
       label: t('nav.services'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,6 +29,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'journey',
+      aliases: ['journey', 'health_journey', 'appointments', 'appointment_confirmed', 'referral', 'track_referral', 'follow_up'],
       label: t('nav.journey'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -38,6 +41,7 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
     {
       id: 'profile',
+      aliases: ['profile', 'abha', 'onboarding'],
       label: t('nav.profile'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -48,10 +52,15 @@ export default function BottomNav({ activeScreen = 'home', onNavigate }) {
     },
   ]
 
+  const normalizedActive = (activeScreen || 'home').toLowerCase()
+
   return (
     <nav className="bottom-nav" aria-label="Main Navigation">
       {navItems.map((item) => {
-        const isActive = activeScreen === item.id
+        const isActive =
+          normalizedActive === item.id ||
+          (item.aliases && item.aliases.includes(normalizedActive))
+
         return (
           <button
             key={item.id}

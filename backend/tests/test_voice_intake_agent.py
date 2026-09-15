@@ -625,3 +625,190 @@ def test_doctor_clinical_summary_retrieves_ivr_voice_encounter(client: TestClien
     assert data["voice_encounter"] is not None
     assert data["voice_encounter"]["patient_name"] == "Ramesh Gaikwad"
     assert "fever" in data["voice_encounter"]["symptoms"]
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 22: Comprehensive End-to-End IVR Call -> Database Linking -> Doctor Portal
+# ──────────────────────────────────────────────────────────────────────────────
+def test_full_e2e_ivr_call_to_doctor_portal(client: TestClient, db_session):
+    """
+    Simulates complete IVR call flow:
+    Caller (9876501234)
+    -> Exotel start (captures real caller phone)
+    -> New Patient registration (Name: "Sunita Kamble", Age: 36, Locality: "Malshiras") - NO gender
+    -> Symptoms ("I have severe fever and cough for three days")
+    -> Duration conversion ("3 days")
+    -> Safety screening
+    -> Transparent triage execution
+    -> Facility recommendation with actual backend services (PHC Malshiras)
+    -> Appointment booking confirmation
+    -> PostgreSQL Verification:
+       - Patient record created with real mobile 9876501234
+       - VoiceEncounter.patient_id == Patient.id
+       - Appointment.patient_id == Patient.id
+       - HealthJourneyEvent.patient_id == Patient.id
+    -> Doctor Portal Reflection:
+       - Doctor queue shows appointment
+       - Doctor appointments shows appointment
+       - Doctor clinical summary displays patient & voice encounter details
+    """
+    from backend.app.models.facility import Facility, FacilityService
+    from backend.app.models.doctor import Doctor
+    from backend.app.models.appointment import Appointment
+    from backend.app.repositories.appointment_repository import AppointmentRepository
+    from backend.app.repositories.facility_repository import FacilityRepository
+    from backend.app.repositories.availability_repository import AvailabilityRepository
+    from backend.app.core.security import create_access_token
+
+    # Ensure facility 1 exists with General Medicine service
+    f_repo = FacilityRepository(db_session)
+    fac = f_repo.get_by_id(1)
+    if not fac:
+        fac = f_repo.create_facility(
+            name="PHC Malshiras",
+            type="PRIMARY_HEALTH_CENTRE",
+            address="Main Road, Malshiras",
+            district="Solapur",
+        )
+    svcs = f_repo.get_services(fac.id)
+    if not any(s.name == "General Medicine" for s in svcs):
+        f_repo.add_service(facility_id=fac.id, name="General Medicine", description="Primary Care OPD")
+    
+    # Ensure doctor at facility 1 exists
+    doc = db_session.query(Doctor).filter_by(doctor_id="DOC-10101").first()
+    if not doc:
+        doc = Doctor(
+            doctor_id="DOC-10101",
+            name="Dr. S. Patil",
+            mobile="9842183000",
+            role="DOCTOR",
+            specialization="General Medicine",
+            facility_id=fac.id,
+        )
+        db_session.add(doc)
+    db_session.commit()
+
+    caller_phone = "9876501234"
+    agent = ConversationAgent()
+    mem = ConversationMemory(
+        language="en-IN",
+        caller_phone=caller_phone,
+        phone_number=caller_phone,
+    )
+
+    # 1. Turn 1: Caller provides name
+    speech1, act1 = agent.handle_turn("Hello, my name is Sunita Kamble", mem, db=db_session)
+    assert mem.patient_name == "Sunita Kamble"
+    assert mem.call_phase == "AGE"
+    assert "gender" not in speech1.lower()
+
+    # 2. Turn 2: Caller provides age (NO gender asked or collected)
+    speech2, act2 = agent.handle_turn("I am 36 years old", mem, db=db_session)
+    assert mem.age == 36
+    assert mem.gender is None
+    assert mem.call_phase == "LOCALITY"
+    assert "gender" not in speech2.lower()
+
+    # 3. Turn 3: Caller provides village/locality
+    speech3, act3 = agent.handle_turn("I live in Malshiras", mem, db=db_session)
+    assert mem.locality == "Malshiras"
+    assert mem.call_phase == "SYMPTOMS"
+
+    # 4. Turn 4: Caller describes multiple natural symptoms
+    speech4, act4 = agent.handle_turn("I have fever and cough", mem, db=db_session)
+    assert "fever" in mem.symptoms
+    assert "cough" in mem.symptoms
+    assert mem.call_phase == "DURATION"
+
+    # 5. Turn 5: Caller provides duration
+    speech5, act5 = agent.handle_turn("For three days", mem, db=db_session)
+    assert mem.duration == "3 days"
+    assert mem.call_phase == "SAFETY_QUESTIONS"
+
+    # 6. Turn 6: Safety questions answered (no red flags)
+    speech6, act6 = agent.handle_turn("No, no chest pain or breathing difficulty", mem, db=db_session)
+    assert mem.call_phase == "TRIAGE_PRESENTED"
+    assert mem.triage_result is not None
+    assert mem.recommended_facility is not None
+    assert "PHC Malshiras" in mem.recommended_facility["name"]
+
+    # 7. Turn 7: Booking modality choice
+    speech7, act7 = agent.handle_turn("I want an in-person clinic visit", mem, db=db_session)
+    assert mem.appointment_type == "offline"
+    assert mem.call_phase == "BOOKING_CONFIRM"
+
+    # 8. Turn 8: Explicit Confirmation
+    speech8, act8 = agent.handle_turn("Yes, please confirm this appointment", mem, db=db_session)
+    assert mem.call_phase == "ENDED"
+    assert mem.appointment_id is not None
+
+    db_session.commit()
+
+    # Verify Patient in DB
+    p_repo = PatientRepository(db_session)
+    pat = p_repo.find_by_mobile(caller_phone)
+    assert pat is not None
+    assert pat.id == mem.patient_id
+    assert pat.full_name == "Sunita Kamble"
+    assert pat.age == 36
+    assert pat.village == "Malshiras"
+    assert pat.gender is None  # Never collected or inferred
+
+    # Verify Appointment in DB
+    ap_repo = AppointmentRepository(db_session)
+    appt = ap_repo.get_by_id(mem.appointment_id)
+    assert appt is not None
+    assert appt.patient_id == pat.id
+    assert appt.facility_id == fac.id
+    assert appt.status in ("CONFIRMED", "SCHEDULED", "BOOKED")
+
+    # Verify Doctor Queue
+    token = create_access_token(subject="DOC-10101", role="DOCTOR")
+    doc_headers = {"Authorization": f"Bearer {token}"}
+
+    resp_queue = client.get("/api/v1/doctor/queue", headers=doc_headers)
+    assert resp_queue.status_code == 200
+    queue_data = resp_queue.json()["data"]
+    assert any(q["patient_id"] == pat.id for q in queue_data)
+
+    # Verify Doctor Appointments
+    resp_appts = client.get("/api/v1/doctor/appointments", headers=doc_headers)
+    assert resp_appts.status_code == 200
+    appts_data = resp_appts.json()["data"]
+    assert any(a["id"] == appt.id and a["patient_id"] == pat.id for a in appts_data)
+
+    # Verify Doctor Clinical Summary
+    resp_summary = client.get(f"/api/v1/doctor/patients/{pat.id}/clinical-summary", headers=doc_headers)
+    assert resp_summary.status_code == 200
+    sum_data = resp_summary.json()["data"]
+    assert sum_data["patient"]["id"] == pat.id
+    assert sum_data["patient"]["name"] == "Sunita Kamble"
+    assert sum_data["patient"]["mobile"] == caller_phone
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Test 23: IVR Spoken Prompts Never Use Disallowed Branding Names
+# ──────────────────────────────────────────────────────────────────────────────
+def test_ivr_prompts_mythri_branding():
+    """Verify that user-facing spoken responses use MYTHRI and never use banned names."""
+    from backend.app.services.exotel_voice_service import (
+        EXOTEL_INITIAL_LANGUAGE_MENU,
+        EXOTEL_GREETING_TEXT,
+        EXOTEL_SYMPTOM_PROMPT_EN,
+        EXOTEL_SYMPTOM_PROMPT_HI,
+        EXOTEL_SYMPTOM_PROMPT_MR,
+    )
+    banned = ["rural care navigator", "rural care", "rcn", "mythri companion"]
+    prompts = [
+        EXOTEL_INITIAL_LANGUAGE_MENU,
+        EXOTEL_GREETING_TEXT,
+        EXOTEL_SYMPTOM_PROMPT_EN,
+        EXOTEL_SYMPTOM_PROMPT_HI,
+        EXOTEL_SYMPTOM_PROMPT_MR,
+    ]
+    for p in prompts:
+        p_lower = p.lower()
+        for b in banned:
+            assert b not in p_lower, f"Found banned phrase '{b}' in prompt: {p}"
+    
+    assert "MYTHRI" in EXOTEL_INITIAL_LANGUAGE_MENU

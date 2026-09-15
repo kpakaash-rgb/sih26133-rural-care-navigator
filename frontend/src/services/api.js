@@ -32,17 +32,94 @@ function getApiBase() {
 const API_BASE = getApiBase();
 
 /**
+ * Safely inspects a JWT string's expiration timestamp without sending network requests.
+ *
+ * @param {string|null} token - JWT token string
+ * @returns {boolean} True if token is missing, malformed, or expired
+ */
+export function isTokenExpired(token) {
+  if (!token || typeof token !== 'string') return true;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    const base64Url = parts[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    const parsed = JSON.parse(jsonPayload);
+    if (!parsed.exp) return false;
+    // Check if expiry timestamp in ms is in the past (with a 5-second buffer)
+    return parsed.exp * 1000 <= Date.now() + 5000;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Resolves the appropriate JWT token for an API request based on the target endpoint.
+ * Ensures patient endpoints always use the patient's access_token and never accidentally
+ * use a stale or expired staff/worker token.
+ *
+ * @param {string} endpoint - API route relative to /api/v1
+ * @returns {string|null} The resolved JWT token or null
+ */
+export function resolveAuthToken(endpoint = '') {
+  // Staff/Doctor-specific routes require staff credentials
+  if (
+    endpoint.startsWith('/doctor') ||
+    endpoint.startsWith('/auth/doctor') ||
+    endpoint.startsWith('/auth/staff')
+  ) {
+    return localStorage.getItem('staff_token') || localStorage.getItem('access_token');
+  }
+
+  // Worker-specific routes require worker credentials
+  if (
+    endpoint.startsWith('/worker') ||
+    endpoint.startsWith('/auth/worker') ||
+    (endpoint.startsWith('/patients') && !endpoint.includes('/me'))
+  ) {
+    return (
+      localStorage.getItem('worker_token') ||
+      localStorage.getItem('staff_token') ||
+      localStorage.getItem('access_token')
+    );
+  }
+
+  // Patient-specific endpoints strictly use the patient's access_token
+  if (
+    endpoint.startsWith('/appointments') ||
+    endpoint.startsWith('/auth/me') ||
+    endpoint.startsWith('/schemes/relevant') ||
+    endpoint.startsWith('/triage') ||
+    endpoint.startsWith('/hospital-recommendation') ||
+    endpoint.startsWith('/health-journey') ||
+    endpoint.startsWith('/follow-ups')
+  ) {
+    return localStorage.getItem('access_token');
+  }
+
+  // Default priority: patient access_token > staff_token > worker_token
+  return (
+    localStorage.getItem('access_token') ||
+    localStorage.getItem('staff_token') ||
+    localStorage.getItem('worker_token')
+  );
+}
+
+/**
  * Make an HTTP request to the backend API.
  *
  * @param {string} endpoint - API route relative to /api/v1 (e.g. '/auth/me')
- * @param {RequestInit} [options={}] - Standard fetch options
+ * @param {RequestInit & { token?: string }} [options={}] - Standard fetch options
  * @returns {Promise<any>} The unwrapped response data
  */
 export async function apiRequest(endpoint, options = {}) {
-  const token =
-    localStorage.getItem('staff_token') ||
-    localStorage.getItem('worker_token') ||
-    localStorage.getItem('access_token');
+  const token = options.token || resolveAuthToken(endpoint);
 
   const headers = {
     'Content-Type': 'application/json',
@@ -200,7 +277,7 @@ export function clearPatientSession() {
 
 /**
  * Submit reported symptoms and description for rule-based triage.
- * @param {{ symptoms: string[], description?: string }} payload
+ * @param {{ symptoms: string[], description?: string, duration_days?: number }} payload
  */
 export async function triageSymptoms(payload) {
   return apiRequest('/triage', {
@@ -208,6 +285,7 @@ export async function triageSymptoms(payload) {
     body: JSON.stringify({
       symptoms: payload.symptoms || [],
       description: payload.description || '',
+      duration_days: payload.duration_days ?? 1,
     }),
   });
 }

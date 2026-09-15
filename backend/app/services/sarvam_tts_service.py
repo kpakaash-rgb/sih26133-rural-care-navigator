@@ -160,10 +160,15 @@ class SarvamTTSService:
                 )
 
             if response.status_code != 200:
-                logger.warning(
-                    "Sarvam TTS API returned non-200 status: %d",
-                    response.status_code,
-                )
+                if response.status_code == 402:
+                    logger.warning(
+                        "Sarvam TTS API returned 402 Payment Required: provider account has insufficient credits or billing issue."
+                    )
+                else:
+                    logger.warning(
+                        "Sarvam TTS API returned non-200 status: %d",
+                        response.status_code,
+                    )
                 raise TTSError("Voice response is temporarily unavailable.")
 
             data = response.json()

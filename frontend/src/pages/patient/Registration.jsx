@@ -51,11 +51,6 @@ export default function Registration({ onNavigate, registrationData }) {
       return
     }
 
-    if (!gender) {
-      setError('Please select your gender.')
-      return
-    }
-
     const trimmedVillage = village.trim()
     if (!trimmedVillage) {
       setError('Please enter your village or residential area.')
@@ -79,7 +74,7 @@ export default function Registration({ onNavigate, registrationData }) {
         full_name: trimmedName,
         mobile: cleanMobile,
         age: ageNum,
-        gender,
+        gender: gender ? gender.trim().toUpperCase().replace(/\s+/g, '_') : undefined,
         village: trimmedVillage,
         district: trimmedDistrict,
         abha_number: abhaNumber.trim() || undefined,
@@ -262,7 +257,7 @@ export default function Registration({ onNavigate, registrationData }) {
             <div className="form-field-group">
               <label htmlFor="regGender" className="form-field-label">
                 <span className="field-icon" aria-hidden="true">⚧</span>
-                <span>Gender *</span>
+                <span>Gender (Optional)</span>
               </label>
               <select
                 id="regGender"
@@ -273,11 +268,13 @@ export default function Registration({ onNavigate, registrationData }) {
                   if (error) setError(null)
                 }}
                 disabled={loading}
-                style={{ height: '42px' }}
+                style={{ backgroundColor: '#fff', height: '42px' }}
               >
-                <option value="MALE">Male (पुरुष)</option>
-                <option value="FEMALE">Female (महिला)</option>
-                <option value="OTHER">Other (अन्य)</option>
+                <option value="">Select (Optional)</option>
+                <option value="MALE">Male / पुरुष</option>
+                <option value="FEMALE">Female / महिला</option>
+                <option value="OTHER">Other / अन्य</option>
+                <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
               </select>
             </div>
           </div>

@@ -140,7 +140,7 @@ def test_ivr_webhook_missing_digits(client: TestClient):
     data = response.json()
     assert data["success"] is False
     assert data["error"] == "missing_or_invalid_digits"
-    assert "Welcome to Rural Care Navigator" in data["message"]
+    assert "Welcome to MYTHRI" in data["message"]
     assert "Press 1 for Fever" in data["message"]
 
 
@@ -154,7 +154,7 @@ def test_ivr_webhook_invalid_digit(client: TestClient):
     data = response.json()
     assert data["success"] is False
     assert data["error"] == "missing_or_invalid_digits"
-    assert "Welcome to Rural Care Navigator" in data["message"]
+    assert "Welcome to MYTHRI" in data["message"]
 
 
 def test_ivr_webhook_json_payload(client: TestClient):

@@ -48,14 +48,17 @@ export default function ReferralCreated({ onNavigate, referral: propReferral }) 
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
+    if (!onNavigate) return
     if (tabId === 'home' || tabId === SCREENS.HOME) {
-      if (onNavigate) {
-        onNavigate(SCREENS.HOME)
-      }
-    } else if (tabId === 'journey') {
-      if (onNavigate) {
-        onNavigate(SCREENS.APPOINTMENTS)
-      }
+      onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
     }
   }
 

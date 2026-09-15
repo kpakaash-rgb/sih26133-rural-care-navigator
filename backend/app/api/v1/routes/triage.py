@@ -46,4 +46,5 @@ async def triage(request: TriageRequest) -> TriageResult:
     return run_triage(
         symptoms=request.symptoms,
         description=request.description,
+        duration_days=request.duration_days,
     )

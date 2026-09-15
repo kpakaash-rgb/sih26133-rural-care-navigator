@@ -61,6 +61,43 @@ function deriveRequiredServices(triage) {
   return ['General Medicine']
 }
 
+/**
+ * Generate a transparent matching explanation based on actual care needs, facility type, and services.
+ */
+function generateMatchingReason(fac, triageData, itemReason) {
+  if (itemReason && itemReason.trim()) {
+    return itemReason
+  }
+
+  if (triageData) {
+    if (triageData.urgency === 'emergency' || triageData.emergency) {
+      return 'Equipped with emergency medical services and physician support.'
+    }
+    if (triageData.urgency === 'needs_attention') {
+      const type = fac.type || fac.raw?.type
+      if (type === 'PRIMARY_HEALTH_CENTRE') {
+        return 'Primary Health Centre suitable for the recommended care level.'
+      }
+      if (type === 'COMMUNITY_HEALTH_CENTRE') {
+        return 'Community Health Centre with physician consultation and diagnostic facilities.'
+      }
+      if (type === 'DISTRICT_HOSPITAL') {
+        return 'District Hospital with specialized consultation and clinical capabilities.'
+      }
+      return 'Matches your recommended care level and has the required service available.'
+    }
+    if (triageData.urgency === 'routine') {
+      return 'Local facility suitable for routine consultation and outpatient care.'
+    }
+  }
+
+  if (fac.services && fac.services.length > 0) {
+    return 'Required medical service is available at this facility.'
+  }
+
+  return 'Local facility matching your care needs.'
+}
+
 export default function Healthcare({ onNavigate, triageData }) {
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
@@ -85,7 +122,6 @@ export default function Healthcare({ onNavigate, triageData }) {
     try {
       setFacilities((prevFacilities) => {
         if (!prevFacilities || prevFacilities.length === 0) return prevFacilities
-        // Trigger parallel async updates
         Promise.all(
           prevFacilities.map(async (fac) => {
             try {
@@ -186,31 +222,34 @@ export default function Healthcare({ onNavigate, triageData }) {
             setIsAiRecommended(true)
             const mapped = data.map((item, index) => {
               const fac = item.facility || {}
-              const distanceKm = typeof item.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : 'Area-based'
+              const distanceKm = typeof item.distance_km === 'number' ? `${item.distance_km.toFixed(1)} km` : 'Local Area'
               const waitMins = typeof item.estimated_wait_minutes === 'number' ? item.estimated_wait_minutes : (typeof item.queue_wait_minutes === 'number' ? item.queue_wait_minutes : 0)
               const waitPts = typeof item.waiting_patients === 'number' ? item.waiting_patients : 0
 
-              return {
+              const serviceNames = (item.matched_services && item.matched_services.length > 0)
+                ? item.matched_services
+                : (fac.services && fac.services.length > 0 ? fac.services.map((s) => s.name || s) : requiredServices)
+
+              const facilityObj = {
                 id: item.facility_id || fac.id || index + 1,
                 name: item.hospital_name || fac.name || 'Healthcare Facility',
                 category: formatFacilityType(item.facility_type || fac.type, t),
                 type: item.facility_type || fac.type || 'PRIMARY_HEALTH_CENTRE',
                 distance: distanceKm,
                 distance_km: item.distance_km,
-                services: (item.matched_services && item.matched_services.length > 0)
-                  ? item.matched_services
-                  : (fac.services && fac.services.length > 0 ? fac.services.map((s) => s.name || s) : requiredServices),
-                reason: item.recommendation_reason || (index === 0
-                  ? 'Recommended primary care facility with shortest wait time.'
-                  : 'Alternative healthcare facility in your service network.'),
+                services: serviceNames,
                 queueStatus: item.queue_status || (waitMins > 45 ? 'BUSY' : 'NORMAL'),
                 waitingPatients: waitPts,
                 estimatedWaitMinutes: waitMins,
+                lastUpdated: item.queue?.last_updated || fac.queue?.last_updated || item.last_updated || null,
                 address: item.address || fac.address || fac.district || 'Healthcare Facility',
                 phone: fac.phone || '108 / 104 Emergency Helpline',
                 status: fac.status || 'ACTIVE',
                 raw: fac,
               }
+
+              facilityObj.reason = generateMatchingReason(facilityObj, triageData, item.recommendation_reason)
+              return facilityObj
             })
             setFacilities(mapped)
           } else {
@@ -219,24 +258,28 @@ export default function Healthcare({ onNavigate, triageData }) {
             if (isMounted && Array.isArray(allFacs)) {
               setIsAiRecommended(false)
               setFacilities(
-                allFacs.map((fac) => ({
-                  id: fac.id,
-                  name: fac.name,
-                  category: formatFacilityType(fac.type, t),
-                  type: fac.type,
-                  distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
-                  services: (fac.services && fac.services.length > 0)
-                    ? fac.services.map((s) => s.name || s)
-                    : ['General Medicine'],
-                  reason: 'Registered healthcare center in your district.',
-                  queueStatus: fac.queue?.status || 'NORMAL',
-                  waitingPatients: fac.queue?.waiting_patients ?? 0,
-                  estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
-                  address: fac.address || fac.district || 'Healthcare Facility',
-                  phone: fac.phone || '108 / 104 Emergency Helpline',
-                  status: fac.status || 'ACTIVE',
-                  raw: fac,
-                }))
+                allFacs.map((fac) => {
+                  const facilityObj = {
+                    id: fac.id,
+                    name: fac.name,
+                    category: formatFacilityType(fac.type, t),
+                    type: fac.type,
+                    distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
+                    services: (fac.services && fac.services.length > 0)
+                      ? fac.services.map((s) => s.name || s)
+                      : ['General Medicine'],
+                    queueStatus: fac.queue?.status || 'NORMAL',
+                    waitingPatients: fac.queue?.waiting_patients ?? 0,
+                    estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
+                    lastUpdated: fac.queue?.last_updated || null,
+                    address: fac.address || fac.district || 'Healthcare Facility',
+                    phone: fac.phone || '108 / 104 Emergency Helpline',
+                    status: fac.status || 'ACTIVE',
+                    raw: fac,
+                  }
+                  facilityObj.reason = generateMatchingReason(facilityObj, triageData, null)
+                  return facilityObj
+                })
               )
             }
           }
@@ -249,24 +292,28 @@ export default function Healthcare({ onNavigate, triageData }) {
             if (isMounted && Array.isArray(allFacs)) {
               setIsAiRecommended(false)
               setFacilities(
-                allFacs.map((fac) => ({
-                  id: fac.id,
-                  name: fac.name,
-                  category: formatFacilityType(fac.type, t),
-                  type: fac.type,
-                  distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
-                  services: (fac.services && fac.services.length > 0)
-                    ? fac.services.map((s) => s.name || s)
-                    : ['General Medicine'],
-                  reason: 'Registered healthcare center in your area.',
-                  queueStatus: fac.queue?.status || 'NORMAL',
-                  waitingPatients: fac.queue?.waiting_patients ?? 0,
-                  estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
-                  address: fac.address || fac.district || 'Healthcare Facility',
-                  phone: fac.phone || '108 / 104 Emergency Helpline',
-                  status: fac.status || 'ACTIVE',
-                  raw: fac,
-                }))
+                allFacs.map((fac) => {
+                  const facilityObj = {
+                    id: fac.id,
+                    name: fac.name,
+                    category: formatFacilityType(fac.type, t),
+                    type: fac.type,
+                    distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
+                    services: (fac.services && fac.services.length > 0)
+                      ? fac.services.map((s) => s.name || s)
+                      : ['General Medicine'],
+                    queueStatus: fac.queue?.status || 'NORMAL',
+                    waitingPatients: fac.queue?.waiting_patients ?? 0,
+                    estimatedWaitMinutes: fac.queue?.estimated_wait_minutes ?? 0,
+                    lastUpdated: fac.queue?.last_updated || null,
+                    address: fac.address || fac.district || 'Healthcare Facility',
+                    phone: fac.phone || '108 / 104 Emergency Helpline',
+                    status: fac.status || 'ACTIVE',
+                    raw: fac,
+                  }
+                  facilityObj.reason = generateMatchingReason(facilityObj, triageData, null)
+                  return facilityObj
+                })
               )
             }
           } catch {
@@ -295,8 +342,17 @@ export default function Healthcare({ onNavigate, triageData }) {
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
-    if (tabId === SCREENS.HOME && onNavigate) {
+    if (!onNavigate) return
+    if (tabId === 'home' || tabId === SCREENS.HOME) {
       onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
     }
   }
 
@@ -311,10 +367,12 @@ export default function Healthcare({ onNavigate, triageData }) {
 
   return (
     <div className="healthcare-screen-wrapper">
-      {/* Top Header */}
+      {/* Top Header with Back and SOS */}
       <Header
         title={t('common.appName')}
         showLogo
+        showBack
+        onBack={() => onNavigate && onNavigate(triageData?.urgency ? SCREENS.CARE_GUIDANCE : SCREENS.HOME)}
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
 
@@ -324,7 +382,7 @@ export default function Healthcare({ onNavigate, triageData }) {
         {Boolean(triageData?.urgency === 'emergency' || triageData?.emergency) && (
           <article
             className="serious-emergency-box"
-            style={{ margin: '0 16px 16px', borderColor: '#ef4444' }}
+            style={{ margin: '0 0 14px', borderColor: '#ef4444' }}
           >
             <div className="emergency-box-header">
               <span className="emergency-asterisk-icon" aria-hidden="true">
@@ -349,16 +407,18 @@ export default function Healthcare({ onNavigate, triageData }) {
           </article>
         )}
 
-        {/* Title and Badge */}
+        {/* Title and Badges */}
         <section className="healthcare-intro-section">
           <h1 className="healthcare-page-title">{t('healthcare.title')}</h1>
           <p className="healthcare-page-subtitle">
             {t('healthcare.subtitle')}
           </p>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+
+          <div className="healthcare-status-row">
+            {/* Recommendation status pill */}
             <div className="prototype-data-pill">
               <span className="prototype-info-icon" aria-hidden="true">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="#475569">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#475569">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
                 </svg>
               </span>
@@ -369,18 +429,7 @@ export default function Healthcare({ onNavigate, triageData }) {
 
             {/* Location Status Pill */}
             <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 10px',
-                borderRadius: '16px',
-                fontSize: '12px',
-                fontWeight: 500,
-                backgroundColor: locationState.usingGps ? '#f0fdf4' : '#f8fafc',
-                color: locationState.usingGps ? '#15803d' : '#475569',
-                border: locationState.usingGps ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
-              }}
+              className={`location-status-pill ${locationState.usingGps ? 'gps-active' : 'gps-default'}`}
             >
               <svg
                 width="13"
@@ -396,48 +445,30 @@ export default function Healthcare({ onNavigate, triageData }) {
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                 <circle cx="12" cy="10" r="3" />
               </svg>
-              <span>{locationState.usingGps ? t('healthcare.liveLocation') : t('healthcare.defaultLocation')}</span>
+              <span>
+                {locationState.usingGps
+                  ? t('healthcare.liveLocation')
+                  : t('healthcare.defaultLocation')}
+              </span>
               {!locationState.usingGps && (
                 <button
                   type="button"
                   onClick={handleRetryLocation}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    margin: '0 0 0 4px',
-                    color: '#0284c7',
-                    fontWeight: 600,
-                    fontSize: '12px',
-                    textDecoration: 'underline',
-                    cursor: 'pointer',
-                  }}
+                  className="location-retry-link"
                 >
                   {t('healthcare.useLocation')}
                 </button>
               )}
             </div>
 
-            {/* Live Queue Refresh Button */}
+            {/* Queue Data Status Indicator */}
             {facilities.length > 0 && (
               <button
                 type="button"
                 onClick={() => refreshVisibleQueues(true)}
                 disabled={isRefreshingQueues}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '5px',
-                  padding: '4px 10px',
-                  borderRadius: '16px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  backgroundColor: '#ffffff',
-                  color: '#0284c7',
-                  border: '1px solid #cbd5e1',
-                  cursor: isRefreshingQueues ? 'not-allowed' : 'pointer',
-                }}
-                aria-label="Refresh live facility queues"
+                className="queue-freshness-indicator-btn"
+                aria-label="Refresh availability data"
               >
                 <svg
                   width="12"
@@ -455,30 +486,24 @@ export default function Healthcare({ onNavigate, triageData }) {
                 >
                   <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
                 </svg>
-                <span>{isRefreshingQueues ? t('common.loading') : t('facilityDetails.queueFreshness')}</span>
+                <span>
+                  {isRefreshingQueues
+                    ? t('common.loading')
+                    : t('healthcare.availabilityData')}
+                </span>
               </button>
             )}
           </div>
         </section>
 
         {errorMessage && (
-          <div
-            style={{
-              backgroundColor: '#fffbeb',
-              border: '1px solid #fde68a',
-              borderRadius: '6px',
-              padding: '8px 12px',
-              margin: '0 16px 12px',
-              color: '#92400e',
-              fontSize: '12.5px',
-            }}
-          >
+          <div className="healthcare-error-banner">
             {errorMessage}
           </div>
         )}
 
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '40px 16px', color: '#64748b' }}>
+          <div className="healthcare-loading-state">
             <p>{t('common.loading')}</p>
           </div>
         ) : (
@@ -486,6 +511,7 @@ export default function Healthcare({ onNavigate, triageData }) {
           <div className="suitable-facilities-list">
             {facilities.map((fac, idx) => (
               <article key={fac.id || idx} className="suitable-facility-card">
+                {/* Header: Facility Name and Location / Distance Badge */}
                 <div className="facility-header-row">
                   <div className="facility-identity">
                     <h2 className="facility-title">{fac.name}</h2>
@@ -511,96 +537,89 @@ export default function Healthcare({ onNavigate, triageData }) {
                   </div>
                 </div>
 
+                {/* Available Medical Services */}
                 <div className="facility-services-group">
                   <h3 className="services-heading">{t('facilityDetails.servicesOffered')}:</h3>
-                  <ul className="services-checklist">
+                  <div className="services-checklist">
                     {fac.services.map((srv, sIdx) => (
-                      <li key={sIdx} className="service-item">
+                      <span key={sIdx} className="service-item">
                         <span className="service-check" aria-hidden="true">✓</span>
                         <span>{srv}</span>
-                      </li>
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
 
-                <div className="facility-availability-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                  {fac.queueStatus ? (
+                {/* Current Queue Information & Staleness */}
+                <div className="facility-queue-group">
+                  {fac.queueStatus && fac.queueStatus !== 'UNKNOWN' ? (
                     <>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                        <span className="availability-label" style={{ fontWeight: 700 }}>{t('healthcare.currentQueue')}:</span>
-                        <span
-                          style={{
-                            display: 'inline-block',
-                            padding: '2px 8px',
-                            borderRadius: '4px',
-                            fontSize: '11.5px',
-                            fontWeight: 700,
-                            backgroundColor: fac.queueStatus === 'NORMAL' ? '#dcfce7' : fac.queueStatus === 'BUSY' ? '#fef3c7' : '#fee2e2',
-                            color: fac.queueStatus === 'NORMAL' ? '#166534' : fac.queueStatus === 'BUSY' ? '#92400e' : '#991b1b',
-                          }}
-                        >
+                      <div className="queue-status-line">
+                        <span className="availability-label">{t('healthcare.currentQueue')}:</span>
+                        <span className={`queue-badge queue-${fac.queueStatus.toLowerCase()}`}>
                           {fac.queueStatus}
                         </span>
                         {fac.waitingPatients != null && (
-                          <span style={{ fontSize: '12px', color: '#334155' }}>
-                            {fac.waitingPatients} {t('common.patientsWaiting')}
+                          <span className="queue-detail-text">
+                            · {fac.waitingPatients} {t('common.patientsWaiting')}
                           </span>
                         )}
                         {fac.estimatedWaitMinutes != null && (
-                          <span style={{ fontSize: '12px', color: '#64748b' }}>
-                            • ~{fac.estimatedWaitMinutes} {t('common.minutes')} {t('common.waiting')}
+                          <span className="queue-detail-text">
+                            · ~{fac.estimatedWaitMinutes} {t('common.minutes')} {t('common.waiting')}
                           </span>
                         )}
                       </div>
                       {fac.lastUpdated && (
                         <div
-                          style={{
-                            fontSize: '11px',
-                            color: formatQueueLastUpdated(fac.lastUpdated).isStale ? '#b45309' : '#64748b',
-                            fontStyle: 'italic',
-                          }}
+                          className={`queue-updated-text ${
+                            formatQueueLastUpdated(fac.lastUpdated).isStale ? 'is-stale' : ''
+                          }`}
                         >
                           {formatQueueLastUpdated(fac.lastUpdated).text}
                         </div>
                       )}
                     </>
                   ) : (
-                    <span className="availability-items" style={{ color: '#64748b', fontStyle: 'italic' }}>
-                      {t('healthcare.noFacilitiesFound')}
-                    </span>
+                    <div className="queue-updated-text">
+                      {t('healthcare.queueUnavailable')}
+                    </div>
                   )}
                 </div>
 
+                {/* Why This Facility Box */}
                 <div className="why-facility-box">
                   <div className="why-facility-title-row">
                     <svg
                       className="why-facility-icon"
-                      width="16"
-                      height="16"
+                      width="15"
+                      height="15"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="#0284c7"
-                      strokeWidth="2"
+                      strokeWidth="2.2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       aria-hidden="true"
                     >
-                      <path d="M12 22v-7" />
-                      <path d="M9 7.5A4.5 4.5 0 0 1 18 9c0 4.5-6 6-6 6s-6-1.5-6-6a4.5 4.5 0 0 1 3-4.24" />
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4" />
+                      <path d="M12 8h.01" />
                     </svg>
-                    <h4 className="why-facility-heading">{t('careGuidance.reason')}</h4>
+                    <h4 className="why-facility-heading">{t('healthcare.whyThisFacility')}</h4>
                   </div>
                   <p className="why-facility-desc">
                     {fac.reason}
                   </p>
                 </div>
 
+                {/* Action Button */}
                 <button
                   type="button"
                   className={idx === 0 ? 'facility-solid-btn' : 'facility-outline-btn'}
                   onClick={() => handleSelectFacility(fac)}
                 >
-                  {t('healthcare.viewDetails')}
+                  {t('healthcare.viewAvailabilityAndBook')}
                 </button>
               </article>
             ))}

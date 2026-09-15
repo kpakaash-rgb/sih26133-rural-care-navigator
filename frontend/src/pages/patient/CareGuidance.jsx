@@ -13,17 +13,46 @@ export default function CareGuidance({
   const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
 
-  // Use the real backend result instead of hardcoded values.
+  // Extract real dynamic values from the backend triage result
   const urgency = triageResult?.urgency || 'routine'
   const recommendedCare =
-    triageResult?.recommended_care || 'Routine healthcare service'
+    triageResult?.recommended_care || 'Primary Health Centre (PHC)'
   const reason =
     triageResult?.reason ||
     'No emergency warning sign was identified. Consider routine healthcare if your symptoms persist or become worse.'
   const emergency = Boolean(triageResult?.emergency)
+  const durationDays =
+    triageResult?.duration_days || triageResult?.durationDays || 1
 
-  const symptoms =
-    reportedSymptoms.length > 0 ? reportedSymptoms : ['No symptoms selected']
+  const durationUnit =
+    durationDays === 1 ? t('symptoms.day') : t('symptoms.days')
+  const durationLabel = `${durationDays} ${durationUnit}`
+
+  // Normalize symptom tokens for localization lookup
+  const formatSymptom = (sym) => {
+    if (!sym) return ''
+    if (sym === 'FEVER') return 'Fever'
+    if (sym === 'COUGH') return 'Cough'
+    if (sym === 'HEADACHE') return 'Headache'
+    if (sym === 'STOMACH_PROBLEM') return 'Stomach Problem'
+    if (sym === 'KNEE_PAIN') return 'Knee Pain'
+    if (sym === 'BACK_PAIN') return 'Back Pain'
+    if (sym === 'OTHER_PAIN') return 'Other Pain'
+    if (sym === 'INJURY') return 'Injury'
+    if (sym === 'GENERAL_OTHER') return 'General / Other'
+    return sym
+  }
+
+  const rawSymptomsList =
+    reportedSymptoms && reportedSymptoms.length > 0
+      ? reportedSymptoms
+      : triageResult?.symptoms && triageResult.symptoms.length > 0
+      ? triageResult.symptoms
+      : triageResult?.problemDescription
+      ? [triageResult.problemDescription]
+      : []
+
+  const formattedSymptoms = rawSymptomsList.map(formatSymptom).filter(Boolean)
 
   const getUrgencyTitle = () => {
     switch (urgency) {
@@ -71,19 +100,28 @@ export default function CareGuidance({
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
+    if (!onNavigate) return
     if (tabId === 'home' || tabId === SCREENS.HOME) {
-      if (onNavigate) {
-        onNavigate(SCREENS.HOME)
-      }
+      onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
     }
   }
 
   return (
     <div className="care-guidance-screen-wrapper">
-      {/* Brand Header with SOS */}
+      {/* Brand Header with SOS and Back */}
       <Header
         title={t('common.appName')}
         showLogo
+        showBack
+        onBack={() => onNavigate && onNavigate(SCREENS.SYMPTOMS)}
         rightAction={
           <SOSButton
             label="SOS"
@@ -95,8 +133,7 @@ export default function CareGuidance({
 
       {/* Main Vertically Scrollable Content */}
       <main className="care-guidance-scrollable-content">
-
-        {/* Urgency Section */}
+        {/* Triage Level Assessment Card */}
         <section className="urgency-question-section">
           <h2 className="urgency-question-heading">
             {t('careGuidance.triageLevel')}
@@ -126,7 +163,7 @@ export default function CareGuidance({
           </p>
         </section>
 
-        {/* Reported Symptoms */}
+        {/* Reported Symptoms with Duration */}
         <section className="reported-symptoms-card">
           <div className="reported-symptoms-header">
             <svg
@@ -153,18 +190,29 @@ export default function CareGuidance({
           </div>
 
           <div className="reported-symptoms-chips">
-            {symptoms.map((symptom) => (
-              <span
-                key={symptom}
-                className="guidance-symptom-chip"
-              >
-                {t(`symptoms.symptomItems.${symptom}`) || symptom}
+            {formattedSymptoms.length > 0 ? (
+              formattedSymptoms.map((symptom) => {
+                const localizedSymptom =
+                  t(`symptoms.symptomItems.${symptom}`) || symptom
+
+                return (
+                  <span
+                    key={symptom}
+                    className="guidance-symptom-chip"
+                  >
+                    {localizedSymptom} · {durationLabel}
+                  </span>
+                )
+              })
+            ) : (
+              <span className="guidance-symptom-chip">
+                {t('symptoms.selectSymptoms')} · {durationLabel}
               </span>
-            ))}
+            )}
           </div>
         </section>
 
-        {/* Why this guidance? */}
+        {/* Specific Dynamic Clinical Reason */}
         <section className="guidance-detail-section">
           <h2 className="guidance-detail-heading">
             {t('careGuidance.reason')}
@@ -175,7 +223,7 @@ export default function CareGuidance({
           </p>
         </section>
 
-        {/* Where should you go? */}
+        {/* Recommended Action / Facility Level */}
         <section className="guidance-detail-section">
           <h2 className="guidance-detail-heading">
             {t('careGuidance.recommendedAction')}
@@ -186,7 +234,7 @@ export default function CareGuidance({
           </p>
         </section>
 
-        {/* Emergency Warning */}
+        {/* Prominent Emergency Warning for Emergency Results */}
         {emergency && (
           <section className="care-guidance-emergency-section">
             <div className="emergency-section-header">
@@ -238,7 +286,7 @@ export default function CareGuidance({
           </section>
         )}
 
-        {/* AI Disclaimer */}
+        {/* AI Informational Disclaimer */}
         <div className="guidance-ai-disclaimer">
           <span
             className="disclaimer-info-icon"
@@ -259,9 +307,8 @@ export default function CareGuidance({
           </p>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Find Suitable Facilities & Edit Symptoms */}
         <div className="care-guidance-actions">
-
           {/* Find Care */}
           <button
             type="button"
@@ -292,7 +339,7 @@ export default function CareGuidance({
             <span>{t('careGuidance.viewFacilities')}</span>
           </button>
 
-          {/* Edit Symptoms */}
+          {/* Edit Symptoms ("How are you feeling?") */}
           <button
             type="button"
             className="guidance-edit-feeling-btn"
@@ -318,7 +365,7 @@ export default function CareGuidance({
           </button>
         </div>
 
-        {/* General Emergency Section */}
+        {/* General Emergency 108 Callout (when not already an emergency result) */}
         {!emergency && (
           <section className="care-guidance-emergency-section">
             <div className="emergency-section-header">
@@ -375,4 +422,4 @@ export default function CareGuidance({
       />
     </div>
   )
-}
+}

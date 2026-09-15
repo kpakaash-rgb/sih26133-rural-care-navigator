@@ -27,9 +27,12 @@ export default function Appointments({ onNavigate }) {
   const [successMessage, setSuccessMessage] = useState('')
   const [cancellingId, setCancellingId] = useState(null)
 
+  const [isSessionExpired, setIsSessionExpired] = useState(false)
+
   const fetchAppointments = async () => {
     setIsLoading(true)
     setErrorMessage('')
+    setIsSessionExpired(false)
     try {
       const data = await getAppointments()
       if (Array.isArray(data)) {
@@ -38,9 +41,19 @@ export default function Appointments({ onNavigate }) {
         setAppointments([])
       }
     } catch (err) {
-      setErrorMessage(
-        err.message || 'Unable to load appointments. Please check connection.'
-      )
+      if (
+        err.status === 401 ||
+        err.message?.toLowerCase().includes('expired') ||
+        err.message?.toLowerCase().includes('unauthorized') ||
+        err.message?.toLowerCase().includes('token')
+      ) {
+        setIsSessionExpired(true)
+        setErrorMessage('Your session has expired. Please sign in again to continue.')
+      } else {
+        setErrorMessage(
+          err.message || 'Unable to load appointments. Please check connection.'
+        )
+      }
     } finally {
       setIsLoading(false)
     }
@@ -58,9 +71,19 @@ export default function Appointments({ onNavigate }) {
       })
       .catch((err) => {
         if (isMounted) {
-          setErrorMessage(
-            err.message || 'Unable to load appointments. Please check connection.'
-          )
+          if (
+            err.status === 401 ||
+            err.message?.toLowerCase().includes('expired') ||
+            err.message?.toLowerCase().includes('unauthorized') ||
+            err.message?.toLowerCase().includes('token')
+          ) {
+            setIsSessionExpired(true)
+            setErrorMessage('Your session has expired. Please sign in again to continue.')
+          } else {
+            setErrorMessage(
+              err.message || 'Unable to load appointments. Please check connection.'
+            )
+          }
           setIsLoading(false)
         }
       })
@@ -76,20 +99,23 @@ export default function Appointments({ onNavigate }) {
 
   const handleNavClick = (tabId) => {
     setActiveTab(tabId)
+    if (!onNavigate) return
     if (tabId === 'home' || tabId === SCREENS.HOME) {
-      if (onNavigate) {
-        onNavigate(SCREENS.HOME)
-      }
-    } else if (tabId === 'services') {
-      if (onNavigate) {
-        onNavigate(SCREENS.HEALTHCARE)
-      }
+      onNavigate(SCREENS.HOME)
+    } else if (tabId === 'services' || tabId === SCREENS.HEALTHCARE) {
+      onNavigate(SCREENS.HEALTHCARE)
+    } else if (tabId === 'journey' || tabId === SCREENS.HEALTH_JOURNEY) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    } else if (tabId === 'profile' || tabId === SCREENS.ABHA) {
+      onNavigate(SCREENS.ABHA)
+    } else {
+      onNavigate(tabId)
     }
   }
 
-  const handleViewDetails = () => {
+  const handleSignInAgain = () => {
     if (onNavigate) {
-      onNavigate(SCREENS.HEALTH_JOURNEY)
+      onNavigate(SCREENS.LOGIN, { returnScreen: SCREENS.APPOINTMENTS })
     }
   }
 
@@ -174,13 +200,35 @@ export default function Appointments({ onNavigate }) {
               backgroundColor: '#fee2e2',
               border: '1px solid #f87171',
               borderRadius: '6px',
-              padding: '10px 14px',
+              padding: '12px 14px',
               margin: '0 16px 12px',
               color: '#991b1b',
               fontSize: '13px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
             }}
           >
-            {errorMessage}
+            <span>{errorMessage}</span>
+            {isSessionExpired && (
+              <button
+                type="button"
+                onClick={handleSignInAgain}
+                style={{
+                  alignSelf: 'flex-start',
+                  backgroundColor: '#004b87',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  fontSize: '12.5px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Sign In Again →
+              </button>
+            )}
           </div>
         )}
 

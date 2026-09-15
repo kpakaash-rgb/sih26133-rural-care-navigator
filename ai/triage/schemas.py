@@ -17,9 +17,23 @@ class TriageRequest(BaseModel):
         default="",
         description="Patient's description of their current problem.",
     )
+    duration_days: int = Field(
+        default=1,
+        ge=1,
+        le=30,
+        description="Duration of reported symptoms in days (1-30).",
+    )
 
 class TriageResult(BaseModel):
     urgency: UrgencyLevel
     recommended_care: str
     reason: str
     emergency: bool
+    symptoms: list[str] = Field(
+        default_factory=list,
+        description="Canonical normalized symptom categories evaluated.",
+    )
+    duration_days: int = Field(
+        default=1,
+        description="Duration in days considered during triage decision support.",
+    )

@@ -66,23 +66,23 @@ MESSAGES = {
         ),
     },
     "greeting_new": {
-        "en": "Welcome to Rural Care Navigator. Please reply with your full name.\n(Reply HI for Hindi, MR for Marathi)",
-        "hi": "रूरल केयर नेविगेटर में आपका स्वागत है। कृपया अपना पूरा नाम भेजें।",
-        "mr": "रूरल केअर नेव्हिगेटरमध्ये आपले स्वागत आहे. कृपया आपले पूर्ण नाव पाठवा.",
+        "en": "Welcome to MYTHRI. Please reply with your full name.\n(Reply HI for Hindi, MR for Marathi)",
+        "hi": "MYTHRI में आपका स्वागत है। कृपया अपना पूरा नाम भेजें।",
+        "mr": "MYTHRI मध्ये आपले स्वागत आहे. कृपया आपले पूर्ण नाव पाठवा.",
     },
     "greeting_returning": {
         "en": (
-            "Hello {name}! Welcome to Rural Care Navigator.\n"
+            "Hello {name}! Welcome to MYTHRI.\n"
             "Please reply with your symptoms (e.g. Fever for 2 days) or send:\n"
             "1-Book, 2-Facility, 4-Referral, 5-Followup, 0-Emergency"
         ),
         "hi": (
-            "नमस्ते {name}! रूरल केयर नेविगेटर में आपका स्वागत है।\n"
+            "नमस्ते {name}! MYTHRI में आपका स्वागत है।\n"
             "कृपया अपने लक्षण बताएं (उदा. 2 दिन से बुखार) या भेजें:\n"
             "1-बुक, 2-अस्पताल, 4-रेफरल, 5-फॉलोअप, 0-इमरजेंसी"
         ),
         "mr": (
-            "नमस्ते {name}! रूरल केअर नेव्हिगेटरमध्ये आपले स्वागत आहे.\n"
+            "नमस्ते {name}! MYTHRI मध्ये आपले स्वागत आहे.\n"
             "कृपया आपली लक्षणे सांगा (उदा. 2 दिवस ताप) किंवा पाठवा:\n"
             "1-बुक, 2-रुग्णालय, 4-रेफरल, 5-फॉलोअप, 0-तातडीची मदत"
         ),

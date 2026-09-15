@@ -5,7 +5,7 @@ import { SCREENS } from '../../utils/constants'
 import { requestOtp, verifyOtp } from '../../services/api'
 import { useLanguage } from '../../i18n'
 
-export default function Login({ onNavigate }) {
+export default function Login({ onNavigate, loginData }) {
   const { t } = useLanguage()
   const [mobileNumber, setMobileNumber] = useState('')
   const [showOtpStep, setShowOtpStep] = useState(false)
@@ -58,16 +58,18 @@ export default function Login({ onNavigate }) {
         onNavigate(SCREENS.ONBOARDING, {
           mobile: cleanMobile,
           registration_token: data.registration_token,
+          returnScreen: loginData?.returnScreen,
         })
       } else {
-        // Existing registered patient -> store session and navigate to Home
+        // Existing registered patient -> store session and navigate to destination or Home
         if (data?.access_token) {
           localStorage.setItem('access_token', data.access_token)
         }
         if (data?.patient) {
           localStorage.setItem('patient', JSON.stringify(data.patient))
         }
-        onNavigate(SCREENS.HOME, { patient: data?.patient })
+        const targetScreen = loginData?.returnScreen || SCREENS.HOME
+        onNavigate(targetScreen, { patient: data?.patient })
       }
     } catch (err) {
       setError(err.message || t('auth.verifyFailed'))
@@ -78,7 +80,12 @@ export default function Login({ onNavigate }) {
 
   return (
     <div className="login-screen-wrapper">
-      <Header title={t('common.appName')} showLogo />
+      <Header
+        title={t('common.appName')}
+        showLogo
+        showBack
+        onBack={() => onNavigate(SCREENS.WELCOME)}
+      />
 
       <div className="login-content-container">
         <div className="login-header-text">
