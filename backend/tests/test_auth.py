@@ -572,3 +572,62 @@ class TestAuthMeEndpoint:
         body = response.json()
         _assert_envelope(body, success=False)
         assert "expired" in body["message"].lower()
+
+
+class TestCORSPreflight:
+    """Test CORS preflight and production frontend origin resolution."""
+
+    def test_cors_options_preflight_request_otp_localhost(self, client):
+        response = client.options(
+            "/api/v1/auth/request-otp",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        assert response.status_code == 200
+        assert response.headers.get("access-control-allow-origin") == "http://localhost:5173"
+        assert response.headers.get("access-control-allow-credentials") == "true"
+        assert "POST" in response.headers.get("access-control-allow-methods", "")
+
+    def test_cors_options_preflight_request_otp_vercel_production(self, client):
+        response = client.options(
+            "/api/v1/auth/request-otp",
+            headers={
+                "Origin": "https://sih26133-rural-care-navigator.vercel.app",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type",
+            },
+        )
+        assert response.status_code == 200
+        assert response.headers.get("access-control-allow-origin") == "https://sih26133-rural-care-navigator.vercel.app"
+        assert response.headers.get("access-control-allow-credentials") == "true"
+
+    def test_cors_options_preflight_request_otp_vercel_preview(self, client):
+        response = client.options(
+            "/api/v1/auth/request-otp",
+            headers={
+                "Origin": "https://sih26133-rural-care-navigator-preview-branch.vercel.app",
+                "Access-Control-Request-Method": "POST",
+                "Access-Control-Request-Headers": "content-type,authorization",
+            },
+        )
+        assert response.status_code == 200
+        assert response.headers.get("access-control-allow-origin") == "https://sih26133-rural-care-navigator-preview-branch.vercel.app"
+
+    def test_cors_post_request_otp_from_production_frontend(self, client):
+        response = client.post(
+            "/api/v1/auth/request-otp",
+            headers={
+                "Origin": "https://sih26133-rural-care-navigator.vercel.app",
+                "Content-Type": "application/json",
+            },
+            json={"mobile": "9876543210"},
+        )
+        assert response.status_code == 200
+        assert response.headers.get("access-control-allow-origin") == "https://sih26133-rural-care-navigator.vercel.app"
+        body = response.json()
+        assert body["success"] is True
+        assert body["data"]["mobile"] == "9876543210"
+

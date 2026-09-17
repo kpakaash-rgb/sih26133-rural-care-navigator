@@ -128,15 +128,46 @@ class Settings(BaseSettings):
     # CORS
     # ──────────────────────────────────────────────
     FRONTEND_ORIGIN: str = "http://localhost:5173"
+    FRONTEND_URL: Optional[str] = None
+    ALLOWED_ORIGINS: Optional[str] = None
+    CORS_ORIGINS: Optional[str] = None
+    CORS_ORIGIN_REGEX: Optional[str] = r"^https://.*\.vercel\.app$"
 
     @property
     def cors_origins(self) -> List[str]:
         """
-        Parse FRONTEND_ORIGIN into a list of allowed origins.
-        Supports comma-separated values:
-            FRONTEND_ORIGIN=http://localhost:5173,http://localhost:3000
+        Consolidate and normalize all allowed CORS origins from environment variables
+        and development defaults. Strips trailing slashes to guarantee exact matching
+        with browser Origin headers.
         """
-        return [o.strip() for o in self.FRONTEND_ORIGIN.split(",") if o.strip()]
+        origins_set = {
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://localhost:4173",
+            "http://localhost:8000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:4173",
+            "http://127.0.0.1:8000",
+        }
+
+        # Collect origins from all supported environment variable aliases
+        raw_sources = [
+            self.FRONTEND_ORIGIN,
+            self.FRONTEND_URL,
+            self.ALLOWED_ORIGINS,
+            self.CORS_ORIGINS,
+        ]
+
+        for source in raw_sources:
+            if not source:
+                continue
+            for item in str(source).split(","):
+                cleaned = item.strip().rstrip("/")
+                if cleaned:
+                    origins_set.add(cleaned)
+
+        return sorted(list(origins_set))
 
     # ──────────────────────────────────────────────
     # Convenience
