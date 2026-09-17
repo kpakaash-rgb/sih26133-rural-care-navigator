@@ -119,6 +119,12 @@ export default function Appointments({ onNavigate }) {
     }
   }
 
+  const handleViewDetails = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.HEALTH_JOURNEY)
+    }
+  }
+
   const handleCancelAppointment = async (apptId) => {
     if (!window.confirm('Are you sure you want to cancel this appointment?')) {
       return
