@@ -50,15 +50,19 @@ export default function WorkerAppLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
               width: 34, height: 34,
-              borderRadius: 10,
-              background: 'rgba(255,255,255,0.18)',
+              borderRadius: 8,
+              background: '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
+              padding: '3px',
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.12)',
+              boxSizing: 'border-box',
             }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="8" y="1" width="4" height="18" rx="1.5" fill="white"/>
-                <rect x="1" y="8" width="18" height="4" rx="1.5" fill="white"/>
-              </svg>
+              <img
+                src="/mythri-icon.png"
+                alt="Mythri"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </div>
             <div>
               <div className="header-title">{facilityName}</div>
