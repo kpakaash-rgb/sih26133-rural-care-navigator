@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
+import ConnectivityBanner from '../../components/ConnectivityBanner'
 import { SCREENS } from '../../utils/constants'
 import { useTranslation } from '../../i18n'
 
@@ -10,8 +11,10 @@ export default function CareGuidance({
   triageResult,
   reportedSymptoms = [],
 }) {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   const [activeTab, setActiveTab] = useState('services')
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const isTtsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
 
   // Extract real dynamic values from the backend triage result
   const urgency = triageResult?.urgency || 'routine'
@@ -78,6 +81,45 @@ export default function CareGuidance({
     }
   }
 
+  const handleToggleSpeech = () => {
+    if (!isTtsSupported) return
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+      return
+    }
+
+    window.speechSynthesis.cancel()
+
+    const spokenText = `${getUrgencyTitle()}. ${getUrgencyMessage()}. ${reason || ''}`
+    const utterance = new SpeechSynthesisUtterance(spokenText)
+
+    const langCode =
+      language === 'ta'
+        ? 'ta-IN'
+        : language === 'hi'
+        ? 'hi-IN'
+        : language === 'mr'
+        ? 'mr-IN'
+        : 'en-IN'
+    utterance.lang = langCode
+
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    window.speechSynthesis.speak(utterance)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel()
+      }
+    }
+  }, [])
+
   const handleEmergencyCall = () => {
     window.location.href = 'tel:108'
   }
@@ -131,6 +173,8 @@ export default function CareGuidance({
         }
       />
 
+      <ConnectivityBanner />
+
       {/* Main Vertically Scrollable Content */}
       <main className="care-guidance-scrollable-content">
         {/* Triage Level Assessment Card */}
@@ -142,8 +186,44 @@ export default function CareGuidance({
           <div
             className={`needs-attention-card urgency-${urgency}`}
           >
-            <div className="attention-badge-title">
-              {getUrgencyTitle()}
+            {triageResult?.offline && (
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: '#f0fdf4',
+                  color: '#15803d',
+                  border: '1px solid #86efac',
+                  padding: '3px 10px',
+                  borderRadius: '999px',
+                  fontSize: '0.74rem',
+                  fontWeight: 700,
+                  marginBottom: '8px',
+                }}
+              >
+                <span>⚡</span>
+                <span>
+                  {t('triage.offlineGenerated') || 'Evaluated Offline on Device • Protocol Active'}
+                </span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <div className="attention-badge-title" style={{ margin: 0 }}>
+                {getUrgencyTitle()}
+              </div>
+
+              {isTtsSupported && (
+                <button
+                  type="button"
+                  className={`read-aloud-btn ${isSpeaking ? 'speaking' : ''}`}
+                  onClick={handleToggleSpeech}
+                  aria-label={isSpeaking ? t('voice.stopReading') || 'Stop Audio' : t('voice.readAloud') || 'Read Aloud'}
+                >
+                  <span aria-hidden="true">{isSpeaking ? '⏹️' : '🔊'}</span>
+                  <span>{isSpeaking ? t('voice.stopReading') || 'Stop' : t('voice.readAloud') || 'Read Aloud'}</span>
+                </button>
+              )}
             </div>
 
             <p className="attention-card-desc">

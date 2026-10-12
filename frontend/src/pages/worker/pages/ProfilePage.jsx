@@ -335,7 +335,7 @@ export default function ProfilePage() {
 
       {/* ── Footer Branding ── */}
       <footer className="pf-footer">
-        <p className="pf-footer-brand">Mythri • v2.4 (NHM Certified)</p>
+        <p className="pf-footer-brand">Nalam Connect • v2.4 (NHM Certified)</p>
         <p className="pf-footer-sub">National Health Mission • Frontline Build #849</p>
       </footer>
 

@@ -1,16 +1,21 @@
 import { SCREENS } from '../../utils/constants'
 import { useLanguage } from '../../i18n'
+import LanguageSelector from '../../components/LanguageSelector'
 
 export default function Welcome({ onNavigate }) {
   const { t } = useLanguage()
 
   return (
     <div className="welcome-screen-container">
+      <div style={{ width: '100%', maxWidth: '360px', display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+        <LanguageSelector />
+      </div>
+
       <div className="welcome-center-content">
         <div className="welcome-icon-box" aria-hidden="true">
           <img
-            src="/mythri-icon.png"
-            alt="Mythri Logo"
+            src="/images/nalam-connect-logo.png"
+            alt="Nalam Connect Logo"
             className="welcome-medical-icon"
           />
         </div>

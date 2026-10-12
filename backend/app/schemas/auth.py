@@ -99,12 +99,14 @@ class AuthenticatedPatient(BaseModel):
     emergency_contact: Optional[str] = None
     abha_number: Optional[str] = None
     role: str = "PATIENT"
+    is_profile_complete: bool = False
 
 
 class AuthTokenResponse(BaseModel):
     """Response returned upon successful OTP verification or self-registration."""
 
     is_registered: bool = True
+    is_profile_complete: Optional[bool] = None
     access_token: Optional[str] = None
     token_type: str = "bearer"
     role: str = "PATIENT"

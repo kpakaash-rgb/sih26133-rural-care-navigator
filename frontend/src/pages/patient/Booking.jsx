@@ -3,7 +3,10 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { bookAppointment, isTokenExpired, clearPatientSession } from '../../services/api'
+import { enqueueRequest } from '../../services/offlineQueue'
+import ConnectivityBanner from '../../components/ConnectivityBanner'
 import { useTranslation } from '../../i18n'
+import { getLocalizedFacilityName } from '../../utils/hospitalLocalization'
 
 export default function Booking({ onNavigate, bookingData }) {
   const { t } = useTranslation()
@@ -67,6 +70,40 @@ export default function Booking({ onNavigate, bookingData }) {
     setIsConflict(false)
     setIsSessionExpired(false)
 
+    // If device is offline, enqueue consultation request directly to IndexedDB
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      try {
+        const queuedItem = await enqueueRequest({
+          ...bookingData,
+          facility_id: bookingData.facilityId,
+          service_id: bookingData.serviceId,
+          availability_slot_id: bookingData.slotId,
+        })
+
+        if (onNavigate) {
+          onNavigate(SCREENS.APPOINTMENT_CONFIRMED, {
+            ...bookingData,
+            createdAppointment: {
+              id: queuedItem.id,
+              facility_name: bookingData.facility,
+              service_name: bookingData.service,
+              status: 'saved_offline',
+              appointment_date: bookingData.date,
+              start_time: bookingData.time,
+            },
+            status: 'saved_offline',
+            isOfflineSaved: true,
+            offlineQueueId: queuedItem.id,
+          })
+        }
+      } catch (queueErr) {
+        setErrorMessage('Unable to save offline request: ' + queueErr.message)
+      } finally {
+        setIsSubmitting(false)
+      }
+      return
+    }
+
     try {
       const appointment = await bookAppointment({
         facility_id: bookingData.facilityId,
@@ -83,6 +120,43 @@ export default function Booking({ onNavigate, bookingData }) {
         })
       }
     } catch (err) {
+      const isNetworkIssue =
+        (typeof navigator !== 'undefined' && !navigator.onLine) ||
+        err.message?.toLowerCase().includes('failed to fetch') ||
+        err.message?.toLowerCase().includes('network') ||
+        err.message?.toLowerCase().includes('offline')
+
+      if (isNetworkIssue) {
+        try {
+          const queuedItem = await enqueueRequest({
+            ...bookingData,
+            facility_id: bookingData.facilityId,
+            service_id: bookingData.serviceId,
+            availability_slot_id: bookingData.slotId,
+          })
+
+          if (onNavigate) {
+            onNavigate(SCREENS.APPOINTMENT_CONFIRMED, {
+              ...bookingData,
+              createdAppointment: {
+                id: queuedItem.id,
+                facility_name: bookingData.facility,
+                service_name: bookingData.service,
+                status: 'saved_offline',
+                appointment_date: bookingData.date,
+                start_time: bookingData.time,
+              },
+              status: 'saved_offline',
+              isOfflineSaved: true,
+              offlineQueueId: queuedItem.id,
+            })
+          }
+          return
+        } catch {
+          // If queue saving also failed, proceed to error display
+        }
+      }
+
       if (
         err.status === 401 ||
         err.message?.toLowerCase().includes('expired') ||
@@ -114,6 +188,9 @@ export default function Booking({ onNavigate, bookingData }) {
   const appointmentDetails = {
     facility: bookingData?.facility || 'Healthcare Facility',
     service: bookingData?.service || 'General Medicine',
+    doctorName: bookingData?.doctorName || 'Dr. R. Karthik',
+    doctorSpecialization: bookingData?.doctorSpecialization || bookingData?.service || 'General Medicine',
+    doctorRoom: bookingData?.doctorRoom || 'OPD-1',
     date: bookingData?.date || (bookingData?.selectedSlot?.date ? bookingData.selectedSlot.date : ''),
     time: bookingData?.time || (bookingData?.selectedSlot?.start_time ? bookingData.selectedSlot.start_time : ''),
     type: bookingData?.type || 'In-person',
@@ -155,6 +232,9 @@ export default function Booking({ onNavigate, bookingData }) {
         onBack={handleBack}
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
+
+      {/* Connectivity Alert Banner */}
+      <ConnectivityBanner />
 
       {/* Main Vertically Scrollable Content */}
       <main className="booking-scrollable-content">
@@ -260,7 +340,7 @@ export default function Booking({ onNavigate, bookingData }) {
 
             <div className="summary-place-info">
               <span className="summary-field-label">{t('booking.facility')}</span>
-              <h2 className="summary-place-name">{appointmentDetails.facility}</h2>
+              <h2 className="summary-place-name">{getLocalizedFacilityName(appointmentDetails.facility, t)}</h2>
             </div>
           </div>
 
@@ -286,8 +366,17 @@ export default function Booking({ onNavigate, bookingData }) {
                   <circle cx="16" cy="14.5" r="1.5" fill="#004b87" />
                 </svg>
               </span>
-              <span className="summary-service-name">{appointmentDetails.service}</span>
+              <span className="summary-service-name">
+                {appointmentDetails.doctorName
+                  ? `${appointmentDetails.doctorName} • ${appointmentDetails.service}`
+                  : appointmentDetails.service}
+              </span>
             </div>
+            {appointmentDetails.doctorRoom && (
+              <span className="summary-doctor-room" style={{ fontSize: '12px', color: '#0369a1', marginTop: '4px', display: 'block', fontWeight: 600 }}>
+                📍 {appointmentDetails.doctorRoom}
+              </span>
+            )}
           </div>
 
           <div className="summary-card-divider" />

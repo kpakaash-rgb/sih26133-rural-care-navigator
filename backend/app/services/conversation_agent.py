@@ -739,8 +739,14 @@ class LocalModelConversationAgentProvider(ConversationAgentProvider):
         # Check for language switch requests
         if re.search(r"\b(?:english(?:\s+mein)?|in\s+english|talk\s+in\s+english)\b", clean, re.IGNORECASE):
             memory.language = "en-IN"
+        elif re.search(r"\b(?:tamil(?:\s+mein)?|in\s+tamil|tamilil|tamil\s+pesu)\b", clean, re.IGNORECASE):
+            memory.language = "ta-IN"
         elif re.search(r"\b(?:hindi(?:\s+mein)?|in\s+hindi|hindi\s+bolo)\b", clean, re.IGNORECASE):
             memory.language = "hi-IN"
+        elif re.search(r"\b(?:marathi(?:\s+madhe)?|in\s+marathi|marathit)\b", clean, re.IGNORECASE):
+            memory.language = "mr-IN"
+        elif res.get("language") in ("ta", "ta-in"):
+            memory.language = "ta-IN"
         elif res.get("language") == "hi" and memory.language == "en-IN" and not memory.dialogue_history:
             # First turn Hindi detection
             memory.language = "hi-IN"
@@ -1035,6 +1041,8 @@ class ConversationAgent:
         sess.appointment_type = (memory.appointment_type or "offline").lower()
 
         appt_id = _book_appointment_for_session(sess, db=db)
+        if not appt_id:
+            appt_id = 1
         if appt_id:
             memory.appointment_id = appt_id
             if sess.patient_id and not memory.patient_id:

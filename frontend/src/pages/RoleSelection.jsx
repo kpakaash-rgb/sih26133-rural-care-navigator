@@ -48,8 +48,8 @@ export default function RoleSelection() {
 
           <div className="role-brand-logo-wrap">
             <img
-              src="/mythri-icon.png"
-              alt="Mythri"
+              src="/images/nalam-connect-logo.png"
+              alt="Nalam Connect"
               className="role-brand-logo-img"
             />
           </div>

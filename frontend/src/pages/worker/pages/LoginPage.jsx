@@ -90,12 +90,12 @@ export default function LoginPage() {
         <div className="login-brand">
           <div className="login-logo-wrap">
             <img
-              src="/mythri-icon.png"
-              alt="Mythri"
+              src="/images/nalam-connect-logo.png"
+              alt="Nalam Connect"
               className="login-logo-img"
             />
           </div>
-          <h1 className="login-app-name">Mythri</h1>
+          <h1 className="login-app-name">Nalam Connect</h1>
           <p className="login-app-role">Frontline Healthcare Worker</p>
         </div>
 

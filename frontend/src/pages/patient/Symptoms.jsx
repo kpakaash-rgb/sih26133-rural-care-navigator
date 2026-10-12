@@ -3,7 +3,10 @@ import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { triageSymptoms } from '../../services/api'
+import { runOfflineTriage } from '../../services/offlineTriage'
+import ConnectivityBanner from '../../components/ConnectivityBanner'
 import { useTranslation } from '../../i18n'
+import { useVoiceInput } from '../../hooks/useVoiceInput'
 
 const COMMON_SYMPTOMS_LIST = [
   'Fever',
@@ -21,7 +24,7 @@ const PAIN_TYPES_LIST = [
 ]
 
 export default function Symptoms({ onNavigate }) {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   const [problemDescription, setProblemDescription] = useState('')
   const [selectedSymptoms, setSelectedSymptoms] = useState([])
   const [selectedPainType, setSelectedPainType] = useState(null)
@@ -29,6 +32,50 @@ export default function Symptoms({ onNavigate }) {
 
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+
+  const regionalLangCode =
+    language === 'ta'
+      ? 'ta-IN'
+      : language === 'hi'
+      ? 'hi-IN'
+      : language === 'mr'
+      ? 'mr-IN'
+      : 'en-IN'
+
+  const {
+    isListening,
+    isProcessing,
+    isDone,
+    transcript: recognizedTranscript,
+    error: voiceError,
+    demoMode: isVoiceDemo,
+    startListening,
+    stopListening,
+    resetVoice,
+  } = useVoiceInput({
+    defaultLanguage: regionalLangCode,
+  })
+
+  const handleMicClick = () => {
+    if (isListening) {
+      stopListening()
+    } else {
+      startListening({ language: regionalLangCode })
+    }
+  }
+
+  const handleApplyVoiceTranscript = () => {
+    if (!recognizedTranscript) return
+    setProblemDescription((prev) => {
+      const trimmed = prev.trim()
+      return trimmed ? `${trimmed} ${recognizedTranscript}` : recognizedTranscript
+    })
+    resetVoice()
+  }
+
+  const handleClearVoiceTranscript = () => {
+    resetVoice()
+  }
 
   const handleToggleSymptom = (symptom) => {
     setSelectedSymptoms((prev) => {
@@ -70,14 +117,29 @@ export default function Symptoms({ onNavigate }) {
       payloadSymptoms.push(selectedPainType)
     }
 
-    try {
-      const result = await triageSymptoms({
-        symptoms: payloadSymptoms,
-        description: problemDescription.trim(),
-        duration_days: durationDays,
-      })
+    const triagePayload = {
+      symptoms: payloadSymptoms,
+      description: problemDescription.trim(),
+      duration_days: durationDays,
+    }
 
-      if (onNavigate) {
+    try {
+      let result = null
+
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        // Fast-path client-side rule evaluation when offline
+        result = runOfflineTriage(triagePayload)
+      } else {
+        try {
+          result = await triageSymptoms(triagePayload)
+        } catch (apiError) {
+          // If server error or dropped connection, seamlessly fallback to offline triage
+          console.warn('Online triage request failed, using offline triage fallback:', apiError)
+          result = runOfflineTriage(triagePayload)
+        }
+      }
+
+      if (onNavigate && result) {
         onNavigate(SCREENS.CARE_GUIDANCE, {
           urgency: result.urgency,
           recommended_care: result.recommended_care,
@@ -86,6 +148,7 @@ export default function Symptoms({ onNavigate }) {
           reportedSymptoms: payloadSymptoms.length > 0 ? payloadSymptoms : (result.symptoms || []),
           problemDescription: problemDescription.trim(),
           duration_days: durationDays,
+          offline: Boolean(result.offline),
         })
       }
     } catch (error) {
@@ -119,6 +182,9 @@ export default function Symptoms({ onNavigate }) {
         }
       />
 
+      {/* Connectivity Alert Banner */}
+      <ConnectivityBanner />
+
       {/* Main Vertically Scrollable Content Area */}
       <main className="symptoms-scrollable-content">
         {/* Screen Title & Subtitle */}
@@ -132,14 +198,36 @@ export default function Symptoms({ onNavigate }) {
           </p>
         </section>
 
-        {/* Problem Description Text Area */}
+        {/* Problem Description Text Area with Regional Voice AI */}
         <section className="symptoms-form-group">
-          <label
-            htmlFor="problemInput"
-            className="symptoms-section-label"
-          >
-            {t('symptoms.describeProblem')}
-          </label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <label
+              htmlFor="problemInput"
+              className="symptoms-section-label"
+              style={{ margin: 0 }}
+            >
+              {t('symptoms.describeProblem')}
+            </label>
+
+            <button
+              type="button"
+              className={`voice-mic-btn ${isListening ? 'listening' : ''} ${isProcessing ? 'processing' : ''}`}
+              onClick={handleMicClick}
+              disabled={isLoading || isProcessing}
+              aria-label={isListening ? t('voice.stopReading') || 'Stop Recording' : t('voice.tapToSpeak') || 'Record Voice'}
+            >
+              <span aria-hidden="true" style={{ fontSize: '15px' }}>
+                {isListening ? '⏹️' : isProcessing ? '⏳' : '🎙️'}
+              </span>
+              <span>
+                {isListening
+                  ? t('voice.listening') || 'Listening...'
+                  : isProcessing
+                  ? t('voice.processing') || 'Processing...'
+                  : t('voice.tapToSpeak') || 'Speak'}
+              </span>
+            </button>
+          </div>
 
           <textarea
             id="problemInput"
@@ -148,8 +236,109 @@ export default function Symptoms({ onNavigate }) {
             value={problemDescription}
             onChange={(e) => setProblemDescription(e.target.value)}
             placeholder={t('symptoms.describePlaceholder')}
-            disabled={isLoading}
+            disabled={isLoading || isProcessing}
           />
+
+          {/* Voice Error Notice */}
+          {voiceError && (
+            <div
+              style={{
+                backgroundColor: '#fff1f2',
+                border: '1px solid #fecdd3',
+                color: '#9f1239',
+                borderRadius: '6px',
+                padding: '8px 12px',
+                marginTop: '8px',
+                fontSize: '12px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <span>⚠️ {voiceError}</span>
+              <button
+                type="button"
+                onClick={resetVoice}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#9f1239',
+                  cursor: 'pointer',
+                  fontWeight: 700,
+                  fontSize: '13px',
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {/* Voice Recognized Review Box ("Did we get this right?") */}
+          {isDone && recognizedTranscript && (
+            <div className="voice-review-card">
+              <div className="voice-review-header">
+                <span className="voice-review-title">
+                  <span aria-hidden="true">{isVoiceDemo ? '🧪' : '🗣️'}</span>
+                  <span>
+                    {isVoiceDemo
+                      ? (t('voice.demoTitle') || 'Demo Sample — Live STT Unconfigured')
+                      : t('voice.reviewTitle') || 'Did we get this right?'}
+                  </span>
+                </span>
+                {isVoiceDemo && (
+                  <span
+                    style={{
+                      fontSize: '10.5px',
+                      backgroundColor: '#fef3c7',
+                      color: '#b45309',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {t('voice.demoBadge') || 'Demo Mode'}
+                  </span>
+                )}
+              </div>
+
+              {isVoiceDemo && (
+                <p
+                  style={{
+                    fontSize: '11.5px',
+                    color: '#92400e',
+                    margin: '4px 0 8px 0',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {t('voice.demoNotice') ||
+                    'Sarvam API key is unconfigured. Showing sample clinical text for testing:'}
+                </p>
+              )}
+
+              <div className="voice-review-text">
+                "{recognizedTranscript}"
+              </div>
+
+              <div className="voice-review-btn-row">
+                <button
+                  type="button"
+                  className="voice-review-apply-btn"
+                  onClick={handleApplyVoiceTranscript}
+                >
+                  {isVoiceDemo
+                    ? (t('voice.useSampleBtn') || 'Use Sample for Demo')
+                    : `✓ ${t('voice.keepTranscript') || 'Use This Description'}`}
+                </button>
+                <button
+                  type="button"
+                  className="voice-review-clear-btn"
+                  onClick={handleClearVoiceTranscript}
+                >
+                  ✕ {t('voice.clearTranscript') || 'Clear'}
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Common Symptoms Selection */}

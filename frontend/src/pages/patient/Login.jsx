@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
-import { SCREENS } from '../../utils/constants'
-import { requestOtp, verifyOtp } from '../../services/api'
+import { SCREENS, isProfileComplete } from '../../utils/constants'
+import { requestOtp, verifyOtp, getMe } from '../../services/api'
 import { useLanguage } from '../../i18n'
 
 export default function Login({ onNavigate, loginData }) {
   const { t } = useLanguage()
-  const [mobileNumber, setMobileNumber] = useState('')
+  const [mobileNumber, setMobileNumber] = useState(loginData?.mobile || '')
   const [showOtpStep, setShowOtpStep] = useState(false)
   const [otpCode, setOtpCode] = useState('')
   const [loading, setLoading] = useState(false)
@@ -58,7 +58,14 @@ export default function Login({ onNavigate, loginData }) {
         onNavigate(SCREENS.ONBOARDING, {
           mobile: cleanMobile,
           registration_token: data.registration_token,
-          returnScreen: loginData?.returnScreen,
+          returnScreen: (
+            loginData?.returnScreen &&
+            loginData.returnScreen !== SCREENS.ONBOARDING &&
+            loginData.returnScreen !== SCREENS.REGISTRATION
+          )
+            ? loginData.returnScreen
+            : SCREENS.HOME,
+          draft: loginData?.draft,
         })
       } else {
         // Existing registered patient -> store session and navigate to destination or Home
@@ -68,8 +75,57 @@ export default function Login({ onNavigate, loginData }) {
         if (data?.patient) {
           localStorage.setItem('patient', JSON.stringify(data.patient))
         }
-        const targetScreen = loginData?.returnScreen || SCREENS.HOME
-        onNavigate(targetScreen, { patient: data?.patient })
+
+        // Fetch the latest patient profile status directly to ensure up-to-date state
+        let activePatient = data?.patient || null
+        try {
+          const freshProfile = await getMe()
+          if (freshProfile) {
+            activePatient = freshProfile
+            localStorage.setItem('patient', JSON.stringify(freshProfile))
+          }
+        } catch {
+          // Gracefully fallback to data.patient
+        }
+
+        const complete = isProfileComplete(activePatient)
+
+        if (!complete) {
+          // Incomplete profile -> navigate to profile completion
+          onNavigate(SCREENS.ONBOARDING, {
+            mobile: cleanMobile,
+            patient: activePatient,
+            draft: {
+              fullName: activePatient?.full_name || '',
+              age: activePatient?.age || '',
+              gender: activePatient?.gender || '',
+              village: activePatient?.village || '',
+              district: activePatient?.district || '',
+              preferredLang: activePatient?.preferred_language || 'en',
+              emergencyContact: activePatient?.emergency_contact || '',
+            },
+            returnScreen: (
+              loginData?.returnScreen &&
+              loginData.returnScreen !== SCREENS.ONBOARDING &&
+              loginData.returnScreen !== SCREENS.REGISTRATION
+            )
+              ? loginData.returnScreen
+              : SCREENS.HOME,
+          })
+        } else {
+          // Complete profile -> navigate to patient homepage (or valid non-auth destination)
+          const targetScreen = (
+            loginData?.returnScreen &&
+            loginData.returnScreen !== SCREENS.ONBOARDING &&
+            loginData.returnScreen !== SCREENS.REGISTRATION &&
+            loginData.returnScreen !== SCREENS.LOGIN &&
+            loginData.returnScreen !== SCREENS.WELCOME
+          )
+            ? loginData.returnScreen
+            : SCREENS.HOME
+
+          onNavigate(targetScreen, { patient: activePatient })
+        }
       }
     } catch (err) {
       setError(err.message || t('auth.verifyFailed'))

@@ -22,17 +22,31 @@ import {
   SchemeDetails,
   MobileClinic,
   Abha,
+  EmergencyFirstAid,
+  Doctors,
 } from './index'
 
-import { SCREENS } from '../../utils/constants'
+
+import { SCREENS, isProfileComplete } from '../../utils/constants'
 import { getMe, clearPatientSession } from '../../services/api'
 import '../../App.css'
 
 export default function PatientApp() {
   const navigate = useNavigate()
-  const [currentScreen, setCurrentScreen] = useState(() => (
-    localStorage.getItem('access_token') ? SCREENS.HOME : SCREENS.WELCOME
-  ))
+  const [currentScreen, setCurrentScreen] = useState(() => {
+    const token = localStorage.getItem('access_token')
+    if (!token) return SCREENS.WELCOME
+    try {
+      const cached = localStorage.getItem('patient')
+      const p = cached ? JSON.parse(cached) : null
+      if (p && !isProfileComplete(p)) {
+        return SCREENS.ONBOARDING
+      }
+    } catch {
+      // fallback
+    }
+    return SCREENS.HOME
+  })
 
   const [patient, setPatient] = useState(() => {
     try {
@@ -43,6 +57,9 @@ export default function PatientApp() {
     }
   })
 
+  const [registrationData, setRegistrationData] = useState(null)
+  const [loginData, setLoginData] = useState(null)
+
   // Verify and refresh patient profile when active session token exists
   useEffect(() => {
     const token = localStorage.getItem('access_token')
@@ -52,6 +69,23 @@ export default function PatientApp() {
           if (data) {
             setPatient(data)
             localStorage.setItem('patient', JSON.stringify(data))
+            if (!isProfileComplete(data)) {
+              setRegistrationData((prev) => ({
+                ...prev,
+                mobile: data.mobile,
+                patient: data,
+                draft: {
+                  fullName: data.full_name || '',
+                  age: data.age || '',
+                  gender: data.gender || '',
+                  village: data.village || '',
+                  district: data.district || '',
+                  preferredLang: data.preferred_language || 'en',
+                  emergencyContact: data.emergency_contact || '',
+                },
+              }))
+              setCurrentScreen(SCREENS.ONBOARDING)
+            }
           }
         })
         .catch((err) => {
@@ -94,12 +128,12 @@ export default function PatientApp() {
   const [selectedScheme, setSelectedScheme] = useState(null)
   const [selectedFacility, setSelectedFacility] = useState(null)
   const [selectedReferral, setSelectedReferral] = useState(null)
+  const [selectedFirstAidTopic, setSelectedFirstAidTopic] = useState(null)
+  const [selectedDoctorSpecialization, setSelectedDoctorSpecialization] = useState('all')
+  const [selectedDoctorFacilityId, setSelectedDoctorFacilityId] = useState(null)
 
   const [triageData, setTriageData] = useState(initialTriageState)
   const [bookingData, setBookingData] = useState(initialBookingState)
-
-  const [registrationData, setRegistrationData] = useState(null)
-  const [loginData, setLoginData] = useState(null)
 
   // ---------------------------------------------------------
   // Navigation handler
@@ -122,11 +156,22 @@ export default function PatientApp() {
       screenId === SCREENS.ONBOARDING ||
       screenId === SCREENS.SCHEMES ||
       screenId === SCREENS.MOBILE_CLINIC ||
-      screenId === SCREENS.ABHA
+      screenId === SCREENS.ABHA ||
+      screenId === SCREENS.EMERGENCY_FIRST_AID ||
+      screenId === SCREENS.DOCTORS
     ) {
       setTriageData(initialTriageState)
     } else if (screenId === SCREENS.HEALTHCARE && !data?.triageData && !triageData.urgency) {
       setTriageData(initialTriageState)
+    }
+
+    if (screenId === SCREENS.EMERGENCY_FIRST_AID) {
+      setSelectedFirstAidTopic(data?.topicId || null)
+    }
+
+    if (screenId === SCREENS.DOCTORS) {
+      setSelectedDoctorSpecialization(data?.specialization || 'all')
+      setSelectedDoctorFacilityId(data?.facilityId || null)
     }
 
     if (data) {
@@ -182,6 +227,53 @@ export default function PatientApp() {
           ...prev,
           ...data,
         }))
+      }
+    }
+
+    // Immediate synchronous access to patient to avoid stale state race conditions
+    const activePatient = data?.patient || (() => {
+      try {
+        const stored = localStorage.getItem('patient')
+        return stored ? JSON.parse(stored) : null
+      } catch {
+        return null
+      }
+    })() || patient
+
+    const token = localStorage.getItem('access_token')
+
+    // Route guard: if authenticated user with complete profile tries to go to onboarding/registration, redirect to home
+    if (
+      token &&
+      activePatient &&
+      isProfileComplete(activePatient) &&
+      (screenId === SCREENS.ONBOARDING || screenId === SCREENS.REGISTRATION)
+    ) {
+      screenId = SCREENS.HOME
+    }
+
+    // Route guard: if authenticated user has incomplete profile and tries to go to home/protected screens, redirect to onboarding
+    if (
+      token &&
+      activePatient &&
+      !isProfileComplete(activePatient) &&
+      (screenId === SCREENS.HOME || screenId === SCREENS.APPOINTMENTS || screenId === SCREENS.HEALTH_JOURNEY || screenId === SCREENS.BOOKING)
+    ) {
+      screenId = SCREENS.ONBOARDING
+      if (!data?.registrationData && !registrationData) {
+        setRegistrationData({
+          mobile: activePatient.mobile,
+          patient: activePatient,
+          draft: {
+            fullName: activePatient.full_name || '',
+            age: activePatient.age || '',
+            gender: activePatient.gender || '',
+            village: activePatient.village || '',
+            district: activePatient.district || '',
+            preferredLang: activePatient.preferred_language || 'en',
+            emergencyContact: activePatient.emergency_contact || '',
+          },
+        })
       }
     }
 
@@ -389,6 +481,29 @@ export default function PatientApp() {
           onNavigate={handleNavigate}
           patient={patient}
           onLogout={handleLogout}
+        />
+      )}
+
+      {/* =====================================================
+          OFFLINE EMERGENCY FIRST AID
+      ===================================================== */}
+
+      {currentScreen === SCREENS.EMERGENCY_FIRST_AID && (
+        <EmergencyFirstAid
+          onNavigate={handleNavigate}
+          initialTopicId={selectedFirstAidTopic}
+        />
+      )}
+
+      {/* =====================================================
+          DOCTOR DIRECTORY
+      ===================================================== */}
+
+      {currentScreen === SCREENS.DOCTORS && (
+        <Doctors
+          onNavigate={handleNavigate}
+          initialSpecialization={selectedDoctorSpecialization}
+          facilityId={selectedDoctorFacilityId}
         />
       )}
 

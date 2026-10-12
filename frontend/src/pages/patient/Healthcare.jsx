@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
@@ -6,6 +6,12 @@ import { SCREENS } from '../../utils/constants'
 import { recommendHospitals, getFacilities, getFacilityQueue } from '../../services/api'
 import { formatQueueLastUpdated, getUserLocation } from '../../utils'
 import { useTranslation } from '../../i18n'
+import {
+  getLocalizedFacilityName,
+  getLocalizedDistrict,
+  getLocalizedClusterTitle,
+} from '../../utils/hospitalLocalization'
+import { discoverNearbyHospitalsAndClusters } from '../../utils/clustering'
 
 function formatFacilityType(type, t) {
   switch (type) {
@@ -110,6 +116,8 @@ export default function Healthcare({ onNavigate, triageData }) {
     message: 'Finding healthcare facilities near you...',
     error: null,
   })
+  const [userCoords, setUserCoords] = useState(null)
+  const [discoveryMode, setDiscoveryMode] = useState('ranked') // 'ranked' | 'clusters'
   const [locationRefreshKey, setLocationRefreshKey] = useState(0)
   const [isRefreshingQueues, setIsRefreshingQueues] = useState(false)
 
@@ -181,13 +189,19 @@ export default function Healthcare({ onNavigate, triageData }) {
       try {
         userLocation = await getUserLocation()
         if (isMounted) {
+          const hasGps = Boolean(userLocation?.isGps && typeof userLocation?.latitude === 'number' && typeof userLocation?.longitude === 'number')
           setLocationState({
-            usingGps: Boolean(userLocation.isGps),
-            message: userLocation.isGps
+            usingGps: hasGps,
+            message: hasGps
               ? 'Using your device GPS location'
               : 'Using village location (GPS unavailable)',
-            error: userLocation.error || null,
+            error: userLocation?.error || null,
           })
+          if (hasGps) {
+            setUserCoords({ latitude: userLocation.latitude, longitude: userLocation.longitude })
+          } else {
+            setUserCoords(null)
+          }
         }
       } catch (locErr) {
         if (isMounted) {
@@ -196,6 +210,7 @@ export default function Healthcare({ onNavigate, triageData }) {
             message: 'Using village location (GPS unavailable)',
             error: locErr.message,
           })
+          setUserCoords(null)
         }
       }
 
@@ -235,6 +250,9 @@ export default function Healthcare({ onNavigate, triageData }) {
                 name: item.hospital_name || fac.name || 'Healthcare Facility',
                 category: formatFacilityType(item.facility_type || fac.type, t),
                 type: item.facility_type || fac.type || 'PRIMARY_HEALTH_CENTRE',
+                latitude: typeof item.latitude === 'number' ? item.latitude : (typeof fac.latitude === 'number' ? fac.latitude : null),
+                longitude: typeof item.longitude === 'number' ? item.longitude : (typeof fac.longitude === 'number' ? fac.longitude : null),
+                district: item.district || fac.district || null,
                 distance: distanceKm,
                 distance_km: item.distance_km,
                 services: serviceNames,
@@ -264,6 +282,9 @@ export default function Healthcare({ onNavigate, triageData }) {
                     name: fac.name,
                     category: formatFacilityType(fac.type, t),
                     type: fac.type,
+                    latitude: typeof fac.latitude === 'number' ? fac.latitude : null,
+                    longitude: typeof fac.longitude === 'number' ? fac.longitude : null,
+                    district: fac.district || null,
                     distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
                     services: (fac.services && fac.services.length > 0)
                       ? fac.services.map((s) => s.name || s)
@@ -298,6 +319,9 @@ export default function Healthcare({ onNavigate, triageData }) {
                     name: fac.name,
                     category: formatFacilityType(fac.type, t),
                     type: fac.type,
+                    latitude: typeof fac.latitude === 'number' ? fac.latitude : null,
+                    longitude: typeof fac.longitude === 'number' ? fac.longitude : null,
+                    district: fac.district || null,
                     distance: typeof fac.distance_km === 'number' ? `${fac.distance_km.toFixed(1)} km` : 'Local Area',
                     services: (fac.services && fac.services.length > 0)
                       ? fac.services.map((s) => s.name || s)
@@ -335,6 +359,14 @@ export default function Healthcare({ onNavigate, triageData }) {
       isMounted = false
     }
   }, [triageData, locationRefreshKey, t])
+
+  // Density-Based Spatial Clustering (DBSCAN) & nearby discovery
+  const clusteringResult = useMemo(() => {
+    return discoverNearbyHospitalsAndClusters(facilities, userCoords, {
+      epsKm: 25.0,
+      minPts: 2,
+    })
+  }, [facilities, userCoords])
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -494,7 +526,69 @@ export default function Healthcare({ onNavigate, triageData }) {
               </button>
             )}
           </div>
+
+          {/* Facility / Doctor View Switcher (Phase 4) */}
+          <div className="healthcare-view-switch-row" role="tablist" aria-label="Healthcare directory views">
+            <button
+              type="button"
+              role="tab"
+              aria-selected="true"
+              className="healthcare-view-tab active"
+            >
+              🏥 {t('healthcare.facilitiesTab') || 'Healthcare Centres'}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected="false"
+              className="healthcare-view-tab"
+              onClick={() => onNavigate && onNavigate(SCREENS.DOCTORS)}
+            >
+              👨‍⚕️ {t('healthcare.doctorsTab') || 'Doctor Directory'}
+            </button>
+          </div>
+
+          {/* DBSCAN Clustering vs Ranked Discovery Mode Switcher */}
+          <div className="healthcare-discovery-mode-bar" role="tablist" aria-label="Spatial discovery mode">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={discoveryMode === 'ranked'}
+              className={`discovery-mode-btn ${discoveryMode === 'ranked' ? 'active' : ''}`}
+              onClick={() => setDiscoveryMode('ranked')}
+            >
+              📍 {t('healthcare.nearestTab') || 'Nearby Ranked Hospitals'}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={discoveryMode === 'clusters'}
+              className={`discovery-mode-btn ${discoveryMode === 'clusters' ? 'active' : ''}`}
+              onClick={() => setDiscoveryMode('clusters')}
+            >
+              🌐 {t('healthcare.clustersTab') || 'Hospital Clusters (DBSCAN)'}
+            </button>
+          </div>
         </section>
+
+        {/* Demo Data Notice */}
+        <div className="healthcare-demo-badge" style={{ background: '#fffbeb', border: '1px solid #fef3c7', borderRadius: '8px', padding: '6px 12px', margin: '0 16px 12px', fontSize: '12px', color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span>ℹ️</span>
+          <span>{t('healthcare.demoDataNotice') || 'Demonstration Dataset'} — Tamil Nadu Healthcare Facilities</span>
+        </div>
+
+        {/* Location Permission Denied / GPS Unavailable Callout */}
+        {!locationState.usingGps && (
+          <div className="location-denied-callout" style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '8px', padding: '10px 14px', margin: '0 16px 14px', fontSize: '13px', color: '#475569' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#334155' }}>
+              <span>📍</span>
+              <span>{t('healthcare.locationPermissionDenied') || 'Location access off / GPS unavailable. Showing all regional clusters.'}</span>
+            </div>
+            <p style={{ margin: '4px 0 0 24px', fontSize: '12px', color: '#64748b' }}>
+              {t('healthcare.locationDeniedDesc') || 'Device GPS is unavailable or permission was not granted. Displaying Tamil Nadu healthcare facilities and regional clusters without fabricated distance.'}
+            </p>
+          </div>
+        )}
 
         {errorMessage && (
           <div className="healthcare-error-banner">
@@ -506,16 +600,148 @@ export default function Healthcare({ onNavigate, triageData }) {
           <div className="healthcare-loading-state">
             <p>{t('common.loading')}</p>
           </div>
+        ) : discoveryMode === 'clusters' ? (
+          /* DBSCAN Hospital Clusters View */
+          <div className="suitable-facilities-list" style={{ padding: '0 16px 16px' }}>
+            <div className="dbscan-clusters-container">
+              <div className="dbscan-intro-card" style={{ background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '10px', padding: '12px 14px' }}>
+                <h2 style={{ margin: '0 0 4px', fontSize: '15px', color: '#0369a1', fontWeight: 700 }}>
+                  🌐 {t('healthcare.clustersTitle') || 'Nearby Healthcare Clusters'}
+                </h2>
+                <p style={{ margin: 0, fontSize: '12px', color: '#0284c7' }}>
+                  {t('healthcare.clustersSubtitle') || 'Density-based spatial clusters (DBSCAN) prioritizing facilities near you'}
+                </p>
+              </div>
+
+              {clusteringResult.clusters.length === 0 ? (
+                <p style={{ color: '#64748b', fontSize: '13px', fontStyle: 'italic' }}>
+                  {t('healthcare.noFacilitiesFound')}
+                </p>
+              ) : (
+                clusteringResult.clusters.map((cluster) => {
+                  const clusterTitle = getLocalizedClusterTitle(cluster, t)
+                  return (
+                    <article key={cluster.id} className="dbscan-cluster-card">
+                      <div className="cluster-card-header">
+                        <div className="cluster-title-row">
+                          <h3 className="cluster-heading">🏥 {clusterTitle}</h3>
+                          <span className="cluster-count-badge">
+                            {cluster.count} {t('healthcare.facilitiesTab') || 'Hospitals'}
+                          </span>
+                        </div>
+                        <div className="cluster-meta-chips">
+                          <span className="cluster-meta-chip">
+                            📍 {getLocalizedDistrict(cluster.district, t)}
+                          </span>
+                          <span className="cluster-meta-chip">
+                            📐 {t('healthcare.clusterRadius', { radius: cluster.radiusKm.toFixed(1) }) || `Radius: ${cluster.radiusKm.toFixed(1)} km`}
+                          </span>
+                          {typeof cluster.distanceToUserKm === 'number' && (
+                            <span className="cluster-meta-chip" style={{ background: '#ecfdf5', borderColor: '#a7f3d0', color: '#065f46', fontWeight: 600 }}>
+                              🚶 {t('healthcare.clusterDistanceToYou', { distance: `${cluster.distanceToUserKm.toFixed(1)} km` }) || `${cluster.distanceToUserKm.toFixed(1)} km away`}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="cluster-facilities-group">
+                        {cluster.facilities.map((fac) => (
+                          <div key={fac.id} className="cluster-facility-row">
+                            <div className="cluster-facility-info">
+                              <h4 className="cluster-facility-title">{getLocalizedFacilityName(fac.name, t)}</h4>
+                              <p className="cluster-facility-type-text">
+                                {fac.category || formatFacilityType(fac.type, t)} · {getLocalizedDistrict(fac.district, t)}
+                              </p>
+                            </div>
+                            <div className="cluster-facility-actions">
+                              {typeof fac.distanceToUserKm === 'number' && (
+                                <span className="cluster-facility-dist-pill">
+                                  {fac.distanceToUserKm.toFixed(1)} {t('common.km') || 'km'}
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                className="cluster-view-btn"
+                                onClick={() => handleSelectFacility(fac)}
+                                aria-label={`View details for ${fac.name}`}
+                              >
+                                {t('healthcare.viewAvailabilityAndBook') || 'Select'}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </article>
+                  )
+                })
+              )}
+
+              {/* Individual & Rural Outlier Facilities (Unclustered by DBSCAN) */}
+              {clusteringResult.unclustered.length > 0 && (
+                <section className="unclustered-section-box">
+                  <h3 className="unclustered-section-title">
+                    🏔️ {t('healthcare.unclusteredTitle') || 'Individual & Rural Outlier Facilities'}
+                  </h3>
+                  <p className="unclustered-section-sub">
+                    {t('healthcare.unclusteredSubtitle') || 'Facilities outside high-density clusters providing standalone rural care'}
+                  </p>
+
+                  <div className="unclustered-grid">
+                    {clusteringResult.unclustered.map((fac) => (
+                      <div key={fac.id} className="unclustered-facility-card">
+                        <div className="cluster-facility-info">
+                          <h4 className="cluster-facility-title">{getLocalizedFacilityName(fac.name, t)}</h4>
+                          <p className="cluster-facility-type-text">
+                            {fac.category || formatFacilityType(fac.type, t)} · {getLocalizedDistrict(fac.district, t)}
+                          </p>
+                          <span className="standalone-badge">
+                            {t('healthcare.standaloneBadge') || 'Standalone Facility'}
+                          </span>
+                        </div>
+                        <div className="cluster-facility-actions">
+                          {typeof fac.distanceToUserKm === 'number' && (
+                            <span className="cluster-facility-dist-pill">
+                              {fac.distanceToUserKm.toFixed(1)} {t('common.km') || 'km'}
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            className="cluster-view-btn"
+                            style={{ backgroundColor: '#b45309' }}
+                            onClick={() => handleSelectFacility(fac)}
+                            aria-label={`View details for ${fac.name}`}
+                          >
+                            {t('healthcare.viewAvailabilityAndBook') || 'Select'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Missing Coordinates Section */}
+              {clusteringResult.missingCoordinates.length > 0 && (
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '10px 14px', marginTop: '12px', fontSize: '12px', color: '#64748b' }}>
+                  <strong>⚠️ {t('healthcare.missingCoordsTitle') || 'Facilities with Missing Coordinates'}:</strong>{' '}
+                  {clusteringResult.missingCoordinates.map((f) => getLocalizedFacilityName(f.name, t)).join(', ')}
+                </div>
+              )}
+            </div>
+          </div>
         ) : (
-          /* Facility Cards List */
+          /* Facility Cards List (Ranked Discovery View) */
           <div className="suitable-facilities-list">
-            {facilities.map((fac, idx) => (
+            {(clusteringResult.nearestHospitals.length > 0 ? clusteringResult.nearestHospitals : facilities).map((fac, idx) => (
               <article key={fac.id || idx} className="suitable-facility-card">
                 {/* Header: Facility Name and Location / Distance Badge */}
                 <div className="facility-header-row">
                   <div className="facility-identity">
-                    <h2 className="facility-title">{fac.name}</h2>
-                    <p className="facility-category">{fac.category}</p>
+                    <h2 className="facility-title">{getLocalizedFacilityName(fac.name, t)}</h2>
+                    <p className="facility-category">
+                      {fac.category}
+                      {fac.district ? ` · ${getLocalizedDistrict(fac.district, t)}` : ''}
+                    </p>
                   </div>
                   <div className={`distance-badge ${idx === 0 ? 'distance-primary' : 'distance-secondary'}`}>
                     <svg
@@ -533,7 +759,11 @@ export default function Healthcare({ onNavigate, triageData }) {
                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                       <circle cx="12" cy="10" r="3" />
                     </svg>
-                    <span>{fac.distance}</span>
+                    <span>
+                      {typeof fac.distanceToUserKm === 'number'
+                        ? `${fac.distanceToUserKm.toFixed(1)} ${t('common.km') || 'km'}`
+                        : (fac.distance || (fac.district ? getLocalizedDistrict(fac.district, t) : 'Local Area'))}
+                    </span>
                   </div>
                 </div>
 
@@ -613,14 +843,24 @@ export default function Healthcare({ onNavigate, triageData }) {
                   </p>
                 </div>
 
-                {/* Action Button */}
-                <button
-                  type="button"
-                  className={idx === 0 ? 'facility-solid-btn' : 'facility-outline-btn'}
-                  onClick={() => handleSelectFacility(fac)}
-                >
-                  {t('healthcare.viewAvailabilityAndBook')}
-                </button>
+                {/* Action Buttons */}
+                <div className="facility-card-actions-col">
+                  <button
+                    type="button"
+                    className={idx === 0 ? 'facility-solid-btn' : 'facility-outline-btn'}
+                    onClick={() => handleSelectFacility(fac)}
+                  >
+                    {t('healthcare.viewAvailabilityAndBook')}
+                  </button>
+                  <button
+                    type="button"
+                    className="facility-doctors-link-btn"
+                    onClick={() => onNavigate && onNavigate(SCREENS.DOCTORS, { facilityId: fac.id })}
+                    aria-label={`View doctors on duty at ${fac.name}`}
+                  >
+                    👨‍⚕️ {t('healthcare.viewFacilityDoctors') || 'View Doctors on Duty'}
+                  </button>
+                </div>
               </article>
             ))}
           </div>

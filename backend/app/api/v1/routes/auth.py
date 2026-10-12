@@ -164,7 +164,16 @@ async def get_me(
 
     Requires Bearer token with 'PATIENT' role.
     """
+    profile_complete = bool(
+        patient.full_name
+        and len(patient.full_name.strip()) >= 2
+        and (
+            (patient.district and patient.district.strip())
+            or (patient.village and patient.village.strip())
+        )
+    )
     patient_data = AuthenticatedPatient.model_validate(patient).model_dump()
+    patient_data["is_profile_complete"] = profile_complete
     return success_response(
         data=patient_data,
         message="Authenticated patient profile",

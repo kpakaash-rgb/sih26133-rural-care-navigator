@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
+import ConnectivityBanner from '../../components/ConnectivityBanner'
 import { SCREENS } from '../../utils/constants'
 import { sendCareSummarySMS } from '../../services/api'
 import { useTranslation } from '../../i18n'
+import { getLocalizedFacilityName } from '../../utils/hospitalLocalization'
 
 function formatTime(timeStr) {
   if (!timeStr) return ''
@@ -35,9 +37,11 @@ function formatFacilityType(type, t) {
 }
 
 export default function AppointmentConfirmed({ onNavigate, bookingData }) {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   const [isSendingSms, setIsSendingSms] = useState(false)
   const [smsStatus, setSmsStatus] = useState(null)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const isTtsSupported = typeof window !== 'undefined' && 'speechSynthesis' in window
 
   const handleSosClick = () => {
     window.location.href = 'tel:108'
@@ -51,7 +55,7 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
 
   const handleGetDirections = () => {
     const query = encodeURIComponent(
-      (appointmentDetails.facility || 'PHC Malshiras') + ', Solapur'
+      (appointmentDetails.facility || 'PHC Thirukazhukundram') + ', Tamil Nadu'
     )
     window.open(`https://maps.google.com/?q=${query}`, '_blank')
   }
@@ -62,21 +66,51 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
     }
   }
 
+  const isOfflineSaved = Boolean(bookingData?.status === 'saved_offline' || bookingData?.isOfflineSaved)
   const appt = bookingData?.createdAppointment
   const rawDate = appt?.appointment_date || bookingData?.dateRaw || bookingData?.date || 'Scheduled Date'
 
   const appointmentDetails = {
-    id: appt?.id || bookingData?.appointmentId,
+    id: appt?.id || bookingData?.appointmentId || bookingData?.offlineQueueId,
     facility: appt?.facility_name || appt?.facility?.name || bookingData?.facility || 'Healthcare Facility',
     facilityId: appt?.facility_id || bookingData?.facilityId,
     facilityType: appt?.facility?.type ? formatFacilityType(appt.facility.type, t) : 'Primary Health Centre',
     service: appt?.service_name || appt?.service?.name || bookingData?.service || 'General Medicine',
+    doctorName: bookingData?.doctorName || 'Dr. R. Karthik',
+    doctorSpecialization: bookingData?.doctorSpecialization || bookingData?.service || 'General Medicine',
+    doctorRoom: bookingData?.doctorRoom || 'OPD-1',
     type: bookingData?.type || 'In-person',
     date: rawDate,
     time: appt?.start_time
       ? `${formatTime(appt.start_time)} - ${formatTime(appt.end_time)}`
       : bookingData?.time || 'Scheduled Slot',
-    status: appt?.status || 'SCHEDULED',
+    status: isOfflineSaved ? 'SAVED_OFFLINE' : (appt?.status || 'SCHEDULED'),
+  }
+
+  const handleToggleSpeech = () => {
+    if (!isTtsSupported) return
+    if (isSpeaking) {
+      window.speechSynthesis.cancel()
+      setIsSpeaking(false)
+      return
+    }
+
+    window.speechSynthesis.cancel()
+    const confirmationText = `${t('appointmentConfirmed.title')}. ${appointmentDetails.facility}. ${appointmentDetails.doctorName}. ${appointmentDetails.date}, ${appointmentDetails.time}. ${t('appointmentConfirmed.instructions')}`
+    const utterance = new SpeechSynthesisUtterance(confirmationText)
+    const langCode =
+      language === 'ta'
+        ? 'ta-IN'
+        : language === 'hi'
+        ? 'hi-IN'
+        : language === 'mr'
+        ? 'mr-IN'
+        : 'en-IN'
+    utterance.lang = langCode
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+    window.speechSynthesis.speak(utterance)
   }
 
   const handleSendSms = async () => {
@@ -112,27 +146,68 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
 
+      {/* Connectivity Banner */}
+      <ConnectivityBanner />
+
       {/* Main Vertically Scrollable Content */}
       <main className="confirmed-scrollable-content">
         {/* Confirmation Hero Section */}
-        <section className="confirmed-hero-section">
-          <div className="confirmed-badge-box" aria-hidden="true">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#ffffff"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+        {isOfflineSaved ? (
+          <section className="confirmed-hero-section">
+            <div
+              className="confirmed-badge-box"
+              style={{ backgroundColor: '#d97706', boxShadow: '0 4px 14px rgba(217, 119, 6, 0.3)' }}
+              aria-hidden="true"
             >
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-          </div>
-          <h1 className="confirmed-main-title">{t('appointmentConfirmed.title')}</h1>
-          <p className="confirmed-subtitle">{t('appointmentConfirmed.successMsg')}</p>
-        </section>
+              <span style={{ fontSize: '26px' }}>💾</span>
+            </div>
+            <h1 className="confirmed-main-title">
+              {t('offlineQueue.savedOfflineTitle') || 'Saved Offline on Device'}
+            </h1>
+            <p className="confirmed-subtitle">
+              {t('offlineQueue.savedOfflineDesc') ||
+                'Your consultation request has been stored safely on your phone. It will be sent automatically when you reconnect to the internet.'}
+            </p>
+
+            {/* Offline warning notice */}
+            <div
+              style={{
+                backgroundColor: '#fffbeb',
+                border: '1.5px solid #fde68a',
+                borderRadius: '10px',
+                padding: '10px 14px',
+                marginTop: '12px',
+                color: '#92400e',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                lineHeight: 1.45,
+                textAlign: 'left',
+              }}
+            >
+              ⚠️ {t('offlineQueue.notConfirmedNotice') ||
+                'Saved on this device only. This consultation is NOT yet confirmed by the healthcare facility.'}
+            </div>
+          </section>
+        ) : (
+          <section className="confirmed-hero-section">
+            <div className="confirmed-badge-box" aria-hidden="true">
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h1 className="confirmed-main-title">{t('appointmentConfirmed.title')}</h1>
+            <p className="confirmed-subtitle">{t('appointmentConfirmed.successMsg')}</p>
+          </section>
+        )}
 
         {/* Appointment Summary Card */}
         <article className="confirmed-summary-card">
@@ -147,7 +222,7 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
                     <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </span>
-                <h2 className="confirmed-facility-name">{appointmentDetails.facility}</h2>
+                <h2 className="confirmed-facility-name">{getLocalizedFacilityName(appointmentDetails.facility, t)}</h2>
               </div>
               {appointmentDetails.id && (
                 <span
@@ -272,6 +347,23 @@ export default function AppointmentConfirmed({ onNavigate, bookingData }) {
 
         {/* Action Buttons Section */}
         <section className="confirmed-actions-group">
+          {/* Accessibility TTS: Read Confirmation Aloud */}
+          {isTtsSupported && (
+            <button
+              type="button"
+              className={`confirmed-read-aloud-btn ${isSpeaking ? 'speaking' : ''}`}
+              onClick={handleToggleSpeech}
+              aria-label={isSpeaking ? (t('appointmentConfirmed.stopReading') || 'Stop Reading') : (t('appointmentConfirmed.readAloud') || 'Read Confirmation Aloud')}
+            >
+              <span aria-hidden="true">{isSpeaking ? '🔊' : '🗣️'}</span>
+              <span>
+                {isSpeaking
+                  ? t('appointmentConfirmed.stopReading') || 'Stop Reading'
+                  : t('appointmentConfirmed.readAloud') || 'Read Confirmation Aloud'}
+              </span>
+            </button>
+          )}
+
           {/* SMS Action: Send details via SMS */}
           <button
             type="button"

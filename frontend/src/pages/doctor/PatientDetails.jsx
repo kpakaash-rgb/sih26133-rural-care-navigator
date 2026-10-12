@@ -105,13 +105,11 @@ export default function PatientDetails({
           </button>
           <div className="header-brand">
             <img
-              src="/mythri-icon.png"
-              alt="Mythri"
-              width="22"
-              height="22"
-              style={{ objectFit: 'contain', borderRadius: '4px' }}
+              src="/images/nalam-connect-logo.png"
+              alt="Nalam Connect"
+              style={{ width: '48px', height: '28px', objectFit: 'contain' }}
             />
-            <span>Mythri</span>
+            <span>Nalam Connect</span>
           </div>
         </div>
         <div className="header-actions">
@@ -154,7 +152,7 @@ export default function PatientDetails({
                 </span>
               </div>
               <p className="text-sm text-gray-500 mb-1">
-                {patient?.patient_code || `Patient #${patient?.id}`} • {patient?.village || 'Solapur Rural'}
+                {patient?.patient_code || `Patient #${patient?.id}`} • {patient?.village || 'Chengalpattu Rural'}
               </p>
               {patient?.mobile && (
                 <p className="text-sm text-gray-700 flex items-center gap-1.5 font-medium">

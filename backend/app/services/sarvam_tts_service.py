@@ -19,8 +19,11 @@ from __future__ import annotations
 
 import base64
 from dataclasses import dataclass
+import io
 import logging
-from typing import Any, Dict, Optional
+import re
+from typing import Any, Dict, List, Optional
+import wave
 
 import httpx
 
@@ -138,12 +141,16 @@ class SarvamTTSService:
             raise TTSError("Voice response is temporarily unavailable.")
 
         payload: Dict[str, Any] = {
+            "inputs": [clean_text],
+            "target_language_code": self.language_code,
             "text": clean_text,
             "language_code": self.language_code,
             "model": self.model,
             "speaker": self.speaker,
             "sample_rate": self.sample_rate,
+            "speech_sample_rate": self.sample_rate,
             "audio_format": self.output_codec,
+            "enable_preprocessing": True,
         }
 
         headers: Dict[str, str] = {

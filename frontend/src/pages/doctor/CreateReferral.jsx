@@ -167,13 +167,11 @@ export default function CreateReferral({ navigate, patientId, appointmentId }) {
           </button>
           <div className="header-brand">
             <img
-              src="/mythri-icon.png"
-              alt="Mythri"
-              width="22"
-              height="22"
-              style={{ objectFit: 'contain', borderRadius: '4px' }}
+              src="/images/nalam-connect-logo.png"
+              alt="Nalam Connect"
+              style={{ width: '48px', height: '28px', objectFit: 'contain' }}
             />
-            <span>Mythri</span>
+            <span>Nalam Connect</span>
           </div>
         </div>
       </header>
@@ -197,7 +195,7 @@ export default function CreateReferral({ navigate, patientId, appointmentId }) {
           <div className="flex-1">
             <h2 className="font-bold text-gray-900 text-base">{patientData?.name || `Patient #${activePatientId}`}</h2>
             <p className="text-xs text-gray-500">
-              {patientData?.patient_code || `ID: #${activePatientId}`} • Age {patientData?.age || 'N/A'} • {patientData?.village || 'Solapur Rural'}
+              {patientData?.patient_code || `ID: #${activePatientId}`} • Age {patientData?.age || 'N/A'} • {patientData?.village || 'Chengalpattu Rural'}
             </p>
           </div>
         </div>

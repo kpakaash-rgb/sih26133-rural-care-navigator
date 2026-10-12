@@ -86,13 +86,11 @@ export default function Appointments({ navigate, _onLogout, openPatient, startCo
       <header className="global-header">
         <div className="header-brand">
           <img
-            src="/mythri-icon.png"
-            alt="Mythri"
-            width="22"
-            height="22"
-            style={{ objectFit: 'contain', borderRadius: '4px' }}
+            src="/images/nalam-connect-logo.png"
+            alt="Nalam Connect"
+            style={{ width: '48px', height: '28px', objectFit: 'contain' }}
           />
-          <span>Mythri</span>
+          <span>Nalam Connect</span>
         </div>
         <div className="header-actions">
           <button 

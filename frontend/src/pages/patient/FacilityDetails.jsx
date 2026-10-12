@@ -3,9 +3,11 @@ import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
-import { getFacilityDetails, getFacilityServices, getFacilityQueue, sendCareSummarySMS } from '../../services/api'
+import { getFacilityDetails, getFacilityServices, getFacilityQueue, getFacilityDoctors, sendCareSummarySMS } from '../../services/api'
+import { DOCTORS_DATA, filterDoctorsOffline } from '../../data/doctorsData'
 import { formatQueueLastUpdated } from '../../utils'
 import { useTranslation } from '../../i18n'
+import { getLocalizedFacilityName } from '../../utils/hospitalLocalization'
 
 function formatFacilityType(type, t) {
   switch (type) {
@@ -29,9 +31,9 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
   const [activeTab, setActiveTab] = useState('services')
   const [facility, setFacility] = useState(() => ({
     id: facilityId || passedFacility?.id || 1,
-    name: passedFacility?.name || 'PHC Malshiras',
+    name: passedFacility?.name || 'PHC Thirukazhukundram',
     category: passedFacility?.category || 'Primary Health Centre',
-    address: passedFacility?.raw?.address || passedFacility?.address || '124 Main Road, Malshiras',
+    address: passedFacility?.raw?.address || passedFacility?.address || 'Thirukazhukundram, Chengalpattu',
   }))
 
   const [services, setServices] = useState([
@@ -39,10 +41,14 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
     { id: 2, name: 'Basic tests', available: true },
     { id: 3, name: 'Medicines', available: true },
   ])
+  const [facilityDoctors, setFacilityDoctors] = useState(() =>
+    filterDoctorsOffline(DOCTORS_DATA, { facilityId: facilityId || passedFacility?.id || 1 })
+  )
   const [queue, setQueue] = useState(null)
   const [isRefreshingQueue, setIsRefreshingQueue] = useState(false)
   const [isSendingSms, setIsSendingSms] = useState(false)
   const [smsStatus, setSmsStatus] = useState(null)
+
 
   const handleSendSms = async () => {
     if (isSendingSms) return
@@ -90,7 +96,8 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
       getFacilityDetails(targetId).catch(() => null),
       getFacilityServices(targetId).catch(() => null),
       getFacilityQueue(targetId).catch(() => null),
-    ]).then(([details, srvs, queueData]) => {
+      getFacilityDoctors(targetId).catch(() => null),
+    ]).then(([details, srvs, queueData, docData]) => {
       if (isMounted) {
         if (details) {
           setFacility({
@@ -106,6 +113,13 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
         }
         if (queueData) {
           setQueue(queueData)
+        }
+        if (Array.isArray(docData) && docData.length > 0) {
+          setFacilityDoctors(docData)
+        } else if (docData?.data && Array.isArray(docData.data) && docData.data.length > 0) {
+          setFacilityDoctors(docData.data)
+        } else {
+          setFacilityDoctors(filterDoctorsOffline(DOCTORS_DATA, { facilityId: targetId }))
         }
       }
     })
@@ -213,7 +227,7 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
         {/* Facility Identity Header Card */}
         <section className="facility-hero-card">
           <div className="facility-hero-header">
-            <h1 className="facility-hero-name">{facility.name}</h1>
+            <h1 className="facility-hero-name">{getLocalizedFacilityName(facility.name, t)}</h1>
             <p className="facility-hero-type">{facility.category}</p>
           </div>
 
@@ -361,6 +375,70 @@ export default function FacilityDetails({ onNavigate, facility: passedFacility, 
                 </span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Doctors on Duty Section (Phase 4) */}
+        <section className="facility-doctors-section" aria-label="Doctors on Duty">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h2 className="facility-section-heading" style={{ margin: 0 }}>
+              👨‍⚕️ {t('facilityDetails.doctorsOnDuty') || 'Doctors on Duty'}
+            </h2>
+            <button
+              type="button"
+              className="facility-view-all-docs-btn"
+              onClick={() => onNavigate && onNavigate(SCREENS.DOCTORS, { facilityId: facility.id })}
+            >
+              {t('facilityDetails.allDoctors') || 'Doctor Directory'} →
+            </button>
+          </div>
+
+          <div className="facility-doctors-grid">
+            {facilityDoctors.length === 0 ? (
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', fontStyle: 'italic' }}>
+                {t('facilityDetails.noDoctorsAssigned') || 'Medical officer roster is active. General OPD available.'}
+              </p>
+            ) : (
+              facilityDoctors.map((doc) => (
+                <div key={doc.id} className="facility-doc-card">
+                  <div className="facility-doc-header">
+                    <div>
+                      <h3 className="facility-doc-name">{doc.name}</h3>
+                      <span className="facility-doc-spec">{doc.specialization}</span>
+                    </div>
+                    {doc.available_today && (
+                      <span className="facility-doc-duty-badge">
+                        <span className="facility-doc-dot" /> On Duty
+                      </span>
+                    )}
+                  </div>
+                  <div className="facility-doc-meta">
+                    <span>⏰ {doc.opd_timings}</span>
+                    <span>🚪 {doc.opd_room}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="facility-doc-book-btn"
+                    onClick={() => {
+                      if (onNavigate) {
+                        onNavigate(SCREENS.AVAILABILITY, {
+                          doctorId: doc.id,
+                          doctorCode: doc.doctor_id,
+                          doctorName: doc.name,
+                          doctorSpecialization: doc.specialization,
+                          doctorRoom: doc.opd_room,
+                          facilityId: facility.id,
+                          facility: facility.name,
+                          service: doc.specialization,
+                        })
+                      }
+                    }}
+                  >
+                    📅 {t('doctors.bookWith') || 'Book with'} {doc.name.split(' ')[1] || doc.name}
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </section>
 

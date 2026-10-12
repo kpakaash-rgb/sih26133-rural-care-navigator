@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import Header from '../../components/Header'
 import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
@@ -8,15 +8,15 @@ import { useLanguage } from '../../i18n'
 export default function Onboarding({ onNavigate, registrationData }) {
   const { t, language, setLanguage } = useLanguage()
 
-  const [fullName, setFullName] = useState('')
-  const [age, setAge] = useState('')
-  const [gender, setGender] = useState('')
-  const [village, setVillage] = useState('')
-  const [district, setDistrict] = useState('')
-  const [preferredLang, setPreferredLang] = useState(language || 'en')
-  const [emergencyContact, setEmergencyContact] = useState('')
-  const [abhaNumber, setAbhaNumber] = useState('')
-  const [hasConsented, setHasConsented] = useState(true)
+  const [fullName, setFullName] = useState(registrationData?.full_name || registrationData?.draft?.fullName || '')
+  const [mobileNumber, setMobileNumber] = useState(registrationData?.mobile || registrationData?.draft?.mobileNumber || '')
+  const [age, setAge] = useState(registrationData?.age || registrationData?.draft?.age || '')
+  const [gender, setGender] = useState(registrationData?.gender || registrationData?.draft?.gender || '')
+  const [village, setVillage] = useState(registrationData?.village || registrationData?.draft?.village || '')
+  const [district, setDistrict] = useState(registrationData?.district || registrationData?.draft?.district || '')
+  const [preferredLang, setPreferredLang] = useState(registrationData?.preferred_language || registrationData?.draft?.preferredLang || language || 'en')
+  const [emergencyContact, setEmergencyContact] = useState(registrationData?.emergency_contact || registrationData?.draft?.emergencyContact || '')
+  const [hasConsented, setHasConsented] = useState(registrationData?.draft?.hasConsented ?? true)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -24,11 +24,38 @@ export default function Onboarding({ onNavigate, registrationData }) {
   const registrationToken = registrationData?.registration_token || null
   const verifiedMobile = registrationData?.mobile || ''
   const isMobileVerified = Boolean(verifiedMobile && registrationToken)
+  const displayMobile = isMobileVerified ? verifiedMobile : mobileNumber
 
   const handleLanguageChange = (langCode) => {
     setPreferredLang(langCode)
     if (setLanguage) {
       setLanguage(langCode)
+    }
+  }
+
+  const handleGoToLogin = () => {
+    if (onNavigate) {
+      onNavigate(SCREENS.LOGIN, {
+        mobile: displayMobile,
+        returnScreen: (
+          registrationData?.returnScreen &&
+          registrationData.returnScreen !== SCREENS.ONBOARDING &&
+          registrationData.returnScreen !== SCREENS.REGISTRATION
+        )
+          ? registrationData.returnScreen
+          : SCREENS.HOME,
+        draft: {
+          fullName,
+          mobileNumber: displayMobile,
+          age,
+          gender,
+          village,
+          district,
+          preferredLang,
+          emergencyContact,
+          hasConsented,
+        },
+      })
     }
   }
 
@@ -47,7 +74,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
       return
     }
 
-    const cleanMobile = verifiedMobile.replace(/\D/g, '')
+    const cleanMobile = (verifiedMobile || mobileNumber).replace(/\D/g, '')
     if (cleanMobile.length !== 10) {
       setError(t('auth.invalidMobile') || 'Please enter a valid 10-digit mobile number.')
       return
@@ -96,7 +123,6 @@ export default function Onboarding({ onNavigate, registrationData }) {
         district: trimmedDistrict,
         preferred_language: preferredLang,
         emergency_contact: cleanEmergencyContact || undefined,
-        abha_number: abhaNumber.trim() || undefined,
         consent: hasConsented,
         registration_token: registrationToken,
       })
@@ -108,7 +134,13 @@ export default function Onboarding({ onNavigate, registrationData }) {
         localStorage.setItem('patient', JSON.stringify(res.patient))
       }
 
-      const nextScreen = registrationData?.returnScreen || SCREENS.HOME
+      const nextScreen = (
+        registrationData?.returnScreen &&
+        registrationData.returnScreen !== SCREENS.ONBOARDING &&
+        registrationData.returnScreen !== SCREENS.REGISTRATION
+      )
+        ? registrationData.returnScreen
+        : SCREENS.HOME
       onNavigate(nextScreen, { patient: res?.patient })
     } catch (err) {
       setError(err.message || 'Profile creation failed. Please check all details and try again.')
@@ -181,7 +213,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
             </p>
             <button
               type="button"
-              onClick={() => onNavigate(SCREENS.LOGIN)}
+              onClick={handleGoToLogin}
               style={{
                 alignSelf: 'flex-start',
                 background: '#D97706',
@@ -245,11 +277,11 @@ export default function Onboarding({ onNavigate, registrationData }) {
                   if (error) setError(null)
                 }}
                 required
-                disabled={loading || !isMobileVerified}
+                disabled={loading}
               />
             </div>
 
-            {/* Mobile Number (Read-only / Verified) */}
+            {/* Mobile Number */}
             <div className="form-field-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <label htmlFor="onbMobile" className="form-field-label">
@@ -276,14 +308,22 @@ export default function Onboarding({ onNavigate, registrationData }) {
                 id="onbMobile"
                 type="tel"
                 className="reg-text-input"
-                value={verifiedMobile}
-                readOnly
-                disabled
+                placeholder={t('auth.enterMobilePlaceholder')}
+                value={displayMobile}
+                onChange={(e) => {
+                  if (!isMobileVerified) {
+                    setMobileNumber(e.target.value)
+                    if (error) setError(null)
+                  }
+                }}
+                maxLength={10}
+                readOnly={isMobileVerified}
+                disabled={loading}
                 style={{
-                  backgroundColor: '#F8FAFC',
-                  color: '#475569',
-                  fontWeight: 600,
-                  cursor: 'not-allowed',
+                  backgroundColor: isMobileVerified ? '#F8FAFC' : '#FFFFFF',
+                  color: isMobileVerified ? '#475569' : '#0F172A',
+                  fontWeight: isMobileVerified ? 600 : 400,
+                  cursor: isMobileVerified ? 'default' : 'text',
                 }}
               />
             </div>
@@ -307,7 +347,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                     if (error) setError(null)
                   }}
                   required
-                  disabled={loading || !isMobileVerified}
+                  disabled={loading}
                 />
               </div>
 
@@ -323,7 +363,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                     setGender(e.target.value)
                     if (error) setError(null)
                   }}
-                  disabled={loading || !isMobileVerified}
+                  disabled={loading}
                   style={{
                     backgroundColor: '#FFFFFF',
                     height: '42px',
@@ -362,7 +402,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                   if (error) setError(null)
                 }}
                 required
-                disabled={loading || !isMobileVerified}
+                disabled={loading}
               />
             </div>
 
@@ -382,7 +422,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                   if (error) setError(null)
                 }}
                 required
-                disabled={loading || !isMobileVerified}
+                disabled={loading}
               />
             </div>
           </div>
@@ -397,9 +437,10 @@ export default function Onboarding({ onNavigate, registrationData }) {
             <label className="form-field-label" style={{ marginBottom: '8px' }}>
               {t('auth.prefLanguage')}
             </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
               {[
                 { code: 'en', label: 'English' },
+                { code: 'ta', label: 'தமிழ்' },
                 { code: 'hi', label: 'हिंदी' },
                 { code: 'mr', label: 'मराठी' },
               ].map((lang) => {
@@ -409,7 +450,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                     key={lang.code}
                     type="button"
                     onClick={() => handleLanguageChange(lang.code)}
-                    disabled={loading || !isMobileVerified}
+                    disabled={loading}
                     style={{
                       padding: '10px 6px',
                       borderRadius: '8px',
@@ -452,41 +493,12 @@ export default function Onboarding({ onNavigate, registrationData }) {
                 value={emergencyContact}
                 onChange={(e) => setEmergencyContact(e.target.value)}
                 maxLength={10}
-                disabled={loading || !isMobileVerified}
+                disabled={loading}
               />
             </div>
           </div>
 
-          {/* ABHA Number (Optional) Highlight Card */}
-          <div className="abha-highlight-card">
-            <div className="abha-card-header">
-              <span className="abha-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#15803D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                  <circle cx="8" cy="9" r="2" />
-                  <line x1="13" y1="8" x2="18" y2="8" />
-                  <line x1="13" y1="12" x2="18" y2="12" />
-                </svg>
-              </span>
-              <span className="abha-title">{t('auth.abhaOptional')}</span>
-            </div>
-            <p className="abha-subtext">{t('auth.abhaSubtext')}</p>
-            <input
-              type="text"
-              className="reg-text-input"
-              placeholder={t('auth.abhaPlaceholder')}
-              value={abhaNumber}
-              onChange={(e) => setAbhaNumber(e.target.value)}
-              maxLength={17}
-              disabled={loading || !isMobileVerified}
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderColor: '#86EFAC',
-              }}
-            />
-          </div>
+
 
           {/* SECTION 5 — CONSENT */}
           <div className="registration-section-card">
@@ -496,7 +508,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
                 type="checkbox"
                 checked={hasConsented}
                 onChange={(e) => setHasConsented(e.target.checked)}
-                disabled={loading || !isMobileVerified}
+                disabled={loading}
                 style={{
                   marginTop: '3px',
                   width: '18px',
@@ -516,10 +528,10 @@ export default function Onboarding({ onNavigate, registrationData }) {
           <button
             type="submit"
             className="registration-submit-btn"
-            disabled={loading || !isMobileVerified || !hasConsented}
+            disabled={loading || !hasConsented}
             style={{
-              opacity: loading || !isMobileVerified || !hasConsented ? 0.65 : 1,
-              cursor: loading || !isMobileVerified || !hasConsented ? 'not-allowed' : 'pointer',
+              opacity: loading || !hasConsented ? 0.65 : 1,
+              cursor: loading || !hasConsented ? 'not-allowed' : 'pointer',
             }}
           >
             <span>{loading ? t('auth.creatingProfileBtn') : `${t('auth.createProfileBtn')} →`}</span>
@@ -529,7 +541,7 @@ export default function Onboarding({ onNavigate, registrationData }) {
             <div style={{ textAlign: 'center', marginTop: '4px' }}>
               <button
                 type="button"
-                onClick={() => onNavigate(SCREENS.LOGIN)}
+                onClick={handleGoToLogin}
                 style={{
                   background: 'none',
                   border: 'none',

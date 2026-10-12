@@ -14,7 +14,6 @@ export default function Registration({ onNavigate, registrationData }) {
   const [gender, setGender] = useState('MALE')
   const [village, setVillage] = useState('')
   const [district, setDistrict] = useState('')
-  const [abhaNumber, setAbhaNumber] = useState('')
   const [hasConsented, setHasConsented] = useState(true)
 
   const [loading, setLoading] = useState(false)
@@ -29,42 +28,42 @@ export default function Registration({ onNavigate, registrationData }) {
     setError(null)
 
     if (!isMobileVerified && !registrationToken) {
-      setError('Mobile number must be verified with OTP before completing registration.')
+      setError(t('auth.otpRequiredDesc') || 'Mobile number must be verified with OTP before completing registration.')
       return
     }
 
     const trimmedName = fullName.trim()
     if (!trimmedName || trimmedName.length < 2) {
-      setError('Please enter a valid full name (minimum 2 characters).')
+      setError(t('auth.nameRequired') || 'Please enter a valid full name (minimum 2 characters).')
       return
     }
 
     const cleanMobile = verifiedMobile.replace(/\D/g, '')
     if (cleanMobile.length !== 10) {
-      setError('Please enter a valid 10-digit mobile number.')
+      setError(t('auth.invalidMobile') || 'Please enter a valid 10-digit mobile number.')
       return
     }
 
     const ageNum = parseInt(age, 10)
     if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
-      setError('Please enter a valid age between 1 and 120.')
+      setError(t('auth.invalidAge') || 'Please enter a valid age between 1 and 120.')
       return
     }
 
     const trimmedVillage = village.trim()
     if (!trimmedVillage) {
-      setError('Please enter your village or residential area.')
+      setError(t('auth.villageRequired') || 'Please enter your village or residential area.')
       return
     }
 
     const trimmedDistrict = district.trim()
     if (!trimmedDistrict) {
-      setError('Please enter your district name.')
+      setError(t('auth.districtRequired') || 'Please enter your district name.')
       return
     }
 
     if (!hasConsented) {
-      setError('Consent is required to register for rural healthcare services.')
+      setError(t('auth.consentRequired') || 'Consent is required to register for rural healthcare services.')
       return
     }
 
@@ -77,7 +76,6 @@ export default function Registration({ onNavigate, registrationData }) {
         gender: gender ? gender.trim().toUpperCase().replace(/\s+/g, '_') : undefined,
         village: trimmedVillage,
         district: trimmedDistrict,
-        abha_number: abhaNumber.trim() || undefined,
         consent: hasConsented,
         registration_token: registrationToken,
       })
@@ -187,13 +185,13 @@ export default function Registration({ onNavigate, registrationData }) {
           <div className="form-field-group">
             <label htmlFor="regFullName" className="form-field-label">
               <span className="field-icon" aria-hidden="true">👤</span>
-              <span>Full Name *</span>
+              <span>{t('auth.fullName')} *</span>
             </label>
             <input
               id="regFullName"
               type="text"
               className="reg-text-input"
-              placeholder="e.g. Ramesh Kumar / रमेश कुमार"
+              placeholder={t('auth.fullNamePlaceholder') || 'e.g. Arul Kumar / Priya Selvi'}
               value={fullName}
               onChange={(e) => {
                 setFullName(e.target.value)
@@ -208,13 +206,13 @@ export default function Registration({ onNavigate, registrationData }) {
           <div className="form-field-group">
             <label htmlFor="regMobile" className="form-field-label">
               <span className="field-icon" aria-hidden="true">📱</span>
-              <span>Mobile Number {isMobileVerified ? '(OTP Verified)' : '*'}</span>
+              <span>{t('auth.enterMobile')} {isMobileVerified ? `(${t('auth.verifiedBadge') || 'OTP Verified'})` : '*'}</span>
             </label>
             <input
               id="regMobile"
               type="tel"
               className="reg-text-input"
-              placeholder={t('auth.enterMobilePlaceholder')}
+              placeholder={t('auth.enterMobilePlaceholder') || 'Enter 10-digit mobile number'}
               value={mobileNumber}
               onChange={(e) => {
                 if (!isMobileVerified) setMobileNumber(e.target.value)
@@ -235,7 +233,7 @@ export default function Registration({ onNavigate, registrationData }) {
             <div className="form-field-group">
               <label htmlFor="regAge" className="form-field-label">
                 <span className="field-icon" aria-hidden="true">🎂</span>
-                <span>Age *</span>
+                <span>{t('auth.age')} *</span>
               </label>
               <input
                 id="regAge"
@@ -243,7 +241,7 @@ export default function Registration({ onNavigate, registrationData }) {
                 min="1"
                 max="120"
                 className="reg-text-input"
-                placeholder="Years (1-120)"
+                placeholder={t('auth.agePlaceholder') || 'Age in years (1–120)'}
                 value={age}
                 onChange={(e) => {
                   setAge(e.target.value)
@@ -257,7 +255,7 @@ export default function Registration({ onNavigate, registrationData }) {
             <div className="form-field-group">
               <label htmlFor="regGender" className="form-field-label">
                 <span className="field-icon" aria-hidden="true">⚧</span>
-                <span>Gender (Optional)</span>
+                <span>{t('auth.gender')} ({t('common.optional') || 'Optional'})</span>
               </label>
               <select
                 id="regGender"
@@ -270,11 +268,11 @@ export default function Registration({ onNavigate, registrationData }) {
                 disabled={loading}
                 style={{ backgroundColor: '#fff', height: '42px' }}
               >
-                <option value="">Select (Optional)</option>
-                <option value="MALE">Male / पुरुष</option>
-                <option value="FEMALE">Female / महिला</option>
-                <option value="OTHER">Other / अन्य</option>
-                <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+                <option value="">{t('common.select') || 'Select'} ({t('common.optional') || 'Optional'})</option>
+                <option value="MALE">{t('auth.male')}</option>
+                <option value="FEMALE">{t('auth.female')}</option>
+                <option value="OTHER">{t('auth.other')}</option>
+                <option value="PREFER_NOT_TO_SAY">{t('auth.preferNotToSay')}</option>
               </select>
             </div>
           </div>
@@ -283,13 +281,13 @@ export default function Registration({ onNavigate, registrationData }) {
           <div className="form-field-group">
             <label htmlFor="regVillage" className="form-field-label">
               <span className="field-icon" aria-hidden="true">🏡</span>
-              <span>Village / Area *</span>
+              <span>{t('auth.village')} *</span>
             </label>
             <input
               id="regVillage"
               type="text"
               className="reg-text-input"
-              placeholder="e.g. Malshiras Village / Akluj"
+              placeholder={t('auth.villagePlaceholder') || 'e.g. Melmaruvathur / Uthiramerur / Thirukazhukundram'}
               value={village}
               onChange={(e) => {
                 setVillage(e.target.value)
@@ -304,13 +302,13 @@ export default function Registration({ onNavigate, registrationData }) {
           <div className="form-field-group">
             <label htmlFor="regDistrict" className="form-field-label">
               <span className="field-icon" aria-hidden="true">📍</span>
-              <span>District *</span>
+              <span>{t('auth.district')} *</span>
             </label>
             <input
               id="regDistrict"
               type="text"
               className="reg-text-input"
-              placeholder={t('auth.districtPlaceholder') || 'e.g. Solapur / Pune'}
+              placeholder={t('auth.districtPlaceholder') || 'e.g. Chengalpattu / Kancheepuram / Villupuram'}
               value={district}
               onChange={(e) => {
                 setDistrict(e.target.value)
@@ -321,32 +319,6 @@ export default function Registration({ onNavigate, registrationData }) {
             />
           </div>
 
-          {/* ABHA Number (Optional) Highlight Card */}
-          <div className="abha-highlight-card">
-            <div className="abha-card-header">
-              <span className="abha-icon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                  <circle cx="8" cy="9" r="2" />
-                  <line x1="13" y1="8" x2="18" y2="8" />
-                  <line x1="13" y1="12" x2="18" y2="12" />
-                </svg>
-              </span>
-              <span className="abha-title">{t('auth.abhaOptional')}</span>
-            </div>
-            <p className="abha-subtext">{t('auth.abhaSubtext')}</p>
-            <input
-              type="text"
-              className="reg-text-input abha-input"
-              placeholder={t('auth.abhaPlaceholder')}
-              value={abhaNumber}
-              onChange={(e) => setAbhaNumber(e.target.value)}
-              maxLength={17}
-              disabled={loading}
-            />
-          </div>
 
           {/* Consent Checkbox */}
           <div className="consent-checkbox-row">
@@ -390,7 +362,7 @@ export default function Registration({ onNavigate, registrationData }) {
                 cursor: 'pointer',
               }}
             >
-              Already registered? Login with OTP
+              {t('auth.backToLogin') || 'Already registered? Login with OTP'}
             </button>
           </div>
         </form>

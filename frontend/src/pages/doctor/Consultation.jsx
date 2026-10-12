@@ -125,13 +125,11 @@ export default function Consultation({
           </button>
           <div className="header-brand">
             <img
-              src="/mythri-icon.png"
-              alt="Mythri"
-              width="22"
-              height="22"
-              style={{ objectFit: 'contain', borderRadius: '4px' }}
+              src="/images/nalam-connect-logo.png"
+              alt="Nalam Connect"
+              style={{ width: '48px', height: '28px', objectFit: 'contain' }}
             />
-            <span>Mythri</span>
+            <span>Nalam Connect</span>
           </div>
         </div>
         <div className="header-actions">

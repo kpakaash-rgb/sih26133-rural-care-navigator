@@ -49,18 +49,18 @@ export default function WorkerAppLayout() {
           {/* Logo mark */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{
-              width: 34, height: 34,
-              borderRadius: 8,
+              width: 52, height: 32,
+              borderRadius: 6,
               background: '#FFFFFF',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
-              padding: '3px',
-              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.12)',
+              padding: '2px 4px',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
               boxSizing: 'border-box',
             }}>
               <img
-                src="/mythri-icon.png"
-                alt="Mythri"
+                src="/images/nalam-connect-logo.png"
+                alt="Nalam Connect"
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             </div>

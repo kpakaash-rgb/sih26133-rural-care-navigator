@@ -5,6 +5,7 @@ import SOSButton from '../../components/SOSButton'
 import { SCREENS } from '../../utils/constants'
 import { getFacilityAvailability, getFacilityServices } from '../../services/api'
 import { useTranslation } from '../../i18n'
+import { getLocalizedFacilityName } from '../../utils/hospitalLocalization'
 
 function formatTime(timeStr) {
   if (!timeStr) return ''
@@ -43,7 +44,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
   const [activeTab, setActiveTab] = useState('services')
 
   const facilityId = bookingData?.facilityId || 1
-  const facilityName = bookingData?.facility || 'PHC Malshiras'
+  const facilityName = bookingData?.facility || 'PHC Thirukazhukundram'
 
   // Appointment Type State ('in_person' | 'teleconsultation')
   const [appointmentType, setAppointmentType] = useState(
@@ -246,6 +247,10 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
       type: typeLabel,
       typeKey: appointmentType,
       selectedSlot,
+      doctorId: bookingData?.doctorId || 1,
+      doctorName: bookingData?.doctorName || 'Dr. R. Karthik',
+      doctorSpecialization: bookingData?.doctorSpecialization || selectedService?.name || 'General Medicine',
+      doctorRoom: bookingData?.doctorRoom || 'OPD-1',
     }
 
     if (onUpdateBooking) {
@@ -285,7 +290,7 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
                 <path d="M8 12h8" stroke="#004b87" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </span>
-            <span className="facility-name-text">{facilityName}</span>
+            <span className="facility-name-text">{getLocalizedFacilityName(facilityName, t)}</span>
           </div>
 
           <div className="facility-service-row" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
@@ -339,6 +344,28 @@ export default function Availability({ onNavigate, bookingData, onUpdateBooking 
             )}
           </div>
         </section>
+
+        {/* Attending Doctor Banner (Phase 4) */}
+        {bookingData?.doctorName && (
+          <section className="availability-doctor-pill-card" aria-label="Attending Doctor">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '24px' }} aria-hidden="true">👨‍⚕️</span>
+              <div>
+                <span style={{ fontSize: '11px', color: '#0369a1', textTransform: 'uppercase', fontWeight: 700 }}>
+                  {t('availability.attendingDoctor') || 'Attending Physician'}
+                </span>
+                <h3 style={{ margin: 0, fontSize: '14.5px', color: '#004b87', fontWeight: 700 }}>
+                  {bookingData.doctorName}
+                </h3>
+                <div style={{ display: 'flex', gap: '8px', fontSize: '12px', color: '#475569', marginTop: '2px' }}>
+                  <span>{bookingData.doctorSpecialization || selectedService?.name}</span>
+                  {bookingData.doctorRoom && <span>• 🚪 {bookingData.doctorRoom}</span>}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
 
         {/* Error message */}
         {errorMessage && (

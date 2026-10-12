@@ -49,6 +49,19 @@ class AuthService:
         self.journey_repo = journey_repo
         self.sms_service = sms_service or SMSService()
 
+    def _is_patient_profile_complete(self, patient: Optional[Patient]) -> bool:
+        """Evaluate if the patient profile has all mandatory demographics."""
+        if not patient:
+            return False
+        return bool(
+            patient.full_name
+            and len(patient.full_name.strip()) >= 2
+            and (
+                (patient.district and patient.district.strip())
+                or (patient.village and patient.village.strip())
+            )
+        )
+
     def _hash_otp(self, mobile: str, otp: str) -> str:
         """Generate HMAC-SHA256 hash for OTP."""
         return hmac.new(
@@ -174,9 +187,11 @@ class AuthService:
                 role="PATIENT",
                 extra_claims={"mobile": patient.mobile},
             )
+            profile_complete = self._is_patient_profile_complete(patient)
 
             return {
                 "is_registered": True,
+                "is_profile_complete": profile_complete,
                 "access_token": access_token,
                 "token_type": "bearer",
                 "role": "PATIENT",
@@ -192,6 +207,7 @@ class AuthService:
                     "emergency_contact": patient.emergency_contact,
                     "abha_number": patient.abha_number,
                     "role": "PATIENT",
+                    "is_profile_complete": profile_complete,
                 },
             }
 
@@ -205,6 +221,7 @@ class AuthService:
 
         return {
             "is_registered": False,
+            "is_profile_complete": False,
             "mobile": mobile,
             "registration_token": registration_token,
             "message": "OTP verified successfully. Please complete patient registration.",
@@ -274,6 +291,7 @@ class AuthService:
 
         return {
             "is_registered": True,
+            "is_profile_complete": True,
             "access_token": access_token,
             "token_type": "bearer",
             "role": "PATIENT",
@@ -289,6 +307,7 @@ class AuthService:
                 "emergency_contact": patient.emergency_contact,
                 "abha_number": patient.abha_number,
                 "role": "PATIENT",
+                "is_profile_complete": True,
             },
             "message": "Patient registered successfully",
         }

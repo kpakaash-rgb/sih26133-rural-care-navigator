@@ -29,8 +29,8 @@ export default function Header({
           {showLogo && (
             <div className="header-logo-box">
               <img
-                src="/mythri-icon.png"
-                alt="Mythri"
+                src="/images/nalam-connect-logo.png"
+                alt="Nalam Connect"
                 className="header-logo-icon"
               />
             </div>

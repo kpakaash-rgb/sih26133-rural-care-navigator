@@ -273,3 +273,82 @@ def test_api_triage_emergency_priority(client: TestClient):
     data = response.json()
     assert data["urgency"] == "emergency"
     assert data["emergency"] is True
+
+
+# ==============================================================================
+# 8. POST /api/v1/triage/transcribe Endpoint Tests
+# ==============================================================================
+
+def test_api_triage_transcribe_demo_fallback_tamil(client: TestClient):
+    response = client.post(
+        "/api/v1/triage/transcribe",
+        files={"audio": ("recording.webm", b"dummy audio data for test", "audio/webm")},
+        data={"language": "ta-IN"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["language"] == "ta-IN"
+    assert data["demo_mode"] is True
+    assert "தலைவலி" in data["transcript"] or len(data["transcript"]) > 0
+
+
+def test_api_triage_transcribe_demo_fallback_hindi(client: TestClient):
+    response = client.post(
+        "/api/v1/triage/transcribe",
+        files={"audio": ("recording.webm", b"dummy audio data for test", "audio/webm")},
+        data={"language": "hi"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["language"] == "hi-IN"
+    assert data["demo_mode"] is True
+    assert "सिरदर्द" in data["transcript"] or len(data["transcript"]) > 0
+
+
+def test_api_triage_transcribe_demo_fallback_marathi(client: TestClient):
+    response = client.post(
+        "/api/v1/triage/transcribe",
+        files={"audio": ("recording.webm", b"dummy audio data for test", "audio/webm")},
+        data={"language": "mr-IN"},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["language"] == "mr-IN"
+    assert data["demo_mode"] is True
+    assert "डोकेदुखी" in data["transcript"] or len(data["transcript"]) > 0
+
+
+def test_api_triage_transcribe_empty_audio_fails(client: TestClient):
+    response = client.post(
+        "/api/v1/triage/transcribe",
+        files={"audio": ("empty.webm", b"", "audio/webm")},
+        data={"language": "en-IN"},
+    )
+    assert response.status_code == 400
+    err_text = response.json().get("message", response.json().get("detail", "")).lower()
+    assert "empty" in err_text
+
+
+def test_api_triage_transcribe_mocked_sarvam_success(client: TestClient):
+    from unittest.mock import patch, MagicMock, AsyncMock
+    from backend.app.core.config import settings
+
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {
+        "transcript": "எனக்கு இரண்டு நாட்களாக கடுமையான தலைவலி இருக்கிறது",
+        "language_code": "ta-IN",
+    }
+
+    with patch.object(settings, "SARVAM_API_KEY", "mock_sarvam_key_999"):
+        with patch("httpx.AsyncClient.post", new=AsyncMock(return_value=mock_resp)):
+            response = client.post(
+                "/api/v1/triage/transcribe",
+                files={"audio": ("recording.webm", b"test audio content", "audio/webm")},
+                data={"language": "ta-IN"},
+            )
+            assert response.status_code == 200
+            data = response.json()
+            assert data["transcript"] == "எனக்கு இரண்டு நாட்களாக கடுமையான தலைவலி இருக்கிறது"
+            assert data["demo_mode"] is False
+            assert data["language"] == "ta-IN"

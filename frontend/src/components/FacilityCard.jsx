@@ -1,4 +1,6 @@
 import PrimaryButton from './PrimaryButton'
+import { useTranslation } from '../i18n'
+import { getLocalizedFacilityName } from '../utils/hospitalLocalization'
 
 export default function FacilityCard({
   name = 'Primary Health Centre (PHC)',
@@ -10,12 +12,13 @@ export default function FacilityCard({
   onSelect,
   actionLabel = 'View & Book',
 }) {
+  const { t } = useTranslation()
   return (
     <article className="facility-card">
       <div className="facility-card-header">
         <div>
           <span className="facility-badge">{type}</span>
-          <h3 className="facility-name">{name}</h3>
+          <h3 className="facility-name">{getLocalizedFacilityName(name, t)}</h3>
           <p className="facility-address">{address}</p>
         </div>
         <div className="facility-distance">

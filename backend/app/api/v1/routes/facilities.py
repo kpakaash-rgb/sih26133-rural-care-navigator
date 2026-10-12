@@ -129,3 +129,21 @@ async def get_facility_availability(
         data=slots,
         message="Availability slots retrieved successfully",
     )
+
+
+@router.get("/{facility_id}/doctors", summary="Get doctors stationed at this healthcare facility")
+async def get_facility_doctors(
+    facility_id: int,
+    db: Session = Depends(get_db),
+):
+    """
+    Retrieve doctors and medical officers assigned to or consulting at the specified facility.
+    """
+    from backend.app.services.doctor_directory_service import DoctorDirectoryService
+    service = DoctorDirectoryService(db=db)
+    doctors = service.get_doctors_for_facility(facility_id=facility_id)
+    return success_response(
+        data=doctors,
+        message="Facility doctors retrieved successfully",
+    )
+

@@ -10,12 +10,12 @@ export default function Login({ onLogin }) {
       <header className="brand-header">
         <div className="brand-icon">
           <img
-            src="/mythri-icon.png"
-            alt="Mythri"
+            src="/images/nalam-connect-logo.png"
+            alt="Nalam Connect"
             className="brand-logo-img"
           />
         </div>
-        <h1 className="brand-name">Mythri</h1>
+        <h1 className="brand-name">Nalam Connect</h1>
         <p className="brand-role">Doctor / Healthcare Professional</p>
       </header>
 

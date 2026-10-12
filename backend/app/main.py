@@ -17,6 +17,14 @@ Architecture layers registered here:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# Ensure project root is in sys.path so 'backend.app...' imports work regardless of working directory
+_project_root = str(Path(__file__).resolve().parent.parent.parent)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -78,7 +86,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description=(
-        "Rural Care Navigator API — connecting patients in rural India to "
+        "Nalam Connect API — connecting patients in rural India to "
         "appropriate healthcare pathways via AI-assisted triage, ASHA workers, "
         "and government health schemes."
     ),
@@ -136,5 +144,5 @@ async def root():
             "docs": "/docs" if not settings.is_production else "disabled",
             "health": "/api/v1/health",
         },
-        message="Rural Care Navigator API is running",
+        message="Nalam Connect API is running",
     )

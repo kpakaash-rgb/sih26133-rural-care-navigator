@@ -631,3 +631,72 @@ class TestCORSPreflight:
         assert body["success"] is True
         assert body["data"]["mobile"] == "9876543210"
 
+
+# ──────────────────────────────────────────────────────────────────────────────
+# 16. Profile Completeness Regression Tests
+# ──────────────────────────────────────────────────────────────────────────────
+
+class TestProfileCompletenessRegression:
+    def test_complete_profile_otp_login_returns_is_profile_complete_true(
+        self, client, registered_patient
+    ):
+        """Complete profile patient receives is_registered=True, is_profile_complete=True, and valid session."""
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": registered_patient.mobile})
+        assert req_res.status_code == 200
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+
+        ver_res = client.post(
+            "/api/v1/auth/verify-otp",
+            json={"mobile": registered_patient.mobile, "otp": otp},
+        )
+        assert ver_res.status_code == 200
+        body = ver_res.json()
+        _assert_envelope(body, success=True)
+        assert body["data"]["is_registered"] is True
+        assert body["data"]["is_profile_complete"] is True
+        assert body["data"]["patient"]["is_profile_complete"] is True
+        assert "access_token" in body["data"]
+
+        token = body["data"]["access_token"]
+        me_res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+        assert me_res.status_code == 200
+        me_body = me_res.json()
+        assert me_body["data"]["is_profile_complete"] is True
+        assert me_body["data"]["full_name"] == registered_patient.full_name
+
+    def test_incomplete_profile_otp_login_returns_is_profile_complete_false(
+        self, client, db_session
+    ):
+        """Incomplete profile patient (e.g. IVR intake missing name) receives is_profile_complete=False."""
+        incomplete_mobile = "9988776655"
+        incomplete_patient = Patient(
+            mobile=incomplete_mobile,
+            full_name=None,  # Missing profile demographics
+            district=None,
+        )
+        db_session.add(incomplete_patient)
+        db_session.commit()
+        db_session.refresh(incomplete_patient)
+
+        req_res = client.post("/api/v1/auth/request-otp", json={"mobile": incomplete_mobile})
+        assert req_res.status_code == 200
+        otp = req_res.json()["data"]["demo_otp"] or "123456"
+
+        ver_res = client.post(
+            "/api/v1/auth/verify-otp",
+            json={"mobile": incomplete_mobile, "otp": otp},
+        )
+        assert ver_res.status_code == 200
+        body = ver_res.json()
+        _assert_envelope(body, success=True)
+        assert body["data"]["is_registered"] is True
+        assert body["data"]["is_profile_complete"] is False
+        assert body["data"]["patient"]["is_profile_complete"] is False
+        assert "access_token" in body["data"]
+
+        token = body["data"]["access_token"]
+        me_res = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+        assert me_res.status_code == 200
+        assert me_res.json()["data"]["is_profile_complete"] is False
+
+

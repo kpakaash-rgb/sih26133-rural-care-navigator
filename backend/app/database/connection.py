@@ -36,21 +36,45 @@ def _build_engine():
     """
     Build the SQLAlchemy engine from settings.DATABASE_URL.
     Configured for PostgreSQL with connection pooling and pre-ping validation.
+    Falls back to a local SQLite database in development if PostgreSQL is unreachable.
     """
+    db_url = settings.DATABASE_URL
     engine_kwargs = {
-        "echo": settings.is_development,
+        "echo": False,
     }
 
-    if settings.DATABASE_URL.startswith("postgresql"):
-        engine_kwargs.update({
+    if db_url.startswith("postgresql"):
+        pg_kwargs = {
+            **engine_kwargs,
             "pool_size": 10,
             "max_overflow": 20,
             "pool_pre_ping": True,
             "pool_recycle": 1800,
-        })
+        }
+        test_engine = create_engine(db_url, **pg_kwargs)
+        if settings.is_development:
+            try:
+                with test_engine.connect() as conn:
+                    conn.execute(text("SELECT 1"))
+                return test_engine
+            except Exception as exc:
+                logger.warning(
+                    "PostgreSQL at %s is unreachable in development (%s). "
+                    "Falling back to local SQLite database (sqlite:///rural_care_dev.db).",
+                    db_url,
+                    exc,
+                )
+                return create_engine(
+                    "sqlite:///rural_care_dev.db",
+                    connect_args={"check_same_thread": False},
+                )
+        return test_engine
+
+    if db_url.startswith("sqlite"):
+        engine_kwargs["connect_args"] = {"check_same_thread": False}
 
     return create_engine(
-        settings.DATABASE_URL,
+        db_url,
         **engine_kwargs,
     )
 
@@ -133,12 +157,13 @@ def create_all_tables() -> None:
         Base.metadata.create_all(bind=engine)
         with engine.begin() as conn:
             # Safely ensure newly added columns exist in PostgreSQL if table already existed
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS age INTEGER;"))
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(20);"))
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS village VARCHAR(255);"))
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS facility_id INTEGER;"))
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(20);"))
-            conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS emergency_contact VARCHAR(15);"))
+            if conn.dialect.name == "postgresql":
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS age INTEGER;"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS gender VARCHAR(20);"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS village VARCHAR(255);"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS facility_id INTEGER;"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS preferred_language VARCHAR(20);"))
+                conn.execute(text("ALTER TABLE patients ADD COLUMN IF NOT EXISTS emergency_contact VARCHAR(15);"))
     except Exception as exc:
         logger.warning(
             "Database table creation skipped or database unreachable: %s", exc

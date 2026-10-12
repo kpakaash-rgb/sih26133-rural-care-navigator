@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
 import { translations } from './translations'
 
 export const SUPPORTED_LANGUAGES = [
   { code: 'en', label: 'English', nativeName: 'English' },
+  { code: 'ta', label: 'Tamil', nativeName: 'தமிழ்' },
   { code: 'hi', label: 'Hindi', nativeName: 'हिन्दी' },
   { code: 'mr', label: 'Marathi', nativeName: 'मराठी' },
 ]
@@ -18,7 +19,7 @@ export function LanguageProvider({ children }) {
   const [language, setLanguageState] = useState(() => {
     try {
       const saved = localStorage.getItem('rcn_language')
-      if (saved && (saved === 'en' || saved === 'hi' || saved === 'mr')) {
+      if (saved && (saved === 'en' || saved === 'ta' || saved === 'hi' || saved === 'mr')) {
         return saved
       }
     } catch {
@@ -27,8 +28,14 @@ export function LanguageProvider({ children }) {
     return 'en'
   })
 
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.lang = language
+    }
+  }, [language])
+
   const setLanguage = useCallback((langCode) => {
-    if (langCode === 'en' || langCode === 'hi' || langCode === 'mr') {
+    if (langCode === 'en' || langCode === 'ta' || langCode === 'hi' || langCode === 'mr') {
       setLanguageState(langCode)
       try {
         localStorage.setItem('rcn_language', langCode)

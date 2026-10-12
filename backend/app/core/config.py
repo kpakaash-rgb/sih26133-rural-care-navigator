@@ -47,7 +47,7 @@ class Settings(BaseSettings):
     # ──────────────────────────────────────────────
     # Application metadata
     # ──────────────────────────────────────────────
-    PROJECT_NAME: str = "Rural Care Navigator API"
+    PROJECT_NAME: str = "Nalam Connect API"
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: str = "development"
 
@@ -91,6 +91,7 @@ class Settings(BaseSettings):
     # ──────────────────────────────────────────────
     SARVAM_API_KEY: Optional[str] = None
     SARVAM_STT_MODEL: str = "saaras:v3-realtime"
+    SARVAM_STT_REST_MODEL: str = "saaras:v4"
     SARVAM_STT_LANGUAGE_CODE: str = "en-IN"
     SARVAM_STT_SAMPLE_RATE: int = 8000
     SARVAM_STT_AUDIO_CODEC: str = "pcm_s16le"

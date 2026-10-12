@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Header from '../../components/Header'
 import BottomNav from '../../components/BottomNav'
 import SOSButton from '../../components/SOSButton'
+import ConnectivityBanner from '../../components/ConnectivityBanner'
 import { SCREENS } from '../../utils/constants'
 import { getAppointments } from '../../services/api'
 import { useTranslation } from '../../i18n'
@@ -70,6 +71,8 @@ export default function Home({ onNavigate, patient }) {
         rightAction={<SOSButton label="SOS" icon="▲" onClick={handleSosClick} />}
       />
 
+      <ConnectivityBanner />
+
       {/* Main Scrollable Content Container */}
       <main className="home-scrollable-content">
         {/* Patient Greeting */}
@@ -104,25 +107,63 @@ export default function Home({ onNavigate, patient }) {
           </div>
         </article>
 
-        {/* 2. Emergency / SOS Card */}
-        <article
-          className="home-card emergency-banner-card"
-          onClick={handleSosClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              handleSosClick()
-            }
-          }}
-        >
-          <div className="emergency-card-title-row">
-            <span className="emergency-asterisk" aria-hidden="true">✱</span>
-            <h2 className="emergency-card-title">{t('home.emergencyTitle')}</h2>
-          </div>
-          <span className="emergency-card-sub">{t('common.call108')}</span>
-        </article>
+        {/* 2. Emergency & First Aid Section */}
+        <section className="home-emergency-section" aria-label="Emergency and first aid">
+          <article
+            className="home-card emergency-banner-card"
+            onClick={handleSosClick}
+            role="button"
+            tabIndex={0}
+            aria-label="Call 108 Emergency Ambulance"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                handleSosClick()
+              }
+            }}
+          >
+            <div className="emergency-card-title-row">
+              <span className="emergency-asterisk" aria-hidden="true">✱</span>
+              <h2 className="emergency-card-title">{t('home.emergencyTitle')}</h2>
+            </div>
+            <span className="emergency-card-sub">{t('common.call108')}</span>
+          </article>
+
+          {/* Offline First Aid Guide Entry */}
+          <article
+            className="home-card firstaid-banner-card"
+            onClick={() => onNavigate && onNavigate(SCREENS.EMERGENCY_FIRST_AID)}
+            role="button"
+            tabIndex={0}
+            aria-label="Emergency First Aid Guide"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                if (onNavigate) onNavigate(SCREENS.EMERGENCY_FIRST_AID)
+              }
+            }}
+          >
+            <div className="firstaid-card-content">
+              <div className="firstaid-card-left">
+                <div className="firstaid-card-icon" aria-hidden="true">🩹</div>
+                <div>
+                  <div className="firstaid-card-title-row">
+                    <h2 className="firstaid-card-title">
+                      {t('firstAid.homeCardTitle') || 'Emergency First Aid'}
+                    </h2>
+                    <span className="firstaid-offline-pill">
+                      {t('firstAid.offlineReadyBadge') ? 'Offline ⚡' : 'Offline'}
+                    </span>
+                  </div>
+                  <p className="firstaid-card-sub">
+                    {t('firstAid.homeCardSub') || 'Instant offline life-saving instructions'}
+                  </p>
+                </div>
+              </div>
+              <span className="firstaid-card-arrow" aria-hidden="true">→</span>
+            </div>
+          </article>
+        </section>
 
         {/* 3. Find Healthcare (Primary Action) */}
         <article
@@ -153,7 +194,36 @@ export default function Home({ onNavigate, patient }) {
           </div>
         </article>
 
-        {/* 4-7. Secondary Patient Features (Responsive Grid) */}
+        {/* 4. Doctor Directory Entry Card (Phase 4) */}
+        <article
+          className="home-card doctor-finder-card"
+          onClick={() => onNavigate && onNavigate(SCREENS.DOCTORS)}
+          role="button"
+          tabIndex={0}
+          aria-label={t('home.findDoctors') || 'Find Doctors and Medical Officers'}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              if (onNavigate) onNavigate(SCREENS.DOCTORS)
+            }
+          }}
+        >
+          <div className="doctor-finder-icon" aria-hidden="true">
+            <span style={{ fontSize: '24px' }}>👨‍⚕️</span>
+          </div>
+          <div className="doctor-finder-text">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h2 className="doctor-finder-title">{t('home.findDoctors') || 'Doctor Directory'}</h2>
+              <span className="doctor-finder-pill">On Duty</span>
+            </div>
+            <p className="doctor-finder-sub">
+              {t('home.findDoctorsDesc') || 'Search verified physicians, check OPD hours, and book consultations'}
+            </p>
+          </div>
+          <span className="doctor-finder-arrow" aria-hidden="true">→</span>
+        </article>
+
+        {/* 5-8. Secondary Patient Features (Responsive Grid) */}
         <div className="home-secondary-grid">
           {/* My Appointments Card */}
           <article

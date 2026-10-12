@@ -216,7 +216,7 @@ export default function Abha({ onNavigate, patient, onLogout }) {
         {/* Prototype Feedback Notifications */}
         {healthInfoModal && (
           <div className="abha-notice-box" role="status">
-            <span>ℹ️ Connected Health Records: 2 clinical notes from PHC Malshiras and 1 immunization certificate synced.</span>
+            <span>ℹ️ Connected Health Records: 2 clinical notes from PHC Thirukazhukundram and 1 immunization certificate synced.</span>
           </div>
         )}
         {manageModal && (

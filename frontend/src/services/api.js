@@ -19,7 +19,7 @@
  * - If not provided (local development with Vite proxy), defaults to '/api/v1'
  */
 function getApiBase() {
-  const envUrl = (import.meta.env.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+  const envUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
   if (!envUrl) {
     return '/api/v1';
   }
@@ -291,6 +291,50 @@ export async function triageSymptoms(payload) {
 }
 
 /**
+ * Transcribe patient voice recording into text using backend Sarvam AI service.
+ * @param {Blob|File} audioBlob - Audio recording blob (WebM/WAV/OGG)
+ * @param {string} [languageCode='en-IN'] - Regional language code ('ta-IN', 'hi-IN', 'mr-IN', 'en-IN')
+ * @returns {Promise<{ transcript: string, language: string, demo_mode?: boolean, provider?: string }>}
+ */
+export async function transcribeAudio(audioBlob, languageCode = 'en-IN') {
+  const formData = new FormData();
+  formData.append('audio', audioBlob, 'patient_recording.webm');
+  formData.append('language', languageCode);
+
+  const envUrl = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL || '').trim().replace(/\/+$/, '');
+  const base = envUrl ? (envUrl.endsWith('/api/v1') ? envUrl : `${envUrl}/api/v1`) : '/api/v1';
+
+  const res = await fetch(`${base}/triage/transcribe`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.detail || 'Voice transcription failed');
+  }
+
+  return res.json();
+}
+
+/**
+ * Synthesize text into natural spoken regional language audio via backend Sarvam AI TTS.
+ * @param {{ text: string, language?: string, speaker?: string, sample_rate?: number }} payload
+ * @returns {Promise<{ audio_base64: string, mime_type: string, language: string, sample_rate: number, provider: string }>}
+ */
+export async function synthesizeSpeech(payload) {
+  return apiRequest('/triage/synthesize', {
+    method: 'POST',
+    body: JSON.stringify({
+      text: payload.text,
+      language: payload.language || 'ta-IN',
+      speaker: payload.speaker || null,
+      sample_rate: payload.sample_rate || 8000,
+    }),
+  });
+}
+
+/**
  * Request AI-ranked hospital recommendations based on required services and location.
  * @param {{ required_services?: string[], latitude?: number, longitude?: number, max_results?: number }} payload
  */
@@ -367,6 +411,41 @@ export async function getFacilityAvailability(facilityId, params = {}) {
     ? `/facilities/${facilityId}/availability?${queryString}`
     : `/facilities/${facilityId}/availability`;
   return apiRequest(endpoint);
+}
+
+/**
+ * Get doctors stationed at a specific healthcare facility.
+ * @param {number|string} facilityId
+ */
+export async function getFacilityDoctors(facilityId) {
+  return apiRequest(`/facilities/${facilityId}/doctors`);
+}
+
+// ─────────────────────────────────────────────────────────────
+// Doctor Directory Helpers
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Discover doctors and medical officers with optional filters.
+ * @param {{ facility_id?: number|string, specialization?: string, search?: string, available_today?: boolean }} [params={}]
+ */
+export async function getDoctors(params = {}) {
+  const query = new URLSearchParams();
+  if (params.facility_id != null) query.set('facility_id', params.facility_id.toString());
+  if (params.specialization) query.set('specialization', params.specialization);
+  if (params.search) query.set('search', params.search);
+  if (params.available_today != null) query.set('available_today', params.available_today.toString());
+
+  const queryString = query.toString();
+  return apiRequest(queryString ? `/doctors?${queryString}` : '/doctors');
+}
+
+/**
+ * Get complete profile details for a specific doctor.
+ * @param {number|string} doctorId
+ */
+export async function getDoctorDetails(doctorId) {
+  return apiRequest(`/doctors/${doctorId}`);
 }
 
 // ─────────────────────────────────────────────────────────────

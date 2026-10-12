@@ -1,23 +1,27 @@
+import { useTranslation } from '../i18n'
+import { getLocalizedFacilityName } from '../utils/hospitalLocalization'
+
 export default function AppointmentCard({
   id = 'APT-1001',
   facilityName = 'Community Health Centre',
-  doctorName = 'Dr. S. Patil (General Physician)',
+  doctorName = 'Dr. R. Karthik (General Physician)',
   department = 'General OPD',
   date = 'Tomorrow, 10:30 AM',
   tokenNumber = 'T-14',
   status = 'confirmed', // 'confirmed' | 'pending' | 'completed' | 'cancelled'
   onViewDetails,
 }) {
+  const { t } = useTranslation()
   const getStatusLabel = (st) => {
     switch (st) {
       case 'confirmed':
-        return 'Confirmed'
+        return t ? (t('appointments.statusConfirmed') || 'Confirmed') : 'Confirmed'
       case 'pending':
         return 'In Queue'
       case 'completed':
         return 'Completed'
       case 'cancelled':
-        return 'Cancelled'
+        return t ? (t('appointments.cancelled') || 'Cancelled') : 'Cancelled'
       default:
         return st
     }
@@ -36,7 +40,7 @@ export default function AppointmentCard({
       </div>
 
       <div className="appointment-body">
-        <h3 className="appointment-facility">{facilityName}</h3>
+        <h3 className="appointment-facility">{getLocalizedFacilityName(facilityName, t)}</h3>
         <p className="appointment-doctor">{doctorName}</p>
         <div className="appointment-details">
           <div className="detail-item">
